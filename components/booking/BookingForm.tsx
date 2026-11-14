@@ -1,90 +1,129 @@
-
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderCircle, Send, Sparkles, WashingMachine, Home, Bug } from "lucide-react";
 import { ServiceCategory } from "@/types/service";
 import FeedbackModal from "@/components/ui/FeedbackModal";
+import StepIndicator, { StepId } from "./steps/StepIndicator";
+import StepServiceSelect, { ServiceOption } from "./steps/StepServiceSelect";
+import StepServiceDetails from "./steps/StepServiceDetails";
+import StepScheduleLocation from "./steps/StepScheduleLocation";
+import StepReview from "./steps/StepReview";
+import {
+  LaundryDetails,
+  CleaningDetails,
+  DomesticSupportDetails,
+  PestControlDetails,
+} from "@/lib/booking-types";
+import { AlertCircle, RotateCcw } from "lucide-react";
 
-type ServiceOption = {
-  id: string;
-  name: string;
+export type RepeatBookingData = {
+  serviceId: string;
+  serviceName: string;
   category: ServiceCategory;
-  slug?: string;
-  description?: string;
+  bookingNumber: string;
+  address: string;
+  propertyType?: string;
+  numberOfRooms?: number;
+  estimatedSize?: string;
+  specialInstructions?: string;
+  serviceDetails?: Record<string, unknown>;
 };
-
-function formatServiceCategory(category: ServiceCategory) {
-  switch (category) {
-    case "LAUNDRY":
-      return "Laundry";
-    case "DOMESTIC_SUPPORT":
-      return "Domestic Support";
-    case "PEST_CONTROL":
-      return "Pest Control";
-    case "CLEANING":
-    default:
-      return "Cleaning";
-  }
-}
-
-function getServiceCategoryPreview(category: ServiceCategory) {
-  switch (category) {
-    case "LAUNDRY":
-      return {
-        icon: <WashingMachine size={18} />,
-        containerClass: "bg-sky-100 text-sky-700",
-        label: "Professional Laundry Care",
-      };
-    case "DOMESTIC_SUPPORT":
-      return {
-        icon: <Home size={18} />,
-        containerClass: "bg-emerald-100 text-emerald-700",
-        label: "Domestic Help & Household Support",
-      };
-    case "PEST_CONTROL":
-      return {
-        icon: <Bug size={18} />,
-        containerClass: "bg-amber-100 text-amber-700",
-        label: "Fumigation & Pest Control",
-      };
-    case "CLEANING":
-    default:
-      return {
-        icon: <Sparkles size={18} />,
-        containerClass: "bg-blue-100 text-blue-700",
-        label: "Comprehensive Cleaning",
-      };
-  }
-}
 
 type BookingFormProps = {
   services: ServiceOption[];
   initialServiceId?: string;
+  repeatData?: RepeatBookingData;
 };
 
 export default function BookingForm({
   services,
   initialServiceId = "",
+  repeatData,
 }: BookingFormProps) {
   const router = useRouter();
 
-  const [serviceId, setServiceId] = useState(initialServiceId);
+  // Find initial service if provided
+  const targetServiceId = repeatData?.serviceId || initialServiceId;
+  const initialService = targetServiceId
+    ? services.find((s) => s.id === targetServiceId)
+    : undefined;
+
+  // Selected category state
+  const [selectedCategory, setSelectedCategory] = useState<ServiceCategory | null>(
+    () => repeatData?.category || initialService?.category || null
+  );
+
+  // Selected package state
+  const [selectedServiceId, setSelectedServiceId] = useState<string>(
+    () => repeatData?.serviceId || initialService?.id || ""
+  );
+
+  // Wizard state: Step 1 = Category, Step 2 = Package & Details, Step 3 = Schedule & Address, Step 4 = Review
+  // If repeating, start on Step 3 (Schedule & Location) since package and details are already preloaded
+  const [currentStep, setCurrentStep] = useState<StepId>(() => {
+    if (repeatData) return 3;
+    return initialService ? 2 : 1;
+  });
+
+  // Category specific question answers with repeat prefill
+  const [laundryData, setLaundryData] = useState<LaundryDetails>(() => ({
+    laundryServiceType: "wash_and_fold",
+    quantityEstimated: "1_to_2_bags",
+    collectionPreference: "pickup_and_delivery",
+    ...(repeatData?.category === "LAUNDRY" && repeatData.serviceDetails
+      ? (repeatData.serviceDetails as any)
+      : {}),
+  }));
+
+  const [cleaningData, setCleaningData] = useState<CleaningDetails>(() => ({
+    cleaningType: "standard",
+    frequency: "one_time",
+    propertyType: repeatData?.propertyType || "Residential Apartment / Flat",
+    numberOfRooms: repeatData?.numberOfRooms ?? 3,
+    estimatedSize: repeatData?.estimatedSize,
+    ...(repeatData?.category === "CLEANING" && repeatData.serviceDetails
+      ? (repeatData.serviceDetails as any)
+      : {}),
+  }));
+
+  const [domesticData, setDomesticData] = useState<DomesticSupportDetails>(() => ({
+    supportType: "general_housekeeping",
+    frequency: "one_off",
+    schedulePreference: "full_day",
+    ...(repeatData?.category === "DOMESTIC_SUPPORT" && repeatData.serviceDetails
+      ? (repeatData.serviceDetails as any)
+      : {}),
+  }));
+
+  const [pestData, setPestData] = useState<PestControlDetails>(() => ({
+    pestType: ["Cockroaches"],
+    infestationLevel: "moderate",
+    treatmentArea: "indoor_and_outdoor",
+    hasPetsOrChildren: false,
+    previousTreatment: "never",
+    propertyType: repeatData?.propertyType,
+    estimatedSize: repeatData?.estimatedSize,
+    ...(repeatData?.category === "PEST_CONTROL" && repeatData.serviceDetails
+      ? (repeatData.serviceDetails as any)
+      : {}),
+  }));
+
+  // Schedule & Location
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
-  const [address, setAddress] = useState("");
-  const [propertyType, setPropertyType] = useState("");
-  const [numberOfRooms, setNumberOfRooms] = useState("");
-  const [estimatedSize, setEstimatedSize] = useState("");
-  const [specialInstructions, setSpecialInstructions] = useState("");
+  const [address, setAddress] = useState(() => repeatData?.address || "");
+  const [specialInstructions, setSpecialInstructions] = useState(
+    () => repeatData?.specialInstructions || ""
+  );
+
+  // Submission feedback
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingNumber, setBookingNumber] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currentService = services.find((s) => s.id === serviceId);
+  const selectedService = services.find((s) => s.id === selectedServiceId);
 
   const today = new Date();
   const minimumDate = [
@@ -93,347 +132,223 @@ export default function BookingForm({
     String(today.getDate()).padStart(2, "0"),
   ].join("-");
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
+  const handleSelectCategory = (cat: ServiceCategory) => {
+    setSelectedCategory(cat);
+    const servicesInCat = services.filter((s) => s.category === cat);
+    if (!servicesInCat.some((s) => s.id === selectedServiceId) && servicesInCat.length > 0) {
+      setSelectedServiceId(servicesInCat[0].id);
+    }
+  };
 
-    if (!serviceId) {
-      setError("Please choose a service.");
+  const handleSelectService = (srv: ServiceOption) => {
+    setSelectedServiceId(srv.id);
+    setSelectedCategory(srv.category);
+  };
+
+  const getCategoryLabel = () => {
+    const cat = selectedCategory || selectedService?.category;
+    if (!cat) return undefined;
+    switch (cat) {
+      case "LAUNDRY":
+        return "Laundry";
+      case "DOMESTIC_SUPPORT":
+        return "Domestic";
+      case "PEST_CONTROL":
+        return "Pest Control";
+      case "CLEANING":
+      default:
+        return "Cleaning";
+    }
+  };
+
+  // Compile full submission payload
+  const handleSubmitBooking = async () => {
+    if (!selectedService) {
+      setError("Please select a service package.");
+      setCurrentStep(2);
       return;
     }
 
-    if (preferredDate < minimumDate) {
-      setError("Please choose today or a future date.");
+    if (!preferredDate || !preferredTime || !address) {
+      setError("Please fill in preferred date, time, and address.");
+      setCurrentStep(3);
       return;
     }
 
     setIsSubmitting(true);
+    setError("");
 
     try {
+      let categoryDetails: Record<string, unknown> = {};
+      let topPropertyType: string | undefined = undefined;
+      let topRooms: number | undefined = undefined;
+      let topSize: string | undefined = undefined;
+
+      switch (selectedService.category) {
+        case "LAUNDRY":
+          categoryDetails = { ...laundryData };
+          break;
+        case "CLEANING":
+          categoryDetails = { ...cleaningData };
+          topPropertyType = cleaningData.propertyType;
+          topRooms = cleaningData.numberOfRooms;
+          topSize = cleaningData.estimatedSize;
+          break;
+        case "DOMESTIC_SUPPORT":
+          categoryDetails = { ...domesticData };
+          break;
+        case "PEST_CONTROL":
+          categoryDetails = { ...pestData };
+          topPropertyType = pestData.propertyType;
+          topSize = pestData.estimatedSize;
+          break;
+      }
+
       const response = await fetch("/api/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          serviceId,
+          serviceId: selectedService.id,
           preferredDate,
           preferredTime,
           address,
-          propertyType: propertyType || undefined,
-          numberOfRooms: numberOfRooms
-            ? Number(numberOfRooms)
-            : undefined,
-          estimatedSize: estimatedSize || undefined,
+          propertyType: topPropertyType,
+          numberOfRooms: topRooms,
+          estimatedSize: topSize,
           specialInstructions: specialInstructions || undefined,
+          serviceDetails: categoryDetails,
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.message || "Unable to submit your request.");
+        setError(data.message || "Unable to submit your service request.");
         return;
       }
 
-      setSuccess(data.message || "Your request has been submitted.");
       setBookingNumber(data.booking.bookingNumber);
       setShowSuccessModal(true);
-
-      setPreferredDate("");
-      setPreferredTime("");
-      setAddress("");
-      setPropertyType("");
-      setNumberOfRooms("");
-      setEstimatedSize("");
-      setSpecialInstructions("");
-
       router.refresh();
     } catch {
-      setError("A connection error occurred. Please try again.");
+      setError("A connection error occurred. Please check your network and try again.");
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
 
   if (services.length === 0) {
     return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-900">
-        There are currently no available services to book. Please check back
-        later or contact our team.
+      <div className="rounded-2xl border-2 border-amber-300 bg-amber-50 p-6 text-amber-950 font-semibold">
+        There are currently no active services configured in the system. Please contact our support team.
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-7">
-      {success && (
-        <div
-          role="status"
-          className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"
-        >
-          <p className="font-semibold">{success}</p>
-          {bookingNumber && (
-            <p className="mt-1">
-              Your booking reference is{" "}
-              <span className="font-bold">{bookingNumber}</span>.
+    <div>
+      <StepIndicator currentStep={currentStep} categoryLabel={getCategoryLabel()} />
+
+      {/* Repeat Booking Notice */}
+      {repeatData && (
+        <div className="mb-6 flex items-start gap-3.5 rounded-2xl border-2 border-blue-200 bg-blue-50/90 p-4.5 text-blue-950 shadow-2xs">
+          <RotateCcw size={20} className="mt-0.5 shrink-0 text-blue-900" />
+          <div className="flex-1 text-xs">
+            <p className="font-extrabold text-blue-950 text-sm">
+              Re-booking {repeatData.serviceName}
             </p>
-          )}
-          <p className="mt-2">
-            Your request is pending review. Our team will discuss the scope,
-            availability, and price before confirming it.
-          </p>
-          <button
-            type="button"
-            onClick={() => router.push("/account/bookings")}
-            className="mt-3 font-semibold underline"
-          >
-            View my bookings
-          </button>
+            <p className="mt-0.5 text-blue-900 font-medium leading-relaxed">
+              We&apos;ve pre-filled your preferences and address from booking #{repeatData.bookingNumber}. Please choose your new preferred date and time below. You can also step back to edit service options at any time.
+            </p>
+          </div>
         </div>
       )}
 
       {error && (
         <div
           role="alert"
-          className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+          className="mb-6 flex items-start gap-3 rounded-2xl border-2 border-rose-200 bg-rose-50/90 p-4 text-sm font-semibold text-rose-900 shadow-2xs"
         >
-          {error}
+          <AlertCircle size={20} className="mt-0.5 shrink-0 text-rose-600" />
+          <span>{error}</span>
         </div>
       )}
 
-      <section>
-        <h2 className="text-lg font-bold text-slate-900">
-          1. Choose your service
-        </h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Select the service you would like to request.
-        </p>
+      {/* Step 1: Choose Type of Service (Category) */}
+      {currentStep === 1 && (
+        <StepServiceSelect
+          services={services}
+          selectedCategory={selectedCategory}
+          onSelectCategory={handleSelectCategory}
+          onNext={() => {
+            if (selectedCategory) setCurrentStep(2);
+          }}
+        />
+      )}
 
-        <label
-          htmlFor="serviceId"
-          className="mb-2 mt-4 block text-sm font-medium text-slate-700"
-        >
-          Service
-        </label>
-        <select
-          id="serviceId"
-          required
-          value={serviceId}
-          onChange={(event) => setServiceId(event.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-        >
-          <option value="">Choose a service</option>
-          {services.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name} — {formatServiceCategory(service.category)}
-            </option>
-          ))}
-        </select>
+      {/* Step 2: Open Available Services under Type & Configure Specifications */}
+      {currentStep === 2 && selectedCategory && (
+        <StepServiceDetails
+          services={services}
+          selectedCategory={selectedCategory}
+          selectedServiceId={selectedServiceId}
+          onSelectService={handleSelectService}
+          laundryData={laundryData}
+          cleaningData={cleaningData}
+          domesticData={domesticData}
+          pestData={pestData}
+          onUpdateLaundry={(u) => setLaundryData((p) => ({ ...p, ...u }))}
+          onUpdateCleaning={(u) => setCleaningData((p) => ({ ...p, ...u }))}
+          onUpdateDomestic={(u) => setDomesticData((p) => ({ ...p, ...u }))}
+          onUpdatePest={(u) => setPestData((p) => ({ ...p, ...u }))}
+          onNext={() => setCurrentStep(3)}
+          onBack={() => setCurrentStep(1)}
+        />
+      )}
 
-        {currentService && (() => {
-          const preview = getServiceCategoryPreview(currentService.category);
-          return (
-            <div className="mt-3 flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50/70 p-3.5">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`flex h-9 w-9 items-center justify-center rounded-lg ${preview.containerClass}`}
-                >
-                  {preview.icon}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900">
-                    {currentService.name}
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    {preview.label}
-                  </p>
-                </div>
-              </div>
-              <span className="rounded-full border border-blue-200/60 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-xs">
-                Selected
-              </span>
-            </div>
-          );
-        })()}
-      </section>
+      {/* Step 3: Schedule & Address */}
+      {currentStep === 3 && (
+        <StepScheduleLocation
+          preferredDate={preferredDate}
+          preferredTime={preferredTime}
+          address={address}
+          specialInstructions={specialInstructions}
+          onChangeDate={setPreferredDate}
+          onChangeTime={setPreferredTime}
+          onChangeAddress={setAddress}
+          onChangeSpecialInstructions={setSpecialInstructions}
+          onNext={() => setCurrentStep(4)}
+          onBack={() => setCurrentStep(2)}
+          minimumDate={minimumDate}
+        />
+      )}
 
-      <section className="border-t border-slate-200 pt-6">
-        <h2 className="text-lg font-bold text-slate-900">
-          2. Preferred schedule
-        </h2>
-        <p className="mt-1 text-sm text-slate-500">
-          These are your preferences, not a confirmed appointment.
-        </p>
+      {/* Step 4: Review & Submit */}
+      {currentStep === 4 && selectedService && (
+        <StepReview
+          selectedService={selectedService}
+          laundryData={laundryData}
+          cleaningData={cleaningData}
+          domesticData={domesticData}
+          pestData={pestData}
+          preferredDate={preferredDate}
+          preferredTime={preferredTime}
+          address={address}
+          specialInstructions={specialInstructions}
+          isSubmitting={isSubmitting}
+          onBack={() => setCurrentStep(3)}
+          onSubmit={handleSubmitBooking}
+          onEditStep={(step) => setCurrentStep(step)}
+        />
+      )}
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <label
-              htmlFor="preferredDate"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Preferred date
-            </label>
-            <input
-              id="preferredDate"
-              type="date"
-              required
-              min={minimumDate}
-              value={preferredDate}
-              onChange={(event) => setPreferredDate(event.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="preferredTime"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Preferred time
-            </label>
-            <input
-              id="preferredTime"
-              type="time"
-              required
-              value={preferredTime}
-              onChange={(event) => setPreferredTime(event.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-slate-200 pt-6">
-        <h2 className="text-lg font-bold text-slate-900">
-          3. Service location and details
-        </h2>
-
-        <div className="mt-4 space-y-4">
-          <div>
-            <label
-              htmlFor="address"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Service address
-            </label>
-            <textarea
-              id="address"
-              required
-              minLength={5}
-              maxLength={500}
-              rows={3}
-              value={address}
-              onChange={(event) => setAddress(event.target.value)}
-              placeholder="Enter the full address where the service is needed"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label
-                htmlFor="propertyType"
-                className="mb-2 block text-sm font-medium text-slate-700"
-              >
-                Property or venue type
-              </label>
-              <select
-                id="propertyType"
-                value={propertyType}
-                onChange={(event) => setPropertyType(event.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              >
-                <option value="">Select if applicable</option>
-                <option value="Residential">Residential</option>
-                <option value="Office">Office</option>
-                <option value="Commercial">Commercial property</option>
-                <option value="Event venue">Event venue</option>
-                <option value="Post-construction">Post-construction</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="numberOfRooms"
-                className="mb-2 block text-sm font-medium text-slate-700"
-              >
-                Number of rooms (optional)
-              </label>
-              <input
-                id="numberOfRooms"
-                type="number"
-                min={1}
-                max={500}
-                value={numberOfRooms}
-                onChange={(event) => setNumberOfRooms(event.target.value)}
-                placeholder="e.g. 4"
-                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="estimatedSize"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Approximate size (optional)
-            </label>
-            <input
-              id="estimatedSize"
-              maxLength={100}
-              value={estimatedSize}
-              onChange={(event) => setEstimatedSize(event.target.value)}
-              placeholder="e.g. 2-bedroom apartment or medium office"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="specialInstructions"
-              className="mb-2 block text-sm font-medium text-slate-700"
-            >
-              Special instructions (optional)
-            </label>
-            <textarea
-              id="specialInstructions"
-              rows={4}
-              maxLength={2000}
-              value={specialInstructions}
-              onChange={(event) => setSpecialInstructions(event.target.value)}
-              placeholder="Describe any special requirements or areas that need attention"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className="rounded-xl bg-blue-50 p-4 text-sm leading-6 text-blue-900">
-        <strong>Pricing and confirmation:</strong> Prices are negotiable and
-        depend on the scope of work. Submitting this form sends a request; it
-        does not confirm the appointment or establish a final price.
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#031c43] px-5 py-3.5 font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {isSubmitting ? (
-          <LoaderCircle className="animate-spin" size={19} />
-        ) : (
-          <Send size={18} />
-        )}
-        {isSubmitting ? "Submitting request..." : "Submit booking request"}
-      </button>
+      {/* Feedback Modal */}
       <FeedbackModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         variant="success"
         title="Booking Request Submitted"
-        message="Your request has been received. Our team will review the details and reach out shortly to discuss the scope, schedule and confirm your appointment."
+        message="Your request has been received. Our team will review your service-specific preferences and contact you shortly to confirm the appointment and pricing."
         referenceNumber={bookingNumber}
         referenceLabel="Booking Reference"
         primaryAction={{
@@ -442,9 +357,12 @@ export default function BookingForm({
         }}
         secondaryAction={{
           label: "Book Another Service",
-          onClick: () => setShowSuccessModal(false),
+          onClick: () => {
+            setShowSuccessModal(false);
+            setCurrentStep(1);
+          },
         }}
       />
-    </form>
+    </div>
   );
 }

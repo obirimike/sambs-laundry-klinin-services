@@ -42,6 +42,7 @@ enum ContactMessageStatus {
   NEW
   READ
   RESOLVED
+  ARCHIVED
 }
 
 enum QuoteStatus {
@@ -157,6 +158,7 @@ model Booking {
   numberOfRooms       Int?
   estimatedSize       String?
   specialInstructions String?
+  serviceDetails      Json?
 
   adminNotes String?
 

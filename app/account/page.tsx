@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -7,13 +6,28 @@ import {
   Bell,
   CalendarDays,
   CheckCircle2,
-  Clock3,
+  Clock,
   ClipboardList,
   Sparkles,
+  FileText,
+  User,
+  ShieldCheck,
+  ChevronRight,
+  PlusCircle,
+  HelpCircle,
+  MapPin,
+  Calendar,
+  PhoneCall,
+  MessageSquare,
+  WashingMachine,
+  Home,
+  Bug,
 } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import SignOutButton from "@/components/auth/SignOutButton";
+
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const session = await auth();
@@ -33,9 +47,11 @@ export default async function AccountPage() {
   const [
     bookings,
     totalBookings,
-    awaitingBookings,
-    activeBookings,
+    pendingBookings,
+    inProgressBookings,
     completedBookings,
+    pendingQuotesCount,
+    unreadNotifications,
   ] = await Promise.all([
     db.booking.findMany({
       where: {
@@ -45,13 +61,14 @@ export default async function AccountPage() {
         service: {
           select: {
             name: true,
+            category: true,
           },
         },
       },
       orderBy: {
         createdAt: "desc",
       },
-      take: 5,
+      take: 6,
     }),
     db.booking.count({ where: { customerId: session.user.id } }),
     db.booking.count({
@@ -66,245 +83,512 @@ export default async function AccountPage() {
     db.booking.count({
       where: { customerId: session.user.id, status: "COMPLETED" },
     }),
+    db.quote.count({
+      where: {
+        booking: {
+          customerId: session.user.id,
+        },
+        status: "SENT",
+      },
+    }),
+    db.notification.count({
+      where: {
+        userId: session.user.id,
+        isRead: false,
+      },
+    }),
   ]);
 
   const firstName = session.user.name?.split(" ")[0] || "Customer";
 
-  const statusStyles: Record<string, string> = {
-    PENDING: "bg-amber-100 text-amber-800",
-    CONFIRMED: "bg-blue-100 text-blue-800",
-    IN_PROGRESS: "bg-purple-100 text-purple-800",
-    COMPLETED: "bg-green-100 text-green-800",
-    CANCELLED: "bg-red-100 text-red-800",
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return {
+          label: "Awaiting Review",
+          badgeClass: "bg-amber-100 text-amber-900 border-amber-300 font-bold",
+          dotClass: "bg-amber-600",
+        };
+      case "CONFIRMED":
+        return {
+          label: "Confirmed",
+          badgeClass: "bg-blue-100 text-blue-900 border-blue-300 font-bold",
+          dotClass: "bg-blue-700",
+        };
+      case "IN_PROGRESS":
+        return {
+          label: "In Progress",
+          badgeClass: "bg-purple-100 text-purple-900 border-purple-300 font-bold",
+          dotClass: "bg-purple-700",
+        };
+      case "COMPLETED":
+        return {
+          label: "Completed",
+          badgeClass: "bg-emerald-100 text-emerald-900 border-emerald-300 font-bold",
+          dotClass: "bg-emerald-700",
+        };
+      case "CANCELLED":
+        return {
+          label: "Cancelled",
+          badgeClass: "bg-rose-100 text-rose-900 border-rose-300 font-bold",
+          dotClass: "bg-rose-600",
+        };
+      default:
+        return {
+          label: status.replace(/_/g, " "),
+          badgeClass: "bg-slate-200 text-slate-800 border-slate-300 font-bold",
+          dotClass: "bg-slate-600",
+        };
+    }
   };
 
-  const bookingSummary = [
-    {
-      label: "All bookings",
-      value: totalBookings,
-      icon: ClipboardList,
-      color: "bg-blue-50 text-blue-700",
-    },
-    {
-      label: "Awaiting review",
-      value: awaitingBookings,
-      icon: Clock3,
-      color: "bg-amber-50 text-amber-700",
-    },
-    {
-      label: "In progress",
-      value: activeBookings,
-      icon: CalendarDays,
-      color: "bg-indigo-50 text-indigo-700",
-    },
-    {
-      label: "Completed",
-      value: completedBookings,
-      icon: CheckCircle2,
-      color: "bg-emerald-50 text-emerald-700",
-    },
-  ];
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "LAUNDRY":
+        return <WashingMachine size={22} className="text-blue-800" />;
+      case "DOMESTIC_SUPPORT":
+        return <Home size={22} className="text-emerald-800" />;
+      case "PEST_CONTROL":
+        return <Bug size={22} className="text-amber-800" />;
+      case "CLEANING":
+      default:
+        return <Sparkles size={22} className="text-blue-800" />;
+    }
+  };
 
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-slate-100 pb-16">
+      {/* Top Application Navbar */}
+      <header className="sticky top-0 z-40 border-b border-slate-300 bg-white shadow-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          {/* Logo & Compact Title */}
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-3 text-lg font-bold text-slate-900"
+            className="flex items-center gap-3 transition hover:opacity-90"
+            aria-label="SAMB's Laundry & Klinin Services Home"
           >
-            <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full border border-blue-200 bg-blue-900 shadow-sm">
+            <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-full border-2 border-blue-900 bg-blue-950 shadow-sm">
               <Image
                 src="/images/logo/samb-logo.jpeg"
                 alt="SAMB's Logo"
                 fill
-                sizes="36px"
+                sizes="44px"
                 className="object-cover"
+                priority
               />
             </span>
-            <span className="truncate">SAMB&apos;s Services</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-base font-extrabold tracking-tight text-slate-900 sm:text-lg">
+                SAMB&apos;s Laundry
+              </span>
+              <span className="text-xs font-bold text-blue-900 tracking-wide sm:text-sm">
+                &amp; Klinin Services
+              </span>
+            </div>
           </Link>
-<div className="flex shrink-0 items-center gap-2">
+
+          {/* User Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/account/notifications"
-              aria-label="Notifications"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:px-4"
+              aria-label={`Notifications${unreadNotifications > 0 ? ` (${unreadNotifications} unread)` : ""}`}
+              className="relative inline-flex h-10 w-10 sm:w-auto sm:px-4 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold transition hover:bg-slate-50 hover:text-blue-950 shadow-2xs"
             >
-                <Bell size={17} aria-hidden="true" />
-                <span className="hidden sm:inline">Notifications</span>
-              </Link>
-              <Link
-                href="/account/profile"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 sm:px-4"
-              >
-                Profile
-              </Link>
-             <SignOutButton />
+              <Bell size={20} className="text-slate-700" aria-hidden="true" />
+              {unreadNotifications > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-rose-600 ring-2 ring-white" />
+                </span>
+              )}
+              <span className="ml-2 hidden text-xs font-bold sm:inline text-slate-800">Alerts</span>
+              {unreadNotifications > 0 && (
+                <span className="ml-1.5 hidden rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-bold text-white sm:inline">
+                  {unreadNotifications}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/account/profile"
+              aria-label="Profile"
+              className="inline-flex h-10 w-10 sm:w-auto sm:px-4 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white text-slate-800 font-semibold transition hover:bg-slate-50 hover:text-slate-900 shadow-2xs"
+            >
+              <User size={18} className="text-slate-700" />
+              <span className="hidden text-xs font-bold sm:inline">Profile</span>
+            </Link>
+
+            <SignOutButton className="h-10 px-3.5 text-xs font-bold rounded-xl border-slate-300" />
           </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <section className="rounded-3xl bg-[#031c43] p-6 text-white sm:p-9">
-            <p className="text-sm font-semibold uppercase tracking-wider text-blue-200">
-              Customer dashboard
-            </p>
-            <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Welcome, {firstName}!
-            </h1>
-            <p className="mt-3 max-w-xl leading-7 text-blue-100">
-              Request a cleaning or laundry service and keep track of your
-              bookings from one convenient place.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+      {/* Main Content Area */}
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 space-y-6">
+        {/* Hero Card */}
+        <div className="relative overflow-hidden rounded-3xl bg-[#031c43] p-6 sm:p-9 text-white shadow-xl">
+          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-72 w-72 rounded-full bg-blue-500/15 blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5 sm:gap-8">
+            <div className="space-y-2.5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/40 bg-blue-600/30 px-3.5 py-1 text-xs font-bold text-white">
+                <ShieldCheck size={16} className="text-blue-300" />
+                <span>Verified Customer Portal</span>
+              </div>
+              <h1 className="text-2xl font-black tracking-tight text-white sm:text-4xl">
+                Welcome back, {firstName}!
+              </h1>
+              <p className="text-sm font-medium leading-relaxed text-slate-200 sm:text-base sm:max-w-xl">
+                Manage your active laundry pickups, cleaning schedules, pest fumigation, and review price quotations.
+              </p>
+            </div>
+
+            {/* Quick Hero Actions */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
               <Link
                 href="/book"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-semibold text-blue-800 transition hover:bg-blue-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-sm font-extrabold text-[#031c43] shadow-md transition hover:bg-slate-100 active:scale-[0.99]"
               >
-                <Sparkles size={18} aria-hidden="true" />
-                Request a service
+                <Sparkles size={18} className="text-blue-900" />
+                <span>Book a Service</span>
               </Link>
               <Link
                 href="/account/bookings"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl border border-blue-200/60 px-5 py-3 font-semibold text-white transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="inline-flex h-12 items-center justify-center rounded-2xl border-2 border-white/40 bg-white/10 px-5 text-sm font-bold text-white transition hover:bg-white/20"
               >
-                My bookings
+                <span>My Bookings</span>
               </Link>
             </div>
-          </section>
-
-          <Link
-            href="/account/quotes"
-            className="group flex flex-col justify-center rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-300 hover:shadow-md sm:p-7"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-              <ClipboardList size={21} aria-hidden="true" />
-            </span>
-            <h2 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-blue-700">
-              My quotations
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Review service prices, check quotation terms, and respond to
-              quotes.
-            </p>
-            <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-blue-700">
-              View quotations
-              <ArrowRight
-                size={16}
-                className="transition group-hover:translate-x-1"
-                aria-hidden="true"
-              />
-            </span>
-          </Link>
+          </div>
         </div>
 
-        <section
-          aria-label="Booking summary"
-          className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
-        >
-          {bookingSummary.map((stat) => {
-            const Icon = stat.icon;
-
-            return (
-              <article
-                key={stat.label}
-                className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-slate-600">
-                    {stat.label}
-                  </span>
-                  <span className={`rounded-xl p-2 ${stat.color}`}>
-                    <Icon size={18} aria-hidden="true" />
-                  </span>
-                </div>
-                <p className="mt-3 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-                  {stat.value}
+        {/* Action Prompt if Quotes are Pending */}
+        {pendingQuotesCount > 0 && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 sm:p-5 shadow-sm">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-200 text-amber-950 shadow-inner">
+                <FileText size={24} />
+              </div>
+              <div>
+                <p className="text-xs font-extrabold uppercase tracking-wider text-amber-900">
+                  Price Quotation Awaiting Response
                 </p>
-              </article>
-            );
-          })}
+                <p className="text-sm font-bold text-amber-950 sm:text-base">
+                  You have {pendingQuotesCount} price {pendingQuotesCount === 1 ? "quotation" : "quotations"} ready for review.
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/account/quotes"
+              className="inline-flex h-11 w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-amber-800 px-5 text-xs font-extrabold text-white shadow-xs hover:bg-amber-900 transition"
+            >
+              <span>Review Quotations</span>
+              <ArrowRight size={15} />
+            </Link>
+          </div>
+        )}
+
+        {/* 4-Stat Metric Row */}
+        <section aria-label="Booking statistics">
+          <div className="grid grid-cols-2 gap-3.5 sm:gap-5 lg:grid-cols-4">
+            <div className="rounded-2xl border border-slate-300 bg-white p-4 sm:p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Total Bookings
+                </span>
+                <div className="rounded-xl bg-blue-100 p-2 text-blue-900">
+                  <ClipboardList size={20} />
+                </div>
+              </div>
+              <p className="mt-2.5 text-2xl font-black text-slate-900 sm:text-3xl">
+                {totalBookings}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-600">All lifetime requests</p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-300 bg-white p-4 sm:p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Awaiting Review
+                </span>
+                <div className="rounded-xl bg-amber-100 p-2 text-amber-900">
+                  <Clock size={20} />
+                </div>
+              </div>
+              <p className="mt-2.5 text-2xl font-black text-slate-900 sm:text-3xl">
+                {pendingBookings}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-600">Pending review</p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-300 bg-white p-4 sm:p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Active &amp; Assigned
+                </span>
+                <div className="rounded-xl bg-purple-100 p-2 text-purple-900">
+                  <CalendarDays size={20} />
+                </div>
+              </div>
+              <p className="mt-2.5 text-2xl font-black text-slate-900 sm:text-3xl">
+                {inProgressBookings}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-600">Confirmed &amp; in-progress</p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-300 bg-white p-4 sm:p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Completed
+                </span>
+                <div className="rounded-xl bg-emerald-100 p-2 text-emerald-900">
+                  <CheckCircle2 size={20} />
+                </div>
+              </div>
+              <p className="mt-2.5 text-2xl font-black text-slate-900 sm:text-3xl">
+                {completedBookings}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-600">Fulfilled services</p>
+            </div>
+          </div>
         </section>
 
-        <section className="mt-8 sm:mt-10">
-          <div className="mb-5 flex items-center justify-between gap-4">
+        {/* Account Portals */}
+        <section aria-label="Quick navigation portals" className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold text-slate-900 sm:text-xl">
+              Account Portals
+            </h2>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Portal 1: Quotes */}
+            <Link
+              href="/account/quotes"
+              className="group relative flex items-center justify-between rounded-2xl border border-slate-300 bg-white p-4.5 sm:p-5 shadow-sm transition hover:border-blue-700 hover:shadow-md"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-900 shadow-inner">
+                  <FileText size={22} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-blue-900 transition">
+                    Service Quotations
+                  </h3>
+                  <p className="text-xs font-medium text-slate-600 mt-0.5">
+                    Review and accept price estimates
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {pendingQuotesCount > 0 && (
+                  <span className="rounded-full bg-amber-200 px-2.5 py-1 text-xs font-extrabold text-amber-950">
+                    {pendingQuotesCount} pending
+                  </span>
+                )}
+                <ChevronRight size={20} className="text-slate-500 group-hover:translate-x-1 group-hover:text-blue-900 transition" />
+              </div>
+            </Link>
+
+            {/* Portal 2: Notifications */}
+            <Link
+              href="/account/notifications"
+              className="group relative flex items-center justify-between rounded-2xl border border-slate-300 bg-white p-4.5 sm:p-5 shadow-sm transition hover:border-purple-700 hover:shadow-md"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-purple-100 text-purple-900 shadow-inner">
+                  <Bell size={22} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-purple-900 transition">
+                    Notification Inbox
+                  </h3>
+                  <p className="text-xs font-medium text-slate-600 mt-0.5">
+                    Clear alerts &amp; booking updates
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {unreadNotifications > 0 && (
+                  <span className="rounded-full bg-rose-600 px-2.5 py-1 text-xs font-extrabold text-white">
+                    {unreadNotifications} new
+                  </span>
+                )}
+                <ChevronRight size={20} className="text-slate-500 group-hover:translate-x-1 group-hover:text-purple-900 transition" />
+              </div>
+            </Link>
+
+            {/* Portal 3: Services Catalog */}
+            <Link
+              href="/services"
+              className="group relative flex items-center justify-between rounded-2xl border border-slate-300 bg-white p-4.5 sm:p-5 shadow-sm transition hover:border-emerald-700 hover:shadow-md sm:col-span-2 lg:col-span-1"
+            >
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-900 shadow-inner">
+                  <Sparkles size={22} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-slate-900 group-hover:text-emerald-900 transition">
+                    Browse All Services
+                  </h3>
+                  <p className="text-xs font-medium text-slate-600 mt-0.5">
+                    Laundry, cleaning, &amp; pest control
+                  </p>
+                </div>
+              </div>
+
+              <ChevronRight size={20} className="text-slate-500 group-hover:translate-x-1 group-hover:text-emerald-900 transition" />
+            </Link>
+          </div>
+        </section>
+
+        {/* Recent Service Requests Section */}
+        <section aria-label="Recent service bookings" className="space-y-4">
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">
-                Recent bookings
+              <h2 className="text-lg font-extrabold text-slate-900 sm:text-xl">
+                Recent Service Requests
               </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                A quick look at your latest service requests.
+              <p className="text-xs font-semibold text-slate-600">
+                Detailed overview of your current and previous service requests
               </p>
             </div>
 
             <Link
               href="/account/bookings"
-              className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-blue-700 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-bold text-blue-900 hover:text-blue-950 transition"
             >
-              View all <ArrowRight size={15} aria-hidden="true" />
+              <span>View all ({totalBookings})</span>
+              <ChevronRight size={16} />
             </Link>
           </div>
 
           {bookings.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center sm:px-6 sm:py-12">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-700">
-                <Sparkles size={24} aria-hidden="true" />
+            <div className="rounded-3xl border border-dashed border-slate-400 bg-white p-8 sm:p-12 text-center shadow-sm">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 text-blue-900 shadow-inner">
+                <Sparkles size={28} />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-slate-900">
-                No bookings yet
+              <h3 className="mt-4 text-base font-extrabold text-slate-900">
+                No service bookings yet
               </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-                When you request a service, your booking and its status will
-                appear here.
+              <p className="mx-auto mt-1 max-w-sm text-xs font-medium leading-relaxed text-slate-600">
+                Choose from laundry care, office and home cleaning, pest control, or domestic assistance.
               </p>
-              <Link
-                href="/book"
-                className="mt-5 inline-flex min-h-12 items-center justify-center rounded-xl bg-blue-700 px-5 py-3 font-semibold text-white transition hover:bg-blue-800"
-              >
-                Make your first request
-              </Link>
+              <div className="mt-5">
+                <Link
+                  href="/book"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#031c43] px-5 py-3 text-xs font-bold text-white shadow-sm hover:bg-blue-950 transition"
+                >
+                  <PlusCircle size={16} />
+                  <span>Request a Service</span>
+                </Link>
+              </div>
             </div>
           ) : (
-            <div className="grid gap-3 sm:gap-4 lg:grid-cols-2">
-              {bookings.map((booking: any) => (
-                <Link
-                  key={booking.id}
-                  href={`/account/bookings/${booking.id}`}
-                  className="flex min-w-0 items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-blue-300 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700 sm:p-5"
-                >
-                  <div className="min-w-0">
-                    <p className="font-semibold text-slate-900">
-                      {booking.service.name}
-                    </p>
-                    <p className="mt-1 truncate text-sm text-slate-500">
-                      Booking #{booking.bookingNumber}
-                    </p>
-                    <span className="mt-2 inline-flex items-center gap-1.5 text-sm text-slate-500">
-                      <CalendarDays size={15} aria-hidden="true" />
-                      {booking.preferredDate.toLocaleDateString()}
-                    </span>
-                  </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {bookings.map((booking) => {
+                const badge = getStatusBadge(booking.status);
+                const formattedDate = new Date(booking.preferredDate).toLocaleDateString("en-GH", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                });
 
-                  <div className="flex shrink-0 flex-col items-end gap-2">
-                    <span
-                      className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                        statusStyles[booking.status] ||
-                        "bg-slate-100 text-slate-700"
-                      }`}
-                    >
-                      {booking.status.replaceAll("_", " ")}
-                    </span>
-                    <ArrowRight
-                      size={16}
-                      className="text-slate-400"
-                      aria-hidden="true"
-                    />
-                  </div>
-                </Link>
-              ))}
+                return (
+                  <Link
+                    key={booking.id}
+                    href={`/account/bookings/${booking.id}`}
+                    className="group flex flex-col justify-between rounded-2xl border-2 border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-900 hover:shadow-md"
+                  >
+                    <div>
+                      {/* Top Bar: Service Category Icon & Status Badge */}
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 border border-slate-200 shadow-inner">
+                          {getCategoryIcon(booking.service.category)}
+                        </div>
+
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${badge.badgeClass}`}
+                        >
+                          <span className={`h-2 w-2 rounded-full ${badge.dotClass}`} />
+                          {badge.label}
+                        </span>
+                      </div>
+
+                      {/* Service Name & Booking # */}
+                      <h3 className="font-extrabold text-slate-900 text-base group-hover:text-blue-900 transition line-clamp-1">
+                        {booking.service.name}
+                      </h3>
+                      <p className="font-mono text-xs font-bold text-slate-700 mt-0.5">
+                        #{booking.bookingNumber}
+                      </p>
+
+                      {/* Schedule & Address info */}
+                      <div className="mt-4 space-y-2 border-t border-slate-200 pt-3 text-xs">
+                        <div className="flex items-center gap-2">
+                          <Calendar size={15} className="text-blue-900 shrink-0 font-bold" />
+                          <span className="font-bold text-slate-900">
+                            {formattedDate} at {booking.preferredTime}
+                          </span>
+                        </div>
+
+                        <div className="flex items-start gap-2">
+                          <MapPin size={15} className="text-slate-700 shrink-0 mt-0.5 font-bold" />
+                          <span className="line-clamp-2 font-medium leading-relaxed text-slate-700">
+                            {booking.address}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Footer */}
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-3 text-xs font-extrabold text-blue-900">
+                      <span>View details</span>
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition" />
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           )}
+        </section>
+
+        {/* Customer Assistance Banner */}
+        <section aria-label="Customer support assistance">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-3xl border border-slate-300 bg-white p-5 sm:p-7 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-100 text-blue-900 shadow-inner">
+                <HelpCircle size={26} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-extrabold text-slate-900">
+                  Need help with your booking?
+                </h3>
+                <p className="text-xs font-medium leading-relaxed text-slate-600 sm:max-w-xl">
+                  Have questions about your service request, pricing, or scheduling? Our customer support team is ready to assist you.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex w-full sm:w-auto items-center gap-2.5 shrink-0">
+              <a
+                href="tel:+233540240754"
+                className="flex-1 sm:flex-initial inline-flex h-11 items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 text-xs font-extrabold text-slate-900 hover:bg-slate-100 transition shadow-2xs"
+              >
+                <PhoneCall size={15} className="text-blue-900" />
+                <span>Call Desk</span>
+              </a>
+              <Link
+                href="/contact"
+                className="flex-1 sm:flex-initial inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#031c43] px-5 text-xs font-extrabold text-white hover:bg-blue-950 transition shadow-xs"
+              >
+                <MessageSquare size={15} />
+                <span>Send Message</span>
+              </Link>
+            </div>
+          </div>
         </section>
       </div>
     </main>

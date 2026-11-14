@@ -32,3 +32,34 @@ export async function GET() {
 
   return NextResponse.json({ notifications });
 }
+
+export async function DELETE(request: Request) {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { message: "Please sign in to clear notifications." },
+      { status: 401 }
+    );
+  }
+
+  const { searchParams } = new URL(request.url);
+  const scope = searchParams.get("scope"); // 'all' or 'read-only'
+
+  const whereClause: { userId: string; isRead?: boolean } = {
+    userId: session.user.id,
+  };
+
+  if (scope === "read-only") {
+    whereClause.isRead = true;
+  }
+
+  const result = await db.notification.deleteMany({
+    where: whereClause,
+  });
+
+  return NextResponse.json({
+    success: true,
+    deletedCount: result.count,
+  });
+}

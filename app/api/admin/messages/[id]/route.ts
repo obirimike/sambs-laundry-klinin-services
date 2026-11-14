@@ -37,6 +37,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       const msg = await tx.contactMessage.update({
         where: { id },
         data: { status },
+        select: { id: true, status: true },
       });
 
       await writeAudit(tx, {
@@ -54,7 +55,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       return msg;
     });
 
-    return apiSuccess(`Message marked as ${status.toLowerCase()}.`, { contactMessage: updated });
+    return apiSuccess(`Message marked as ${status.toLowerCase()}.`, { id: updated.id, status: updated.status });
   } catch (error) {
     console.error("Update contact message error:", error);
     return apiError(500, "MESSAGE_UPDATE_FAILED", "Unable to update message.");

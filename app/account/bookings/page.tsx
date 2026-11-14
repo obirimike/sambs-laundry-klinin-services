@@ -14,6 +14,7 @@ import { db } from "@/lib/db";
 import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
 import ReviewForm from "@/components/account/ReviewForm";
+import CustomerBookingActions from "@/components/account/CustomerBookingActions";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en-GH", {
@@ -203,12 +204,24 @@ export default async function BookingHistoryPage() {
                         </div>
                       </div>
 
-                      <Link
-                        href={`/account/bookings/${booking.id}`}
-                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
-                      >
-                        View details <ArrowRight size={16} />
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-2 shrink-0">
+                        <CustomerBookingActions
+                          bookingId={booking.id}
+                          bookingNumber={booking.bookingNumber}
+                          status={booking.status}
+                          serviceName={booking.service.name}
+                          currentDate={formatDate(booking.preferredDate)}
+                          currentTime={booking.preferredTime}
+                          compact={true}
+                        />
+                        <Link
+                          href={`/account/bookings/${booking.id}`}
+                          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:border-blue-900 hover:text-blue-900 transition shadow-2xs"
+                        >
+                          <span>Details</span>
+                          <ArrowRight size={14} />
+                        </Link>
+                      </div>
                     </div>
 
                     {booking.status === "COMPLETED" && !booking.review && (

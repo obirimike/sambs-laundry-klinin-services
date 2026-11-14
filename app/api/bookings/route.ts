@@ -16,6 +16,7 @@ const bookingSchema = z
     numberOfRooms: z.number().int().min(1).max(500).optional(),
     estimatedSize: z.string().trim().max(100).optional(),
     specialInstructions: z.string().trim().max(2000).optional(),
+    serviceDetails: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 
@@ -164,6 +165,7 @@ export async function POST(request: Request) {
         numberOfRooms: input.numberOfRooms ?? null,
         estimatedSize: input.estimatedSize || null,
         specialInstructions: input.specialInstructions || null,
+        serviceDetails: (input.serviceDetails as any) ?? undefined,
         status: "PENDING",
       },
       select: {

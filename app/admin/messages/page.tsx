@@ -18,10 +18,26 @@ export default async function AdminMessagesPage() {
   const messages = await db.contactMessage.findMany({
     orderBy: { createdAt: "desc" },
     take: 100,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      phone: true,
+      subject: true,
+      message: true,
+      status: true,
+      createdAt: true,
+    },
   });
 
-  const serializedMessages = messages.map((m: any) => ({
-    ...m,
+  const serializedMessages = messages.map((m) => ({
+    id: m.id,
+    name: m.name,
+    email: m.email,
+    phone: m.phone,
+    subject: m.subject,
+    message: m.message,
+    status: m.status as "NEW" | "READ" | "RESOLVED" | "ARCHIVED",
     createdAt: m.createdAt.toISOString(),
   }));
 

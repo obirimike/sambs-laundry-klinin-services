@@ -156,6 +156,7 @@ model Booking {
   numberOfRooms       Int?
   estimatedSize       String?
   specialInstructions String?
+  serviceDetails      Json?
 
   adminNotes          String?
 

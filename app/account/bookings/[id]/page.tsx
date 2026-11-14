@@ -14,6 +14,8 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
+import ServiceDetailsViewer from "@/components/booking/ServiceDetailsViewer";
+import CustomerBookingActions from "@/components/account/CustomerBookingActions";
 
 
 
@@ -163,6 +165,18 @@ export default async function BookingDetailsPage({
               </div>
             </div>
 
+            {/* Customer Booking Management Actions */}
+            <div className="mt-6">
+              <CustomerBookingActions
+                bookingId={booking.id}
+                bookingNumber={booking.bookingNumber}
+                status={booking.status}
+                serviceName={booking.service.name}
+                currentDate={formatDate(booking.preferredDate)}
+                currentTime={booking.preferredTime}
+              />
+            </div>
+
             <section className="mt-8">
               <h2 className="text-lg font-bold text-slate-900">
                 Requested schedule
@@ -255,6 +269,11 @@ export default async function BookingDetailsPage({
                     </p>
                   </div>
                 )}
+
+                <ServiceDetailsViewer
+                  category={booking.service.category}
+                  serviceDetails={booking.serviceDetails as Record<string, unknown> | null}
+                />
               </div>
             </section>
 

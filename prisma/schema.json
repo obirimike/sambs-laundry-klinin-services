@@ -674,6 +674,13 @@
                   "kind": "scalar"
                 }
               },
+              "serviceDetails": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
               "serviceId": {
                 "nullable": false,
                 "type": {
@@ -835,6 +842,9 @@
                 },
                 "propertyType": {
                   "column": "propertyType"
+                },
+                "serviceDetails": {
+                  "column": "serviceDetails"
                 },
                 "serviceId": {
                   "column": "serviceId"
@@ -3134,6 +3144,11 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
+                "serviceDetails": {
+                  "codecId": "pg/json@1",
+                  "dataType": "pg/json",
+                  "nullable": true
+                },
                 "serviceId": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -5069,7 +5084,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "8e0a53a47d2c17e3b91d7d66986c2e78fdc490ea63a31baaa7d081ea7dfde8b4"
+    "storageHash": "3346c47c312f0825e43f08162ae792a00c0b5dab4fe55ab22e63292f299257cf"
   },
   "execution": {
     "executionHash": "c4684e6596a615a8e0fd91c80f7ff9bd8d5b87576246aa6b0fa51e730dd4315d",

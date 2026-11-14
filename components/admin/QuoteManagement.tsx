@@ -167,12 +167,14 @@ export default function QuoteManagement({
   const [success, setSuccess] = useState("");
   const [sendingQuoteId, setSendingQuoteId] = useState<string | null>(null);
   const [withdrawingQuoteId, setWithdrawingQuoteId] = useState<string | null>(null);
+  const [deletingQuoteId, setDeletingQuoteId] = useState<string | null>(null);
   const [viewingResponseQuoteId, setViewingResponseQuoteId] =
     useState<string | null>(null);
 
   // Modal states
   const [confirmSendQuote, setConfirmSendQuote] = useState<QuoteRecord | null>(null);
   const [confirmWithdrawQuote, setConfirmWithdrawQuote] = useState<QuoteRecord | null>(null);
+  const [confirmDeleteQuote, setConfirmDeleteQuote] = useState<QuoteRecord | null>(null);
   const [feedback, setFeedback] = useState<{
     isOpen: boolean;
     variant: "success" | "error";
@@ -299,6 +301,65 @@ export default function QuoteManagement({
       });
     } finally {
       setWithdrawingQuoteId(null);
+    }
+  }
+
+  async function executeDeleteQuote(quote: QuoteRecord) {
+    setConfirmDeleteQuote(null);
+    setError("");
+    setSuccess("");
+    setDeletingQuoteId(quote.id);
+
+    try {
+      const response = await fetch(`/api/admin/quotes/${quote.id}`, {
+        method: "DELETE",
+      });
+
+      const result = (await response.json()) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        setFeedback({
+          isOpen: true,
+          variant: "error",
+          title: "Deletion Failed",
+          message: result.message || "Unable to delete this quote.",
+        });
+        return;
+      }
+
+      setQuotes((current) => current.filter((q) => q.id !== quote.id));
+
+      setFeedback({
+        isOpen: true,
+        variant: "success",
+        title: "Quote Deleted",
+        message:
+          result.message ||
+          `Quote ${quote.quoteNumber} has been permanently removed from the records.`,
+        referenceNumber: quote.quoteNumber,
+      });
+
+      const refreshResponse = await fetch("/api/admin/quotes", {
+        cache: "no-store",
+      });
+
+      if (refreshResponse.ok) {
+        const refreshed = (await refreshResponse.json()) as {
+          quotes: QuoteRecord[];
+        };
+        setQuotes(refreshed.quotes);
+      }
+    } catch {
+      setFeedback({
+        isOpen: true,
+        variant: "error",
+        title: "Connection Problem",
+        message: "Failed to connect to the server. Please try again.",
+      });
+    } finally {
+      setDeletingQuoteId(null);
     }
   }
 
@@ -809,6 +870,15 @@ export default function QuoteManagement({
                           >
                             View response
                           </button>
+
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteQuote(quote)}
+                            disabled={deletingQuoteId !== null || isSubmitting}
+                            className="whitespace-nowrap rounded-lg border border-rose-300 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+                          >
+                            {deletingQuoteId === quote.id ? "Deleting..." : "Delete"}
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1266,6 +1336,22 @@ export default function QuoteManagement({
           confirmText="Withdraw Quotation"
           isDestructive={true}
           isLoading={withdrawingQuoteId === confirmWithdrawQuote.id}
+        />
+      )}
+
+      {/* Confirmation Modal: Delete Quote */}
+      {confirmDeleteQuote && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={() => setConfirmDeleteQuote(null)}
+          onConfirm={() => executeDeleteQuote(confirmDeleteQuote)}
+          title="Delete quotation record?"
+          description={`Are you sure you want to permanently delete quotation ${confirmDeleteQuote.quoteNumber} for booking ${confirmDeleteQuote.booking.bookingNumber}?`}
+          consequences="This quotation will be permanently removed from quote records. An audit log entry will document this deletion."
+          recordName={confirmDeleteQuote.quoteNumber}
+          confirmText="Delete Quotation"
+          isDestructive={true}
+          isLoading={deletingQuoteId === confirmDeleteQuote.id}
         />
       )}
 

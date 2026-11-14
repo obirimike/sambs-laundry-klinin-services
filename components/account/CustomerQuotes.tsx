@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import FeedbackModal from "@/components/ui/FeedbackModal";
+import { ArrowLeft, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 type QuoteStatus =
   | "DRAFT"
@@ -130,6 +132,9 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
     decision: "ACCEPT" | "DECLINE";
   } | null>(null);
 
+  const [deleteTarget, setDeleteTarget] = useState<QuoteRecord | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [feedback, setFeedback] = useState<{
     isOpen: boolean;
     variant: "success" | "error";
@@ -242,15 +247,70 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
     }
   }
 
+  async function executeDelete() {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    setIsDeleting(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await fetch(`/api/account/quotes/${target.id}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setFeedback({
+          isOpen: true,
+          variant: "error",
+          title: "Removal Failed",
+          message: result.message || "Unable to remove quotation.",
+        });
+        return;
+      }
+
+      setQuotes((current) => current.filter((q) => q.id !== target.id));
+      setDeleteTarget(null);
+
+      setFeedback({
+        isOpen: true,
+        variant: "success",
+        title: "Quotation Cleared",
+        message: result.message || `Quotation #${target.quoteNumber} has been removed from your account.`,
+        referenceNumber: target.quoteNumber,
+      });
+    } catch {
+      setFeedback({
+        isOpen: true,
+        variant: "error",
+        title: "Connection Error",
+        message: "A network error occurred. Please try again.",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <div className="space-y-7">
       <header className="rounded-2xl bg-gradient-to-r from-blue-800 to-indigo-700 p-6 text-white sm:p-8">
+        <div className="mb-6 flex items-center justify-between">
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-100 hover:text-white transition"
+          >
+            <ArrowLeft size={16} /> Back to dashboard
+          </Link>
+        </div>
+
         <p className="text-sm font-semibold uppercase tracking-wider text-blue-100">
           Your account
         </p>
         <h1 className="mt-2 text-3xl font-bold">My quotations</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-100">
-          Review your service estimates, check the itemized costs, and respond to quotations from SAMB&apos;s Laundry and Klinin Services.
+          Review your service estimates, check the itemized costs, respond to quotations, or clear received estimates from SAMB&apos;s Laundry and Klinin Services.
         </p>
         <div className="mt-5 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-medium">
           {pendingCount} awaiting your response
@@ -284,8 +344,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
             No quotations yet
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-            When SAMB sends a quotation for one of your bookings, it will appear
-            here.
+            When SAMB sends a quotation for one of your bookings, it will appear here.
           </p>
         </div>
       ) : (
@@ -301,6 +360,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                 key={quote.id}
                 className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
               >
+                {/* Header Row */}
                 <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
                   <div>
                     <h2 className="text-lg font-bold text-slate-900">
@@ -321,14 +381,26 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                     </p>
                   </div>
 
-                  <div className="flex flex-row items-center justify-between gap-4 sm:flex-col sm:items-end">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                        statusStyles[status]
-                      }`}
-                    >
-                      {titleCase(status)}
-                    </span>
+                  <div className="flex flex-row items-center justify-between gap-3 sm:flex-col sm:items-end">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                          statusStyles[status]
+                        }`}
+                      >
+                        {titleCase(status)}
+                      </span>
+                      {/* Top Clear/Delete Button */}
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(quote)}
+                        title="Remove quotation from list"
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-600 transition hover:border-rose-400 hover:bg-rose-50 hover:text-rose-800"
+                      >
+                        <Trash2 size={13} />
+                        <span>Clear</span>
+                      </button>
+                    </div>
                     <p className="text-2xl font-bold text-slate-900">
                       {money(quote.amount, quote.currency)}
                     </p>
@@ -457,10 +529,10 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                           </p>
                         </div>
 
-                        <div className="flex flex-col gap-2 sm:flex-row">
+                        <div className="flex flex-wrap items-center gap-2.5">
                           <button
                             type="button"
-                            disabled={isBusy}
+                            disabled={isBusy || isDeleting}
                             onClick={() => respond(quote, "DECLINE")}
                             className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
                           >
@@ -469,46 +541,95 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
 
                           <button
                             type="button"
-                            disabled={isBusy}
+                            disabled={isBusy || isDeleting}
                             onClick={() => respond(quote, "ACCEPT")}
                             className="rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {isBusy ? "Processing..." : "Accept quote"}
                           </button>
+
+                          {/* Action area Clear / Delete button */}
+                          <button
+                            type="button"
+                            disabled={isBusy || isDeleting}
+                            onClick={() => setDeleteTarget(quote)}
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-rose-300 bg-rose-50 px-4 py-2.5 text-sm font-semibold text-rose-800 transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <Trash2 size={14} />
+                            <span>Clear Quote</span>
+                          </button>
                         </div>
 
                         <p className="text-xs leading-5 text-slate-500">
-                          Responding records your decision. It does not itself
-                          confirm the booking or record payment.
+                          Responding records your decision. Clearing removes this quote from your account.
                         </p>
                       </div>
                     </div>
                   )}
 
+                  {/* Resolved status messages with Clear Quote action */}
                   {status === "EXPIRED" && (
-                    <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                      This quote has expired. Please contact SAMB if you need a
-                      revised quotation.
-                    </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-amber-50 p-4">
+                      <p className="text-sm text-amber-800">
+                        This quote has expired. Please contact SAMB if you need a revised quotation.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(quote)}
+                        className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-bold text-amber-900 hover:bg-amber-100 transition shadow-2xs"
+                      >
+                        <Trash2 size={13} />
+                        <span>Clear quote</span>
+                      </button>
+                    </div>
                   )}
 
                   {status === "ACCEPTED" && (
-                    <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                      You accepted this quote on {dateLabel(quote.respondedAt)}.
-                      SAMB will follow up regarding booking confirmation.
-                    </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-emerald-50 p-4">
+                      <p className="text-sm text-emerald-800">
+                        You accepted this quote on {dateLabel(quote.respondedAt)}. SAMB will follow up regarding booking confirmation.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(quote)}
+                        className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-bold text-emerald-900 hover:bg-emerald-100 transition shadow-2xs"
+                      >
+                        <Trash2 size={13} />
+                        <span>Clear quote</span>
+                      </button>
+                    </div>
                   )}
 
                   {status === "DECLINED" && (
-                    <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-800">
-                      You declined this quote on {dateLabel(quote.respondedAt)}.
-                    </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-rose-50 p-4">
+                      <p className="text-sm text-rose-800">
+                        You declined this quote on {dateLabel(quote.respondedAt)}.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(quote)}
+                        className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-bold text-rose-900 hover:bg-rose-100 transition shadow-2xs"
+                      >
+                        <Trash2 size={13} />
+                        <span>Clear quote</span>
+                      </button>
+                    </div>
                   )}
 
                   {status === "WITHDRAWN" && (
-                    <p className="rounded-xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-                      This quote is no longer available.
-                    </p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-slate-100 p-4">
+                      <p className="text-sm text-slate-700">
+                        This quote is no longer available.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(quote)}
+                        className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 transition shadow-2xs"
+                      >
+                        <Trash2 size={13} />
+                        <span>Clear quote</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               </article>
@@ -517,7 +638,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
         </div>
       )}
 
-      {/* Confirmation Modal: Quote Decision */}
+      {/* Confirmation Modal: Quote Decision (Accept/Decline) */}
       {confirmTarget && (
         <ConfirmModal
           isOpen={true}
@@ -539,6 +660,23 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
           }
           isDestructive={confirmTarget.decision === "DECLINE"}
           isLoading={busyQuoteId === confirmTarget.quote.id}
+        />
+      )}
+
+      {/* Confirmation Modal: Clear / Delete Quote */}
+      {deleteTarget && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={executeDelete}
+          title="Remove this quotation?"
+          description={`Are you sure you want to remove quote ${deleteTarget.quoteNumber} (${money(deleteTarget.amount, deleteTarget.currency)}) for booking ${deleteTarget.booking.bookingNumber}? This quotation will be cleared from your account.`}
+          recordName={deleteTarget.quoteNumber}
+          consequences="This action will delete the quotation from your account. If you need a new estimate later, you can contact SAMB support or request a new booking."
+          confirmText="Yes, Remove Quote"
+          cancelText="Keep Quote"
+          isDestructive={true}
+          isLoading={isDeleting}
         />
       )}
 

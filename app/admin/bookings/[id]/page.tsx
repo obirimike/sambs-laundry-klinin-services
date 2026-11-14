@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import BookingManager from "@/components/admin/booking-manager";
 import WhatsAppButton from "@/components/admin/WhatsAppButton";
 import { buildBookingWhatsAppMessage } from "@/lib/whatsapp";
+import ServiceDetailsViewer from "@/components/booking/ServiceDetailsViewer";
 
 export const dynamic = "force-dynamic";
 
@@ -188,6 +189,11 @@ export default async function AdminBookingDetailPage({
                     value={booking.specialInstructions}
                   />
                 </div>
+
+                <ServiceDetailsViewer
+                  category={booking.service.category}
+                  serviceDetails={booking.serviceDetails as Record<string, unknown> | null}
+                />
 
                 <div className="mt-4 flex items-start gap-2 rounded-xl bg-slate-50 p-4">
                   <MapPin

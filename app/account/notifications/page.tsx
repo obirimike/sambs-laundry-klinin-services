@@ -1,15 +1,19 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, Bell } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
 import NotificationsList from "@/components/dashboard/notifications-list";
 
+export const dynamic = "force-dynamic";
+
 export default async function NotificationsPage() {
   const session = await auth();
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/login?callbackUrl=%2Faccount%2Fnotifications");
   }
 
   const notifications = await db.notification.findMany({
@@ -34,23 +38,23 @@ export default async function NotificationsPage() {
     <>
       <NavBar />
 
-      <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <div className="mx-auto max-w-4xl">
-          <a
-            href="/account"
-            className="text-sm font-medium text-blue-700 hover:text-blue-900"
-          >
-            ← Back to dashboard
-          </a>
-
-          <div className="mt-6">
-            <NotificationsList
-              initialNotifications={notifications.map((notification: any) => ({
-                ...notification,
-                createdAt: notification.createdAt.toISOString(),
-              }))}
-            />
+          <div className="mb-6 flex items-center justify-between">
+            <Link
+              href="/account"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 transition"
+            >
+              <ArrowLeft size={16} /> Back to dashboard
+            </Link>
           </div>
+
+          <NotificationsList
+            initialNotifications={notifications.map((notification) => ({
+              ...notification,
+              createdAt: notification.createdAt.toISOString(),
+            }))}
+          />
         </div>
       </main>
 

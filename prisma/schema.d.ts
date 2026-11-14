@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8e0a53a47d2c17e3b91d7d66986c2e78fdc490ea63a31baaa7d081ea7dfde8b4'>;
+  StorageHashBase<'3346c47c312f0825e43f08162ae792a00c0b5dab4fe55ab22e63292f299257cf'>;
 export type ExecutionHash =
   ExecutionHashBase<'c4684e6596a615a8e0fd91c80f7ff9bd8d5b87576246aa6b0fa51e730dd4315d'>;
 export type ProfileHash =
@@ -588,6 +588,7 @@ export namespace Models {
     preferredDate: FieldOutputTypes['public']['Booking']['preferredDate'];
     preferredTime: FieldOutputTypes['public']['Booking']['preferredTime'];
     propertyType: FieldOutputTypes['public']['Booking']['propertyType'];
+    serviceDetails: FieldOutputTypes['public']['Booking']['serviceDetails'];
     serviceId: FieldOutputTypes['public']['Booking']['serviceId'];
     specialInstructions: FieldOutputTypes['public']['Booking']['specialInstructions'];
     status: FieldOutputTypes['public']['Booking']['status'];
@@ -1112,6 +1113,12 @@ type ContractBase = Omit<
                 readonly propertyType: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly serviceDetails: {
+                  readonly dataType: 'pg/json';
+                  readonly codecId: 'pg/json@1';
                   readonly nullable: true;
                   readonly many: false;
                 };
@@ -2832,6 +2839,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly serviceDetails: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
               readonly serviceId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -2928,6 +2939,7 @@ type ContractBase = Omit<
                 readonly preferredDate: { readonly column: 'preferredDate' };
                 readonly preferredTime: { readonly column: 'preferredTime' };
                 readonly propertyType: { readonly column: 'propertyType' };
+                readonly serviceDetails: { readonly column: 'serviceDetails' };
                 readonly serviceId: { readonly column: 'serviceId' };
                 readonly specialInstructions: { readonly column: 'specialInstructions' };
                 readonly status: { readonly column: 'status' };

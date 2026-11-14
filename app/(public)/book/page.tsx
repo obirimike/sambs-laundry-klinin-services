@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import dynamic from "next/dynamic";
 import Skeleton from "@/components/ui/Skeleton";
+import { RepeatBookingData } from "@/components/booking/BookingForm";
 
 const BookingForm = dynamic(
   () => import("@/components/booking/BookingForm"),
@@ -23,7 +24,7 @@ const BookingForm = dynamic(
 );
 
 type BookingPageProps = {
-  searchParams: Promise<{ service?: string }>;
+  searchParams: Promise<{ service?: string; repeat?: string }>;
 };
 
 export default async function BookingPage({
@@ -31,10 +32,12 @@ export default async function BookingPage({
 }: BookingPageProps) {
   const query = await searchParams;
 
-  // Preserve the selected service when the customer signs in.
-  const bookingPath = query.service
-    ? `/book?service=${encodeURIComponent(query.service)}`
-    : "/book";
+  // Preserve the selected service or repeat target when the customer signs in.
+  const queryParams = new URLSearchParams();
+  if (query.service) queryParams.set("service", query.service);
+  if (query.repeat) queryParams.set("repeat", query.repeat);
+  const queryString = queryParams.toString();
+  const bookingPath = queryString ? `/book?${queryString}` : "/book";
 
   const session = await auth();
 
@@ -46,20 +49,54 @@ export default async function BookingPage({
     redirect("/account");
   }
 
-  const services = await db.service.findMany({
-    where: { status: "ACTIVE" },
-    select: {
-      id: true,
-      name: true,
-      category: true,
-      slug: true,
-      description: true,
-    },
-    orderBy: [{ category: "asc" }, { name: "asc" }],
-  });
+  const [services, repeatBooking] = await Promise.all([
+    db.service.findMany({
+      where: { status: "ACTIVE" },
+      select: {
+        id: true,
+        name: true,
+        category: true,
+        slug: true,
+        description: true,
+      },
+      orderBy: [{ category: "asc" }, { name: "asc" }],
+    }),
+    query.repeat
+      ? db.booking.findFirst({
+          where: {
+            id: query.repeat,
+            customerId: session.user.id,
+          },
+          include: {
+            service: {
+              select: {
+                id: true,
+                name: true,
+                category: true,
+              },
+            },
+          },
+        })
+      : Promise.resolve(null),
+  ]);
 
   const selectedService = query.service
     ? services.find((service: any) => service.slug === query.service || service.id === query.service)
+    : undefined;
+
+  const repeatData: RepeatBookingData | undefined = repeatBooking
+    ? {
+        serviceId: repeatBooking.serviceId,
+        serviceName: repeatBooking.service.name,
+        category: repeatBooking.service.category,
+        bookingNumber: repeatBooking.bookingNumber,
+        address: repeatBooking.address,
+        propertyType: repeatBooking.propertyType || undefined,
+        numberOfRooms: repeatBooking.numberOfRooms ?? undefined,
+        estimatedSize: repeatBooking.estimatedSize || undefined,
+        specialInstructions: repeatBooking.specialInstructions || undefined,
+        serviceDetails: (repeatBooking.serviceDetails as Record<string, unknown>) || undefined,
+      }
     : undefined;
 
   return (
@@ -71,13 +108,13 @@ export default async function BookingPage({
           </div>
 
           <h1 className="mt-5 text-3xl font-black sm:text-4xl">
-            Request a service
+            {repeatData ? `Re-Book ${repeatData.serviceName}` : "Request a service"}
           </h1>
 
           <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-            Tell us what you need and when you would prefer the service.
-            Our team will review your request and discuss availability and
-            pricing before confirming your booking.
+            {repeatData
+              ? "We've pre-filled your service specifications and address from your previous booking. Choose your new appointment date and submit."
+              : "Tell us what you need and when you would prefer the service. Our team will review your request and discuss availability and pricing before confirming your booking."}
           </p>
         </div>
       </section>
@@ -94,6 +131,7 @@ export default async function BookingPage({
           <BookingForm
             services={services}
             initialServiceId={selectedService?.id}
+            repeatData={repeatData}
           />
         </div>
       </section>

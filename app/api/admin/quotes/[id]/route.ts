@@ -101,3 +101,67 @@ export async function PATCH(
     return apiError(500, "QUOTE_UPDATE_FAILED", "Unable to update this quote right now.");
   }
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: RouteContext
+) {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return apiError(401, "UNAUTHORIZED", "Please sign in.");
+    }
+
+    if (session.user.role !== "ADMIN") {
+      return apiError(403, "FORBIDDEN", "Only administrators can delete quotes.");
+    }
+
+    const { id } = await params;
+
+    const existing = await db.quote.findUnique({
+      where: { id },
+      include: {
+        booking: {
+          select: {
+            id: true,
+            bookingNumber: true,
+            customerId: true,
+          },
+        },
+      },
+    });
+
+    if (!existing) {
+      return apiError(404, "QUOTE_NOT_FOUND", "Quote not found.");
+    }
+
+    await db.$transaction(async (tx: any) => {
+      await writeAudit(tx, {
+        actorId: session.user.id,
+        action: "ADMIN_DELETED_QUOTE",
+        entityType: "QUOTE",
+        entityId: id,
+        reason: `Administrator permanently deleted quote #${existing.quoteNumber} (status: ${existing.status})`,
+        changes: {
+          before: {
+            quoteNumber: existing.quoteNumber,
+            status: existing.status,
+            amount: existing.amount.toString(),
+            bookingNumber: existing.booking.bookingNumber,
+            customerId: existing.booking.customerId,
+          },
+        },
+      });
+
+      await tx.quote.delete({
+        where: { id },
+      });
+    });
+
+    return apiSuccess(`Quote ${existing.quoteNumber} has been deleted successfully.`);
+  } catch (error) {
+    console.error("Admin quote delete error:", error);
+    return apiError(500, "QUOTE_DELETE_FAILED", "Unable to delete this quote right now.");
+  }
+}

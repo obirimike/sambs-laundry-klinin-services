@@ -172,12 +172,12 @@ export default function StepServiceSelect({
       </div>
 
       {/* Continue Action */}
-      <div className="flex justify-end pt-4 border-t-2 border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:justify-end pt-4 border-t-2 border-slate-200">
         <button
           type="button"
           disabled={!selectedCategory}
           onClick={onNext}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#031c43] px-7 py-3.5 text-sm font-black text-white shadow-sm transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#031c43] px-7 py-3.5 text-sm font-black text-white shadow-sm transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]"
         >
           <span>
             {selectedCategory

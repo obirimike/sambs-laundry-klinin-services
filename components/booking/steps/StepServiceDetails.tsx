@@ -283,11 +283,11 @@ export default function StepServiceDetails({
       )}
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between pt-6 border-t-2 border-slate-200">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-6 border-t-2 border-slate-200">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100 transition shadow-2xs"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-3 text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs active:scale-[0.99]"
         >
           <ArrowLeft size={16} />
           <span>Back to Service Types</span>
@@ -297,7 +297,7 @@ export default function StepServiceDetails({
           type="button"
           disabled={!selectedService}
           onClick={onNext}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#031c43] px-6 sm:px-7 py-3 text-xs sm:text-sm font-black text-white shadow-sm transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#031c43] px-6 sm:px-7 py-3.5 sm:py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]"
         >
           <span>Continue to Schedule</span>
           <ArrowRight size={16} />

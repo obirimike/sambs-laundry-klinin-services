@@ -8,7 +8,7 @@ import {
   DomesticSupportDetails,
   PestControlDetails,
 } from "@/lib/booking-types";
-import { Calendar, Clock, MapPin, LoaderCircle, Send, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, MapPin, LoaderCircle, Send, CheckCircle2, ArrowLeft } from "lucide-react";
 
 interface StepReviewProps {
   selectedService: ServiceOption;
@@ -354,21 +354,22 @@ export default function StepReview({
       </div>
 
       {/* Submit Button */}
-      <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-6 border-t-2 border-slate-200">
         <button
           type="button"
           onClick={onBack}
           disabled={isSubmitting}
-          className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-3 text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs active:scale-[0.99] disabled:opacity-50"
         >
-          &larr; Back
+          <ArrowLeft size={16} />
+          <span>Back</span>
         </button>
 
         <button
           type="button"
           disabled={isSubmitting}
           onClick={onSubmit}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#031c43] px-7 py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#031c43] px-7 py-3.5 sm:py-3 text-sm font-black text-white shadow-md transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99]"
         >
           {isSubmitting ? (
             <>

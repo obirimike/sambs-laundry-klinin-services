@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
+
 export default function Footer() {
   return (
     <footer className="bg-slate-950 text-slate-300">
@@ -19,7 +20,7 @@ export default function Footer() {
                 className="object-cover"
               />
             </span>
-            <span className="font-bold tracking-tight">SAMB&apos;S SERVICES</span>
+            <span className="font-bold tracking-tight">SAMB&apos;S LAUNDRY & KLININ SERVICES</span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
             Professional cleaning solutions with expanding laundry services.

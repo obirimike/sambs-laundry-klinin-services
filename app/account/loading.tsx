@@ -17,7 +17,7 @@ export default function AccountLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-2xl border border-slate-200 bg-gray-500 p-5 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24 rounded" />
@@ -29,7 +29,7 @@ export default function AccountLoading() {
       </div>
 
       {/* Recent bookings card skeleton */}
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="rounded-3xl border border-slate-200 bg-gray-500 p-6 shadow-sm sm:p-8">
         <div className="flex items-center justify-between border-b border-slate-100 pb-5">
           <Skeleton className="h-6 w-44 rounded-md" />
           <Skeleton className="h-4 w-20 rounded" />

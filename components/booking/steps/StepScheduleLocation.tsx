@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface StepScheduleLocationProps {
   preferredDate: string;
@@ -45,14 +45,14 @@ export default function StepScheduleLocation({
       </div>
 
       {/* Date & Time Grid */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs space-y-4 overflow-hidden">
         <div className="flex items-center gap-2 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
-          <Calendar size={18} className="text-blue-700" />
+          <Calendar size={18} className="text-blue-700 shrink-0" />
           <span>Preferred Service Time</span>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="w-full min-w-0">
             <label
               htmlFor="preferredDate"
               className="block text-xs font-bold uppercase tracking-wider text-slate-700"
@@ -66,11 +66,11 @@ export default function StepScheduleLocation({
               min={minimumDate}
               value={preferredDate}
               onChange={(e) => onChangeDate(e.target.value)}
-              className="mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-900 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="mt-2 block w-full max-w-full min-w-0 box-border rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 sm:px-4 py-3 text-sm text-slate-900 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </div>
 
-          <div>
+          <div className="w-full min-w-0">
             <label
               htmlFor="preferredTime"
               className="block text-xs font-bold uppercase tracking-wider text-slate-700"
@@ -83,7 +83,7 @@ export default function StepScheduleLocation({
               required
               value={preferredTime}
               onChange={(e) => onChangeTime(e.target.value)}
-              className="mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-900 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="mt-2 block w-full max-w-full min-w-0 box-border rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 sm:px-4 py-3 text-sm text-slate-900 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
           </div>
         </div>
@@ -94,13 +94,13 @@ export default function StepScheduleLocation({
       </div>
 
       {/* Location / Address */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs space-y-4 overflow-hidden">
         <div className="flex items-center gap-2 text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">
-          <MapPin size={18} className="text-blue-700" />
+          <MapPin size={18} className="text-blue-700 shrink-0" />
           <span>Service Address &amp; Directions</span>
         </div>
 
-        <div>
+        <div className="w-full min-w-0">
           <label
             htmlFor="address"
             className="block text-xs font-bold uppercase tracking-wider text-slate-700"
@@ -116,14 +116,14 @@ export default function StepScheduleLocation({
             value={address}
             onChange={(e) => onChangeAddress(e.target.value)}
             placeholder="e.g. House No. 24, Kofi Annan Street, Airport Residential Area, Accra (Near Nyaho Clinic)..."
-            className="mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="mt-2 block w-full max-w-full min-w-0 box-border rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 sm:px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
           />
           <p className="mt-1 text-xs text-slate-400">
             Include neighbourhood, prominent landmark, or GhanaPost GPS digital address if available.
           </p>
         </div>
 
-        <div>
+        <div className="w-full min-w-0">
           <label
             htmlFor="specialInstructions"
             className="block text-xs font-bold uppercase tracking-wider text-slate-700"
@@ -137,27 +137,29 @@ export default function StepScheduleLocation({
             value={specialInstructions}
             onChange={(e) => onChangeSpecialInstructions(e.target.value)}
             placeholder="e.g. Ring the gate bell, security clearance needed at estate gate, water supply available on-site..."
-            className="mt-2 block w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="mt-2 block w-full max-w-full min-w-0 box-border rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 sm:px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition focus:bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
           />
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center justify-between pt-6 border-t border-slate-100">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-6 border-t-2 border-slate-200">
         <button
           type="button"
           onClick={onBack}
-          className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl border-2 border-slate-300 bg-white px-5 py-3 text-xs sm:text-sm font-extrabold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-2xs active:scale-[0.99]"
         >
-          &larr; Back
+          <ArrowLeft size={16} />
+          <span>Back</span>
         </button>
         <button
           type="button"
           disabled={!isFormValid}
           onClick={onNext}
-          className="rounded-xl bg-[#031c43] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-900 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-[#031c43] px-6 sm:px-7 py-3.5 sm:py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-950 focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.99]"
         >
-          Review Booking Request &rarr;
+          <span>Review Booking Request</span>
+          <ArrowRight size={16} />
         </button>
       </div>
     </div>

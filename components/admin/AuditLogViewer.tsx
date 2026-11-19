@@ -104,7 +104,7 @@ export default function AuditLogViewer({
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="ID, reason, administrator..."
+                placeholder="ID, reason, team member..."
                 className="w-full rounded-xl border border-slate-300 py-2 pl-9 pr-3 text-xs text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
             </div>
@@ -112,14 +112,14 @@ export default function AuditLogViewer({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700">
-              Administrator
+              Actor / Team Member
             </label>
             <select
               value={selectedActor}
               onChange={(e) => setSelectedActor(e.target.value)}
               className="mt-1.5 w-full rounded-xl border border-slate-300 bg-white py-2 px-3 text-xs text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             >
-              <option value="ALL">All Administrators</option>
+              <option value="ALL">All Actors</option>
               {actors.map((actor) => (
                 <option key={actor.id} value={actor.id}>
                   {actor.name}

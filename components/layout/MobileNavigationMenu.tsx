@@ -70,13 +70,13 @@ export default function MobileNavigationMenu({
           <div className="my-3 border-t border-slate-100" />
 
           <div className="space-y-2">
-            {isStaff ? (
+            {isStaff || dashboardHref === "/supervisor" ? (
               <Link
-                href="/staff"
+                href={dashboardHref}
                 onClick={closeMenu}
                 className="block rounded-xl bg-[#031c43] px-3 py-3 text-center text-sm font-semibold text-white transition hover:bg-blue-800"
               >
-                Staff Dashboard
+                {dashboardLabel}
               </Link>
             ) : isSignedIn ? (
               <>

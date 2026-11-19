@@ -10,6 +10,36 @@ enum UserRole {
   CUSTOMER
   ADMIN
   STAFF
+  SUPERVISOR
+}
+
+enum AssignmentStatus {
+  PENDING
+  IN_PROGRESS
+  SUBMITTED_FOR_REVIEW
+  CHANGES_REQUESTED
+  APPROVED
+}
+
+enum SupervisionStatus {
+  NOT_REQUIRED
+  ASSIGNED
+  IN_PROGRESS
+  AWAITING_SUPERVISOR_REVIEW
+  CHANGES_REQUESTED
+  SUPERVISOR_APPROVED
+  RETURNED_BY_ADMIN
+}
+
+enum WorkflowReviewDecision {
+  APPROVED
+  CHANGES_REQUESTED
+  RETURNED_TO_SUPERVISOR
+}
+
+enum WorkflowReviewerRole {
+  SUPERVISOR
+  ADMIN
 }
 
 enum AccountStatus {
@@ -102,11 +132,15 @@ model User {
   sessionVersion Int           @default(0)
 
   bookings                 Booking[]
+  bookingsSupervised       Booking[]                  @relation("BookingSupervisor")
+  bookingsFinalApproved    Booking[]                  @relation("BookingFinalApprovedBy")
   notifications            Notification[]
   quotesCreated            Quote[]                    @relation("QuotesCreated")
   assignmentsReceived      BookingAssignment[]        @relation("AssignmentStaff")
   assignmentsCreated       BookingAssignment[]        @relation("AssignmentCreatedBy")
   assignmentsUnassigned    BookingAssignment[]        @relation("AssignmentUnassignedBy")
+  assignmentSubmissions    AssignmentSubmission[]     @relation("SubmissionAuthor")
+  workflowReviews          WorkflowReview[]           @relation("WorkflowReviewer")
   reviews                  Review[]                   @relation("CustomerReviews")
   reviewsModerated         Review[]                   @relation("ReviewsModerated")
   passwordResetTokens      PasswordResetToken[]
@@ -162,11 +196,22 @@ model Booking {
 
   adminNotes String?
 
-  customer    User                @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  service     Service             @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  quotes      Quote[]
-  assignments BookingAssignment[]
-  review      Review?
+  supervisorId         String?
+  supervisorAssignedAt DateTime?
+  supervisionStatus    SupervisionStatus @default(NOT_REQUIRED)
+  finalApprovedById    String?
+  finalApprovedAt      DateTime?
+  finalApprovalNote    String?           @db.Text
+
+  customer        User                   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  service         Service                @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  supervisor      User?                  @relation("BookingSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+  finalApprovedBy User?                  @relation("BookingFinalApprovedBy", fields: [finalApprovedById], references: [id], onDelete: SetNull)
+  quotes          Quote[]
+  assignments     BookingAssignment[]
+  submissions     AssignmentSubmission[]
+  workflowReviews WorkflowReview[]
+  review          Review?
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -178,6 +223,9 @@ model Booking {
   @@index([serviceId])
   @@index([status])
   @@index([preferredDate])
+  @@index([supervisorId])
+  @@index([supervisionStatus])
+  @@index([finalApprovedById])
 }
 
 model Notification {
@@ -257,21 +305,70 @@ model BookingAssignment {
   assignedById   String
   unassignedById String?
 
-  notes    String? @db.Text
-  isActive Boolean @default(true)
+  status   AssignmentStatus @default(PENDING)
+  notes    String?          @db.Text
+  isActive Boolean          @default(true)
 
   assignedAt   DateTime  @default(now())
+  startedAt    DateTime?
+  submittedAt  DateTime?
+  approvedAt   DateTime?
   unassignedAt DateTime?
 
-  booking      Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  staff        User    @relation("AssignmentStaff", fields: [staffId], references: [id], onDelete: Restrict)
-  assignedBy   User    @relation("AssignmentCreatedBy", fields: [assignedById], references: [id], onDelete: Restrict)
-  unassignedBy User?   @relation("AssignmentUnassignedBy", fields: [unassignedById], references: [id], onDelete: SetNull)
+  booking         Booking                @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  staff           User                   @relation("AssignmentStaff", fields: [staffId], references: [id], onDelete: Restrict)
+  assignedBy      User                   @relation("AssignmentCreatedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+  unassignedBy    User?                  @relation("AssignmentUnassignedBy", fields: [unassignedById], references: [id], onDelete: SetNull)
+  submissions     AssignmentSubmission[]
+  workflowReviews WorkflowReview[]
 
   @@index([bookingId, isActive])
+  @@index([bookingId, status])
   @@index([staffId, isActive])
   @@index([assignedById])
   @@index([unassignedById])
+}
+
+model AssignmentSubmission {
+  id            String @id @default(uuid())
+  assignmentId  String
+  bookingId     String
+  submittedById String
+
+  summary       String  @db.Text
+  workPerformed String  @db.Text
+  issuesNoted   String? @db.Text
+  photos        Json?
+
+  assignment  BookingAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  booking     Booking           @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  submittedBy User              @relation("SubmissionAuthor", fields: [submittedById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([assignmentId, createdAt])
+  @@index([bookingId, createdAt])
+  @@index([submittedById])
+}
+
+model WorkflowReview {
+  id           String                 @id @default(uuid())
+  bookingId    String
+  assignmentId String?
+  reviewerId   String
+  reviewerRole WorkflowReviewerRole
+  decision     WorkflowReviewDecision
+  comment      String?                @db.Text
+
+  booking    Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  assignment BookingAssignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+  reviewer   User               @relation("WorkflowReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([bookingId, createdAt])
+  @@index([assignmentId, createdAt])
+  @@index([reviewerId])
 }
 
 model Review {

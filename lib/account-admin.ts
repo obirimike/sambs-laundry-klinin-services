@@ -1,19 +1,25 @@
+import type { Prisma } from "@prisma/client";
 import { writeAudit } from "@/lib/audit";
 import { db } from "@/lib/db";
 
 export async function changeAccountStatus(input: {
   actorId: string;
   userId: string;
-  role: "CUSTOMER" | "STAFF";
+  role: "CUSTOMER" | "STAFF" | "SUPERVISOR" | Array<"STAFF" | "SUPERVISOR">;
   status: "ACTIVE" | "SUSPENDED";
   reason?: string;
 }) {
+  const roleFilter = Array.isArray(input.role)
+    ? { in: input.role }
+    : input.role;
+
   const existing = await db.user.findFirst({
-    where: { id: input.userId, role: input.role },
+    where: { id: input.userId, role: roleFilter },
     select: {
       id: true,
       name: true,
       email: true,
+      role: true,
       accountStatus: true,
     },
   });
@@ -25,15 +31,19 @@ export async function changeAccountStatus(input: {
   }
 
   const action =
-    input.role === "CUSTOMER"
+    existing.role === "CUSTOMER"
       ? input.status === "SUSPENDED"
         ? "CUSTOMER_SUSPENDED"
         : "CUSTOMER_REACTIVATED"
-      : input.status === "SUSPENDED"
-        ? "STAFF_SUSPENDED"
-        : "STAFF_REACTIVATED";
+      : existing.role === "SUPERVISOR"
+        ? input.status === "SUSPENDED"
+          ? "SUPERVISOR_SUSPENDED"
+          : "SUPERVISOR_REACTIVATED"
+        : input.status === "SUSPENDED"
+          ? "STAFF_SUSPENDED"
+          : "STAFF_REACTIVATED";
 
-  const user = await db.$transaction(async (tx: any) => {
+  const user = await db.$transaction(async (tx: Prisma.TransactionClient) => {
     const updated = await tx.user.update({
       where: { id: existing.id },
       data: {

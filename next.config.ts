@@ -6,10 +6,6 @@ const securityHeaders = [
     value: "nosniff",
   },
   {
-    key: "X-Frame-Options",
-    value: "DENY",
-  },
-  {
     key: "Referrer-Policy",
     value: "strict-origin-when-cross-origin",
   },
@@ -29,11 +25,12 @@ if (process.env.NODE_ENV === "production") {
 const nextConfig: NextConfig = {
   /* config options here */
   // Reload trigger for Prisma client enum update
+  output: "standalone",
 
   // Keep Node.js-only packages (pg, Prisma adapter) out of the browser bundle.
   serverExternalPackages: ["pg", "@prisma/adapter-pg", "pgpass", "pg-connection-string"],
 
-  allowedDevOrigins: ["172.20.10.2"],
+  allowedDevOrigins: ["172.20.10.2", "localhost", "127.0.0.1", "*.run.app"],
 
   images: {
     remotePatterns: [

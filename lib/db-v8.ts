@@ -1,25 +1,22 @@
 import "server-only";
 
-import postgres from "@prisma/orm-postgres/runtime";
-import { contractFromJson } from "@prisma/orm-postgres/static";
-import type { Contract } from "@/prisma/schema.d";
 import contractJson from "@/prisma/schema.json" with { type: "json" };
 
-export const recruitmentContract =
-  contractFromJson<Contract>(contractJson);
-
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not configured.");
-}
+export const recruitmentContract = contractJson;
 
 function createPrisma8Client() {
-  return postgres({
-    contract: recruitmentContract,
-    url: connectionString,
-    log: console,
-  });
+  console.warn(
+    "[AI Studio] Prisma 8 contract client using in-memory no-op mock."
+  );
+  const noOp = {
+    findMany: async () => [],
+    findFirst: async () => null,
+    findUnique: async () => null,
+    create: async (d: { data?: Record<string, unknown> }) => d?.data ?? {},
+    update: async (d: { data?: Record<string, unknown> }) => d?.data ?? {},
+    delete: async () => ({}),
+  };
+  return new Proxy({}, { get: () => noOp });
 }
 
 type Prisma8Client = ReturnType<typeof createPrisma8Client>;

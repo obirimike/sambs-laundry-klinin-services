@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -14,15 +15,21 @@ type RouteContext = {
 
 const assignmentSchema = z
   .object({
-    staffId: z.string().uuid(),
+    staffId: z.string().uuid().optional(),
+    staffIds: z.array(z.string().uuid()).min(1).max(20).optional(),
+    supervisorId: z.string().uuid().nullable().optional(),
+    replaceAssignmentId: z.string().uuid().optional(),
     notes: z.string().trim().max(2000).optional(),
   })
-  .strict();
+  .strict()
+  .refine(
+    (data) =>
+      Boolean(data.staffId) ||
+      (Array.isArray(data.staffIds) && data.staffIds.length > 0),
+    { message: "Select at least one staff member to assign." }
+  );
 
-export async function POST(
-  request: Request,
-  context: RouteContext
-) {
+export async function POST(request: Request, context: RouteContext) {
   try {
     const session = await auth();
 
@@ -64,7 +71,15 @@ export async function POST(
     }
 
     const { id: bookingId } = await context.params;
-    const { staffId, notes } = parsed.data;
+    const { staffId, staffIds, supervisorId, replaceAssignmentId, notes } =
+      parsed.data;
+
+    const requestedIds = Array.from(
+      new Set([
+        ...(staffId ? [staffId] : []),
+        ...(staffIds ? staffIds : []),
+      ])
+    );
 
     const booking = await db.booking.findUnique({
       where: { id: bookingId },
@@ -72,6 +87,8 @@ export async function POST(
         id: true,
         bookingNumber: true,
         status: true,
+        supervisorId: true,
+        supervisionStatus: true,
       },
     });
 
@@ -92,10 +109,11 @@ export async function POST(
       );
     }
 
-    const staff = await db.user.findFirst({
+    const staffUsers = await db.user.findMany({
       where: {
-        id: staffId,
+        id: { in: requestedIds },
         role: "STAFF",
+        accountStatus: "ACTIVE",
       },
       select: {
         id: true,
@@ -103,82 +121,242 @@ export async function POST(
       },
     });
 
-    if (!staff) {
+    if (staffUsers.length !== requestedIds.length) {
       return NextResponse.json(
-        { message: "The selected staff account was not found." },
+        {
+          message:
+            "One or more selected staff accounts were not found or are suspended.",
+        },
         { status: 404 }
       );
     }
 
-    const assignment = await db.$transaction(async (tx: any) => {
-      const existing = await tx.bookingAssignment.findFirst({
+    let validSupervisor: { id: string; name: string } | null = null;
+    if (supervisorId) {
+      validSupervisor = await db.user.findFirst({
         where: {
-          bookingId,
-          staffId,
-          isActive: true,
+          id: supervisorId,
+          role: "SUPERVISOR",
+          accountStatus: "ACTIVE",
         },
-        select: { id: true },
+        select: { id: true, name: true },
       });
 
-      if (existing) {
-        return null;
+      if (!validSupervisor) {
+        return NextResponse.json(
+          {
+            message:
+              "Selected supervisor was not found or is suspended.",
+          },
+          { status: 404 }
+        );
+      }
+    }
+
+    const outcome = await db.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const now = new Date();
+
+      if (replaceAssignmentId) {
+        const toReplace = await tx.bookingAssignment.findFirst({
+          where: {
+            id: replaceAssignmentId,
+            bookingId,
+            isActive: true,
+          },
+          include: { staff: { select: { id: true, name: true } } },
+        });
+
+        if (!toReplace) {
+          return { kind: "REPLACE_NOT_FOUND" as const };
+        }
+
+        await tx.bookingAssignment.update({
+          where: { id: replaceAssignmentId },
+          data: {
+            isActive: false,
+            unassignedAt: now,
+            unassignedById: session.user.id,
+          },
+        });
+
+        await tx.notification.create({
+          data: {
+            userId: toReplace.staff.id,
+            title: "Booking assignment updated",
+            message: `You have been replaced on booking ${booking.bookingNumber}.`,
+            type: "BOOKING_UNASSIGNED",
+          },
+        });
+
+        await writeAudit(tx, {
+          actorId: session.user.id,
+          action: "ASSIGNMENT_REPLACED",
+          entityType: "BOOKING_ASSIGNMENT",
+          entityId: replaceAssignmentId,
+          changes: {
+            bookingId,
+            bookingNumber: booking.bookingNumber,
+            previousStaffId: toReplace.staff.id,
+            previousStaffName: toReplace.staff.name,
+          },
+        });
       }
 
-      const created = await tx.bookingAssignment.create({
-        data: {
+      const activeAssignments = await tx.bookingAssignment.findMany({
+        where: {
           bookingId,
-          staffId,
-          assignedById: session.user.id,
-          notes: notes?.trim() || null,
+          isActive: true,
         },
-        include: {
-          staff: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              phone: true,
+        select: { staffId: true },
+      });
+
+      const activeStaffIds = new Set(
+        activeAssignments.map((a: { staffId: string }) => a.staffId)
+      );
+
+      type StaffSummary = { id: string; name: string };
+      const typedStaffUsers = staffUsers as StaffSummary[];
+      const duplicate = typedStaffUsers.filter((u) => activeStaffIds.has(u.id));
+      if (duplicate.length === typedStaffUsers.length) {
+        return { kind: "DUPLICATE" as const };
+      }
+
+      const toAssign = typedStaffUsers.filter((u) => !activeStaffIds.has(u.id));
+      const createdAssignments: Array<{
+        id: string;
+        staffId: string;
+        status: string;
+        notes: string | null;
+        isActive: boolean;
+        assignedAt: Date;
+        staff: {
+          id: string;
+          name: string;
+          email: string;
+          phone: string | null;
+        };
+      }> = [];
+
+      for (const member of toAssign) {
+        const created = await tx.bookingAssignment.create({
+          data: {
+            bookingId,
+            staffId: member.id,
+            assignedById: session.user.id,
+            status: "PENDING",
+            notes: notes?.trim() || null,
+          },
+          include: {
+            staff: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                phone: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      await tx.notification.create({
-        data: {
-          userId: staffId,
-          title: "New booking assignment",
-          message: `You have been assigned to booking ${booking.bookingNumber}.`,
-          type: "BOOKING_ASSIGNED",
-        },
-      });
+        createdAssignments.push(created);
 
-      await writeAudit(tx, {
-        actorId: session.user.id,
-        action: "ASSIGNMENT_CREATED",
-        entityType: "BOOKING_ASSIGNMENT",
-        entityId: created.id,
-        changes: {
-          bookingId,
-          bookingNumber: booking.bookingNumber,
-          staffId,
-          staffName: staff.name,
-        },
-      });
+        await tx.notification.create({
+          data: {
+            userId: member.id,
+            title: "New booking assignment",
+            message: `You have been assigned to booking ${booking.bookingNumber}.`,
+            type: "BOOKING_ASSIGNED",
+          },
+        });
 
-      return created;
+        await writeAudit(tx, {
+          actorId: session.user.id,
+          action: "ASSIGNMENT_CREATED",
+          entityType: "BOOKING_ASSIGNMENT",
+          entityId: created.id,
+          changes: {
+            bookingId,
+            bookingNumber: booking.bookingNumber,
+            staffId: member.id,
+            staffName: member.name,
+          },
+        });
+      }
+
+      // Update supervisor and supervisionStatus safely
+      const bookingPatch: Record<string, unknown> = {};
+      if (validSupervisor && validSupervisor.id !== booking.supervisorId) {
+        bookingPatch.supervisorId = validSupervisor.id;
+        bookingPatch.supervisorAssignedAt = now;
+
+        await tx.notification.create({
+          data: {
+            userId: validSupervisor.id,
+            title: "New supervision assignment",
+            message: `You are now the lead supervisor for booking ${booking.bookingNumber}.`,
+            type: "SUPERVISOR_ASSIGNED",
+          },
+        });
+
+        await writeAudit(tx, {
+          actorId: session.user.id,
+          action: "SUPERVISOR_ASSIGNED",
+          entityType: "BOOKING",
+          entityId: bookingId,
+          changes: {
+            bookingNumber: booking.bookingNumber,
+            supervisorId: validSupervisor.id,
+            supervisorName: validSupervisor.name,
+          },
+        });
+      }
+
+      if (
+        booking.supervisionStatus === "NOT_REQUIRED" &&
+        (validSupervisor || booking.supervisorId)
+      ) {
+        bookingPatch.supervisionStatus = "ASSIGNED";
+      } else if (
+        booking.supervisionStatus === "AWAITING_SUPERVISOR_REVIEW" ||
+        booking.supervisionStatus === "SUPERVISOR_APPROVED"
+      ) {
+        bookingPatch.supervisionStatus = "IN_PROGRESS";
+      }
+
+      if (Object.keys(bookingPatch).length > 0) {
+        await tx.booking.update({
+          where: { id: bookingId },
+          data: bookingPatch,
+        });
+      }
+
+      return {
+        kind: "SUCCESS" as const,
+        createdAssignments,
+        assignedNames: toAssign.map((u) => u.name),
+      };
     });
 
-    if (!assignment) {
+    if (outcome.kind === "REPLACE_NOT_FOUND") {
       return NextResponse.json(
-        { message: "This staff member is already assigned to the booking." },
+        { message: "Assignment to replace was not found." },
+        { status: 404 }
+      );
+    }
+
+    if (outcome.kind === "DUPLICATE") {
+      return NextResponse.json(
+        { message: "The selected staff member(s) are already assigned to this booking." },
         { status: 409 }
       );
     }
 
     return NextResponse.json(
       {
-        message: `${staff.name} has been assigned to booking ${booking.bookingNumber}.`,
-        assignment,
+        message: `${outcome.assignedNames.join(", ")} assigned to booking ${booking.bookingNumber}.`,
+        assignments: outcome.createdAssignments,
+        assignment: outcome.createdAssignments[0],
       },
       { status: 201 }
     );

@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
@@ -37,7 +38,8 @@ export async function DELETE(
 
     const { id: bookingId, assignmentId } = await context.params;
 
-    const result = await db.$transaction(async (tx: any) => {
+    const result = await db.$transaction(
+      async (tx: Prisma.TransactionClient) => {
       const assignment = await tx.bookingAssignment.findFirst({
         where: {
           id: assignmentId,

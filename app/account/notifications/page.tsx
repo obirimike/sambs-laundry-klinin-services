@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Bell } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { roleHomePath } from "@/lib/role-guards";
 import NavBar from "@/components/layout/NavBar";
 import Footer from "@/components/layout/Footer";
 import NotificationsList from "@/components/dashboard/notifications-list";
@@ -15,6 +16,8 @@ export default async function NotificationsPage() {
   if (!session?.user?.id) {
     redirect("/login?callbackUrl=%2Faccount%2Fnotifications");
   }
+
+  const backHref = roleHomePath(session.user.role);
 
   const notifications = await db.notification.findMany({
     where: {
@@ -42,7 +45,7 @@ export default async function NotificationsPage() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-6 flex items-center justify-between">
             <Link
-              href="/account"
+              href={backHref}
               className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700 transition"
             >
               <ArrowLeft size={16} /> Back to dashboard

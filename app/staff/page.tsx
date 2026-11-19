@@ -1,213 +1,210 @@
 import { redirect } from "next/navigation";
-
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import NavBar from "@/components/layout/NavBar";
-import Footer from "@/components/layout/Footer";
+import StaffWorkspaceClient, {
+  type StaffAssignmentItem,
+} from "@/components/staff/StaffWorkspaceClient";
 
 export const dynamic = "force-dynamic";
-
-function formatDate(value: Date) {
-  return value.toLocaleDateString("en-GH", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Africa/Accra",
-  });
-}
 
 export default async function StaffDashboardPage() {
   const session = await auth();
 
-  if (!session?.user?.id) redirect("/login");
-
+  if (!session?.user?.id) redirect("/login?callbackUrl=%2Fstaff");
   if (session.user.role === "ADMIN") redirect("/admin");
+  if (session.user.role === "SUPERVISOR") redirect("/supervisor");
   if (session.user.role !== "STAFF") redirect("/account");
 
-  const assignments = await db.bookingAssignment.findMany({
-    where: {
-      staffId: session.user.id,
-      isActive: true,
-      booking: {
-        status: { in: ["CONFIRMED", "IN_PROGRESS"] },
+  const [assignments, unreadNotifications] = await Promise.all([
+    db.bookingAssignment.findMany({
+      where: {
+        staffId: session.user.id,
+        isActive: true,
+        booking: {
+          status: { in: ["CONFIRMED", "IN_PROGRESS", "COMPLETED"] },
+        },
       },
-    },
-    orderBy: { assignedAt: "desc" },
-    include: {
-      booking: {
-        select: {
-          id: true,
-          bookingNumber: true,
-          status: true,
-          preferredDate: true,
-          preferredTime: true,
-          address: true,
-          specialInstructions: true,
-          customer: {
-            select: {
-              name: true,
-              phone: true,
+      orderBy: { assignedAt: "desc" },
+      include: {
+        submissions: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+        booking: {
+          select: {
+            id: true,
+            bookingNumber: true,
+            status: true,
+            supervisionStatus: true,
+            preferredDate: true,
+            preferredTime: true,
+            address: true,
+            specialInstructions: true,
+            customer: {
+              select: {
+                name: true,
+                phone: true,
+              },
             },
-          },
-          service: {
-            select: {
-              name: true,
-              category: true,
+            service: {
+              select: {
+                name: true,
+                category: true,
+              },
+            },
+            supervisor: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+            assignments: {
+              where: { isActive: true },
+              select: {
+                id: true,
+                staffId: true,
+                status: true,
+                staff: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            workflowReviews: {
+              orderBy: { createdAt: "desc" },
+              take: 10,
+              include: {
+                reviewer: { select: { name: true } },
+              },
             },
           },
         },
       },
-    },
+    }),
+
+    db.notification.count({
+      where: { userId: session.user.id, isRead: false },
+    }),
+  ]);
+
+  interface RawStaffBookingAssignment {
+    id: string;
+    status: string;
+    notes: string | null;
+    assignedAt: Date;
+    startedAt: Date | null;
+    submittedAt: Date | null;
+    approvedAt: Date | null;
+    submissions?: Array<{
+      id: string;
+      summary: string;
+      workPerformed: string;
+      issuesNoted: string | null;
+      photos: unknown;
+      createdAt: Date;
+    }>;
+    booking: {
+      id: string;
+      bookingNumber: string;
+      status: string;
+      supervisionStatus: string;
+      preferredDate: Date;
+      preferredTime: string;
+      address: string;
+      specialInstructions: string | null;
+      customer: { name: string; phone: string | null };
+      service: { name: string; category: string };
+      supervisor: { id: string; name: string } | null;
+      assignments?: Array<{
+        id: string;
+        staffId: string;
+        status: string;
+        staff: { id: string; name: string } | null;
+      }>;
+      workflowReviews?: Array<{
+        decision: string;
+        assignmentId: string | null;
+        comment: string | null;
+        createdAt: Date;
+        reviewer: { name: string } | null;
+      }>;
+    };
+  }
+
+  const serialized: StaffAssignmentItem[] = (
+    assignments as RawStaffBookingAssignment[]
+  ).map((a) => {
+    const coworkers = (a.booking.assignments ?? [])
+      .filter((other) => other.staffId !== session.user.id)
+      .map((other) => ({
+        assignmentId: other.id,
+        staffId: other.staffId,
+        name: other.staff?.name || "Team Member",
+        status: other.status,
+      }));
+
+    const latestSub = a.submissions?.[0] ?? null;
+
+    const matchingFeedback = (a.booking.workflowReviews ?? []).find(
+      (r) =>
+        r.decision === "CHANGES_REQUESTED" &&
+        (!r.assignmentId || r.assignmentId === a.id)
+    );
+
+    return {
+      id: a.id,
+      status: a.status,
+      notes: a.notes,
+      assignedAt: a.assignedAt.toISOString(),
+      startedAt: a.startedAt?.toISOString() ?? null,
+      submittedAt: a.submittedAt?.toISOString() ?? null,
+      approvedAt: a.approvedAt?.toISOString() ?? null,
+      booking: {
+        id: a.booking.id,
+        bookingNumber: a.booking.bookingNumber,
+        status: a.booking.status,
+        supervisionStatus: a.booking.supervisionStatus,
+        preferredDate: a.booking.preferredDate.toISOString(),
+        preferredTime: a.booking.preferredTime,
+        address: a.booking.address,
+        specialInstructions: a.booking.specialInstructions,
+        customer: a.booking.customer,
+        service: a.booking.service,
+        supervisor: a.booking.supervisor,
+      },
+      coworkers,
+      latestSubmission: latestSub
+        ? {
+            id: latestSub.id,
+            summary: latestSub.summary,
+            workPerformed: latestSub.workPerformed,
+            issuesNoted: latestSub.issuesNoted,
+            photos: Array.isArray(latestSub.photos)
+              ? (latestSub.photos as Array<{
+                  storagePath: string;
+                  fileName: string;
+                }>)
+              : [],
+            createdAt: latestSub.createdAt.toISOString(),
+          }
+        : null,
+      supervisorFeedback: matchingFeedback?.comment
+        ? {
+            comment: matchingFeedback.comment,
+            reviewerName: matchingFeedback.reviewer?.name || "Supervisor",
+            createdAt: matchingFeedback.createdAt.toISOString(),
+          }
+        : null,
+    };
   });
 
-  const activeCount = assignments.length;
-  const inProgressCount = assignments.filter(
-    (assignment: any) => assignment.booking.status === "IN_PROGRESS"
-  ).length;
-
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
-      <NavBar />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-        <header>
-          <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
-            Staff workspace
-          </p>
-          <h1 className="mt-2 text-3xl font-bold text-slate-900">
-            Welcome, {session.user.name || "Team member"}
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            View your current assignments and the details needed for each service.
-          </p>
-        </header>
-
-        <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Active assignments</p>
-            <p className="mt-2 text-3xl font-bold text-slate-900">
-              {activeCount}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-sm text-slate-500">Services in progress</p>
-            <p className="mt-2 text-3xl font-bold text-slate-900">
-              {inProgressCount}
-            </p>
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <h2 className="text-xl font-bold text-slate-900">
-            My assigned bookings
-          </h2>
-
-          {assignments.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-10 text-center">
-              <h3 className="font-semibold text-slate-900">
-                No active assignments
-              </h3>
-              <p className="mt-2 text-sm text-slate-500">
-                New assignments will appear here when an administrator assigns
-                you to a confirmed booking.
-              </p>
-            </div>
-          ) : (
-            <div className="mt-4 grid grid-cols-1 gap-5 lg:grid-cols-2">
-              {assignments.map((assignment: any) => {
-                const booking = assignment.booking;
-
-                return (
-                  <article
-                    key={assignment.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-900">
-                          {booking.bookingNumber}
-                        </h3>
-                        <p className="mt-1 text-sm text-slate-600">
-                          {booking.service.name}
-                        </p>
-                      </div>
-
-                      <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800">
-                        {booking.status.replaceAll("_", " ")}
-                      </span>
-                    </div>
-
-                    <div className="mt-5 space-y-3 text-sm">
-                      <p>
-                        <span className="font-semibold text-slate-700">
-                          Date:
-                        </span>{" "}
-                        <span className="text-slate-600">
-                          {formatDate(booking.preferredDate)}
-                        </span>
-                      </p>
-
-                      <p>
-                        <span className="font-semibold text-slate-700">
-                          Preferred time:
-                        </span>{" "}
-                        <span className="text-slate-600">
-                          {booking.preferredTime}
-                        </span>
-                      </p>
-
-                      <div>
-                        <p className="font-semibold text-slate-700">Address</p>
-                        <p className="mt-1 whitespace-pre-wrap text-slate-600">
-                          {booking.address}
-                        </p>
-                      </div>
-
-                      <div>
-                        <p className="font-semibold text-slate-700">
-                          Customer contact
-                        </p>
-                        <p className="mt-1 text-slate-600">
-                          {booking.customer.name}
-                        </p>
-                        {booking.customer.phone && (
-                          <p className="mt-1 text-slate-600">
-                            {booking.customer.phone}
-                          </p>
-                        )}
-                      </div>
-
-                      {booking.specialInstructions && (
-                        <div className="rounded-xl bg-slate-50 p-3">
-                          <p className="font-semibold text-slate-700">
-                            Customer instructions
-                          </p>
-                          <p className="mt-1 whitespace-pre-wrap leading-6 text-slate-600">
-                            {booking.specialInstructions}
-                          </p>
-                        </div>
-                      )}
-
-                      {assignment.notes && (
-                        <div className="rounded-xl border border-blue-100 bg-blue-50 p-3">
-                          <p className="font-semibold text-blue-900">
-                            Assignment notes
-                          </p>
-                          <p className="mt-1 whitespace-pre-wrap leading-6 text-blue-800">
-                            {assignment.notes}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      </main>
-      <Footer />
-    </div>
+    <StaffWorkspaceClient
+      staffName={session.user.name || "Team member"}
+      unreadNotifications={unreadNotifications}
+      assignments={serialized}
+    />
   );
 }

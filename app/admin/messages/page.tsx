@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, MessageSquare } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import NavBar from "@/components/layout/NavBar";
-import Footer from "@/components/layout/Footer";
 import ContactMessageManager from "@/components/admin/ContactMessageManager";
 
 export const dynamic = "force-dynamic";
@@ -42,42 +40,36 @@ export default async function AdminMessagesPage() {
   }));
 
   return (
-    <>
-      <NavBar />
-      <main className="min-h-screen bg-slate-50 px-4 py-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <Link
-            href="/admin"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"
-          >
-            <ArrowLeft size={17} /> Admin dashboard
-          </Link>
+    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <Link
+        href="/admin"
+        className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"
+      >
+        <ArrowLeft size={17} /> Dashboard
+      </Link>
 
-          <div className="mt-7 flex items-center gap-4">
-            <div className="rounded-2xl bg-blue-50 p-3 text-blue-700">
-              <MessageSquare size={28} />
-            </div>
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wider text-blue-700">
-                Customer communication
-              </p>
-              <h1 className="mt-1 text-3xl font-extrabold text-slate-900">
-                Contact messages &amp; inquiries
-              </h1>
-            </div>
-          </div>
-
-          <p className="mt-4 max-w-3xl leading-7 text-slate-600">
-            Review customer inquiries submitted through the contact form, mark
-            them as resolved, or archive them once addressed.
-          </p>
-
-          <div className="mt-8">
-            <ContactMessageManager initialMessages={serializedMessages} />
-          </div>
+      <div className="mt-6 flex items-center gap-4">
+        <div className="rounded-xl bg-blue-50 p-3 text-blue-700">
+          <MessageSquare size={26} />
         </div>
-      </main>
-      <Footer />
-    </>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-blue-700">
+            Customer communication
+          </p>
+          <h1 className="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">
+            Contact messages &amp; inquiries
+          </h1>
+        </div>
+      </div>
+
+      <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+        Review customer inquiries submitted through the contact form, mark them
+        as resolved, or archive them once addressed.
+      </p>
+
+      <div className="mt-7">
+        <ContactMessageManager initialMessages={serializedMessages} />
+      </div>
+    </main>
   );
 }

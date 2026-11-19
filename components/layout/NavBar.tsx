@@ -18,9 +18,22 @@ export default async function NavBar() {
   const isSignedIn = Boolean(user?.id);
   const isAdmin = user?.role === "ADMIN";
   const isStaff = user?.role === "STAFF";
+  const isSupervisor = user?.role === "SUPERVISOR";
 
-  const dashboardHref = isAdmin ? "/admin" : "/account";
-  const dashboardLabel = isAdmin ? "Admin Dashboard" : "My Account";
+  const dashboardHref = isAdmin
+    ? "/admin"
+    : isSupervisor
+      ? "/supervisor"
+      : isStaff
+        ? "/staff"
+        : "/account";
+  const dashboardLabel = isAdmin
+    ? "Admin Dashboard"
+    : isSupervisor
+      ? "Supervisor Portal"
+      : isStaff
+        ? "Staff Dashboard"
+        : "My Account";
   const bookingHref = isSignedIn ? "/book" : "/login";
   const bookingLabel = isSignedIn ? "Book a Service" : "Sign In to Book";
 
@@ -69,13 +82,13 @@ export default async function NavBar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          {isStaff ? (
+          {isStaff || isSupervisor ? (
             <>
               <Link
-                href="/staff"
+                href={dashboardHref}
                 className="rounded-xl bg-[#031c43] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-800"
               >
-                Staff Dashboard
+                {dashboardLabel}
               </Link>
               <SignOutButton className="px-4 py-2.5" />
             </>

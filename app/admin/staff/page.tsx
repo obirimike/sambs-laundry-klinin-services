@@ -13,27 +13,45 @@ export default async function AdminStaffPage() {
   if (session.user.role !== "ADMIN") redirect("/account");
 
   const members = await db.user.findMany({
-    where: { role: "STAFF" },
-    orderBy: { name: "asc" },
+    where: { role: { in: ["STAFF", "SUPERVISOR"] } },
+    orderBy: [{ role: "asc" }, { name: "asc" }],
     select: {
       id: true,
       name: true,
       email: true,
       phone: true,
+      role: true,
       accountStatus: true,
       createdAt: true,
       assignmentsReceived: {
         where: { isActive: true },
         select: { id: true },
       },
+      bookingsSupervised: {
+        where: { status: { in: ["CONFIRMED", "IN_PROGRESS"] } },
+        select: { id: true },
+      },
     },
   });
 
-  const initialStaff = members.map(
-    ({ assignmentsReceived, ...member }: any) => ({
+  interface RawTeamMember {
+    id: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    role: "STAFF" | "SUPERVISOR";
+    accountStatus: "ACTIVE" | "SUSPENDED";
+    createdAt: Date;
+    assignmentsReceived: Array<{ id: string }>;
+    bookingsSupervised: Array<{ id: string }>;
+  }
+
+  const initialStaff = (members as RawTeamMember[]).map(
+    ({ assignmentsReceived, bookingsSupervised, ...member }) => ({
       ...member,
       createdAt: member.createdAt.toISOString(),
       activeAssignmentCount: assignmentsReceived.length,
+      activeSupervisionCount: bookingsSupervised.length,
     })
   );
 

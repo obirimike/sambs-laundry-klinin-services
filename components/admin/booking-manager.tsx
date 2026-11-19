@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderCircle, Save, Trash2, } from "lucide-react";
+import { LoaderCircle, Save, Trash2 } from "lucide-react";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import FeedbackModal from "@/components/ui/FeedbackModal";
 
@@ -11,6 +12,8 @@ type BookingManagerProps = {
   bookingNumber?: string;
   currentStatus: string;
   initialNotes: string;
+  hasWorkflowTeam?: boolean;
+  supervisionStatus?: string;
 };
 
 const transitions: Record<string, { value: string; label: string }[]> = {
@@ -35,6 +38,8 @@ export default function BookingManager({
   bookingNumber = "",
   currentStatus,
   initialNotes,
+  hasWorkflowTeam = false,
+  supervisionStatus = "NOT_REQUIRED",
 }: BookingManagerProps) {
   const router = useRouter();
   const [status, setStatus] = useState(currentStatus);
@@ -59,7 +64,13 @@ export default function BookingManager({
     message: "",
   });
 
-  const options = transitions[currentStatus] || [];
+  const requiresSupervisorApproval =
+    hasWorkflowTeam && supervisionStatus !== "SUPERVISOR_APPROVED";
+
+  const rawOptions = transitions[currentStatus] || [];
+  const options = requiresSupervisorApproval
+    ? rawOptions.filter((opt) => opt.value !== "COMPLETED")
+    : rawOptions;
 
   function handleSaveClick() {
     if (status !== currentStatus) {
@@ -174,8 +185,8 @@ export default function BookingManager({
   }
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-6">
-      <h2 className="text-xl font-bold text-slate-900">
+    <section className="rounded-xl border border-slate-200 bg-white p-6">
+      <h2 className="text-lg font-bold text-slate-900">
         Manage booking
       </h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -183,6 +194,30 @@ export default function BookingManager({
         Customers can see the booking status, but administrator notes remain
         private.
       </p>
+
+      {currentStatus === "IN_PROGRESS" && requiresSupervisorApproval && (
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-xs leading-relaxed text-amber-900">
+          This booking has an assigned team. Staff must submit completion reports
+          and the Lead Supervisor must approve before it can be finalized as{" "}
+          <strong>Completed</strong>.
+        </div>
+      )}
+
+      {currentStatus !== "COMPLETED" &&
+        currentStatus !== "CANCELLED" &&
+        supervisionStatus === "SUPERVISOR_APPROVED" && (
+          <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs leading-relaxed text-emerald-900">
+            <p className="font-semibold">
+              Supervisor approved — ready for final administrator release.
+            </p>
+            <Link
+              href="/admin/approvals"
+              className="mt-1.5 inline-block font-semibold text-emerald-800 underline"
+            >
+              Open Final Approval Queue
+            </Link>
+          </div>
+        )}
 
       {options.length > 0 ? (
         <div className="mt-5">
@@ -196,7 +231,7 @@ export default function BookingManager({
             id="bookingStatus"
             value={status}
             onChange={(event) => setStatus(event.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
           >
             <option value={currentStatus}>
               Keep current status ({currentStatus.replaceAll("_", " ")})
@@ -210,8 +245,9 @@ export default function BookingManager({
         </div>
       ) : (
         <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
-          This booking is {currentStatus.toLowerCase()} and cannot transition
-          to another status in the current workflow.
+          {currentStatus === "IN_PROGRESS" && requiresSupervisorApproval
+            ? "Status is awaiting staff submission and supervisor inspection."
+            : `This booking is ${currentStatus.toLowerCase()} and cannot transition to another status in the current workflow.`}
         </p>
       )}
 

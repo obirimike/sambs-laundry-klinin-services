@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { assertAdmin } from "@/lib/admin-guard";
 import { apiError, apiSuccess } from "@/lib/api-response";
@@ -86,7 +87,19 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const existing = await db.booking.findUnique({
       where: { id },
-      select: { id: true, bookingNumber: true, status: true, adminNotes: true, customerId: true },
+      select: {
+        id: true,
+        bookingNumber: true,
+        status: true,
+        adminNotes: true,
+        customerId: true,
+        supervisorId: true,
+        supervisionStatus: true,
+        assignments: {
+          where: { isActive: true },
+          select: { id: true },
+        },
+      },
     });
 
     if (!existing) {
@@ -107,6 +120,21 @@ export async function PATCH(request: Request, context: RouteContext) {
       );
     }
 
+    const hasWorkflowTeam =
+      Boolean(existing.supervisorId) || existing.assignments.length > 0;
+
+    if (
+      status === "COMPLETED" &&
+      hasWorkflowTeam &&
+      existing.supervisionStatus !== "SUPERVISOR_APPROVED"
+    ) {
+      return apiError(
+        409,
+        "SUPERVISOR_APPROVAL_REQUIRED",
+        "Bookings with assigned staff or a supervisor must pass supervisor review before administrator final approval."
+      );
+    }
+
     const now = new Date();
     const data: {
       status?: "PENDING" | "CONFIRMED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
@@ -114,6 +142,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       confirmedAt?: Date | null;
       completedAt?: Date | null;
       cancelledAt?: Date | null;
+      finalApprovedById?: string | null;
+      finalApprovedAt?: Date | null;
     } = {};
 
     let auditAction = "BOOKING_NOTES_UPDATED";
@@ -125,6 +155,8 @@ export async function PATCH(request: Request, context: RouteContext) {
         auditAction = "BOOKING_CONFIRMED";
       } else if (status === "COMPLETED") {
         data.completedAt = now;
+        data.finalApprovedById = guard.session.user.id;
+        data.finalApprovedAt = now;
         auditAction = "BOOKING_COMPLETED";
       } else if (status === "CANCELLED") {
         data.cancelledAt = now;
@@ -138,7 +170,8 @@ export async function PATCH(request: Request, context: RouteContext) {
       data.adminNotes = adminNotes?.trim() || null;
     }
 
-    const updated = await db.$transaction(async (tx: any) => {
+    const updated = await db.$transaction(
+      async (tx: Prisma.TransactionClient) => {
       const b = await tx.booking.update({
         where: { id },
         data,
@@ -278,7 +311,7 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx: Prisma.TransactionClient) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "BOOKING_DELETED",

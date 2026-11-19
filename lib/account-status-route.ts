@@ -14,7 +14,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 async function updateStatus(
   request: Request,
   context: RouteContext,
-  role: "CUSTOMER" | "STAFF",
+  role: "CUSTOMER" | "STAFF" | Array<"STAFF" | "SUPERVISOR">,
   status: "ACTIVE" | "SUSPENDED"
 ) {
   const guard = await assertAdmin(request);
@@ -35,7 +35,7 @@ async function updateStatus(
     reason: parsed.data.reason,
   });
 
-  const label = role === "CUSTOMER" ? "customer" : "staff member";
+  const label = role === "CUSTOMER" ? "customer" : "team member";
 
   if (result.kind === "NOT_FOUND") {
     return apiError(
@@ -61,8 +61,8 @@ async function updateStatus(
         ? "This customer's access to SAMB has been suspended."
         : "This customer can sign in and book again."
       : status === "SUSPENDED"
-        ? "This staff account has been suspended."
-        : "This staff account has been reactivated.";
+        ? "This team account has been suspended."
+        : "This team account has been reactivated.";
 
   return apiSuccess(message, { user: result.user });
 }
@@ -85,13 +85,18 @@ export function customerStatusHandler(status: "ACTIVE" | "SUSPENDED") {
 export function staffStatusHandler(status: "ACTIVE" | "SUSPENDED") {
   return async function POST(request: Request, context: RouteContext) {
     try {
-      return await updateStatus(request, context, "STAFF", status);
+      return await updateStatus(
+        request,
+        context,
+        ["STAFF", "SUPERVISOR"],
+        status
+      );
     } catch (error) {
       console.error("Staff status error:", error);
       return apiError(
         500,
         "STAFF_STATUS_FAILED",
-        "Unable to update this staff account."
+        "Unable to update this team account."
       );
     }
   };

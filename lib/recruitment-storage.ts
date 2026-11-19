@@ -96,8 +96,19 @@ export async function ensureRecruitmentBucketExists(): Promise<void> {
   }
 }
 
+const memoryCvStore = new Map<
+  string,
+  { buffer: Buffer; mimeType: string; fileName: string }
+>();
+
+function isSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.SUPABASE_URL?.trim() && process.env.SUPABASE_SECRET_KEY?.trim()
+  );
+}
+
 /**
- * Uploads a validated CV file to private Supabase Storage.
+ * Uploads a validated CV file to private Supabase Storage (or in-memory fallback when unconfigured).
  * Returns metadata and unpredictable storage path.
  */
 export async function uploadCvDocument(
@@ -139,15 +150,30 @@ export async function uploadCvDocument(
     );
   }
 
-  await ensureRecruitmentBucketExists();
-
   const now = new Date();
   const yearMonth = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
   const uniqueKey = randomUUID();
   const storagePath = `applications/${yearMonth}/${uniqueKey}${ext}`;
   const cleanFileName = sanitizeFileName(originalName);
+
+  if (!isSupabaseConfigured()) {
+    console.warn("[AI Studio] Supabase Storage not configured — storing CV in memory.");
+    memoryCvStore.set(storagePath, {
+      buffer,
+      mimeType: normalizedMime,
+      fileName: cleanFileName,
+    });
+    return {
+      storagePath,
+      fileName: cleanFileName,
+      mimeType: normalizedMime,
+      fileSize: buffer.length,
+    };
+  }
+
+  await ensureRecruitmentBucketExists();
+
   const supabaseAdmin = getSupabaseAdmin();
- 
 
   const { error: uploadError } = await supabaseAdmin.storage
     .from(RECRUITMENT_BUCKET)
@@ -174,6 +200,10 @@ export async function uploadCvDocument(
  */
 export async function deleteCvDocument(storagePath: string): Promise<void> {
   if (!storagePath) return;
+  if (!isSupabaseConfigured()) {
+    memoryCvStore.delete(storagePath);
+    return;
+  }
   const supabaseAdmin = getSupabaseAdmin();
   try {
     await supabaseAdmin.storage
@@ -194,6 +224,13 @@ export async function createCvSignedUrl(
 ): Promise<string> {
   if (!storagePath) {
     throw new Error("Invalid storage path.");
+  }
+  if (!isSupabaseConfigured()) {
+    const stored = memoryCvStore.get(storagePath);
+    if (!stored) {
+      throw new Error("Unable to retrieve document.");
+    }
+    return `data:${stored.mimeType};base64,${stored.buffer.toString("base64")}`;
   }
   const supabaseAdmin = getSupabaseAdmin();
   const { data, error } = await supabaseAdmin.storage

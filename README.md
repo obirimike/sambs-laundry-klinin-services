@@ -173,7 +173,7 @@ Copy `.env.example` and set each value. **Never commit `.env` or production secr
 | `NEXT_PUBLIC_APP_URL` | Production | Public base URL (e.g. `https://samb.example.com`) — used in email links; defaults to `http://localhost:3000` in development |
 | `RESEND_API_KEY` | For email | Resend API key — without it, the app functions but emails are not delivered |
 | `EMAIL_FROM` | Recommended | Verified sender identity for Resend (e.g. `SAMB <noreply@samb.example.com>`) |
-| `UPSTASH_REDIS_REST_URL` | For rate limiting | Upstash Redis REST endpoint � required in production; skipped in dev if unset |
+| `UPSTASH_REDIS_REST_URL` | For rate limiting | Upstash Redis REST endpoint � required in production; skipped in dev if unset |
 | `UPSTASH_REDIS_REST_TOKEN` | For rate limiting | Upstash Redis REST token |
 
 ## Available Scripts

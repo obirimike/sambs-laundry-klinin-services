@@ -38,9 +38,11 @@ export default async function ProfilePage() {
           href={
             session.user.role === "ADMIN"
               ? "/admin"
-              : session.user.role === "STAFF"
-                ? "/staff"
-                : "/account"
+              : session.user.role === "SUPERVISOR"
+                ? "/supervisor"
+                : session.user.role === "STAFF"
+                  ? "/staff"
+                  : "/account"
           }
           className="text-sm font-semibold text-blue-700 hover:underline"
         >

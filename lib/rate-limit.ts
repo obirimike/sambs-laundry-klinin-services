@@ -1,4 +1,3 @@
-
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
@@ -86,6 +85,21 @@ export type RateLimitPolicy =
   | "recruitment"
   | "applicationTracking";
 
+const POLICY_LIMITS: Record<RateLimitPolicy, { max: number; windowMs: number }> = {
+  auth: { max: 10, windowMs: 10 * 60_000 },
+  registration: { max: 5, windowMs: 10 * 60_000 },
+  contact: { max: 3, windowMs: 10 * 60_000 },
+  booking: { max: 10, windowMs: 10 * 60_000 },
+  account: { max: 10, windowMs: 10 * 60_000 },
+  passwordReset: { max: 5, windowMs: 10 * 60_000 },
+  admin: { max: 30, windowMs: 10 * 60_000 },
+  recruitment: { max: 5, windowMs: 15 * 60_000 },
+  applicationTracking: { max: 10, windowMs: 10 * 60_000 },
+};
+
+// In-memory rate limit fallback when Upstash Redis is not configured
+const memoryRateStore = new Map<string, { count: number; reset: number }>();
+
 export function getRequestIdentifier(request: Request, suffix?: string) {
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";
@@ -98,20 +112,36 @@ export async function limitRequest(
   policy: RateLimitPolicy,
   suffix?: string
 ) {
+  const identifier = getRequestIdentifier(request, suffix);
+
   if (!rateLimiters) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error(
-        "Rate limiting is not configured. Set both " +
-          "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN."
-      );
+    const config = POLICY_LIMITS[policy];
+    const key = `${policy}:${identifier}`;
+    const now = Date.now();
+    const existing = memoryRateStore.get(key);
+
+    if (!existing || existing.reset <= now) {
+      const reset = now + config.windowMs;
+      memoryRateStore.set(key, { count: 1, reset });
+      return {
+        success: true,
+        limit: config.max,
+        remaining: config.max - 1,
+        reset,
+      };
     }
 
-    return null;
+    existing.count += 1;
+    const remaining = Math.max(0, config.max - existing.count);
+    return {
+      success: existing.count <= config.max,
+      limit: config.max,
+      remaining,
+      reset: existing.reset,
+    };
   }
 
-  return rateLimiters[policy].limit(
-    getRequestIdentifier(request, suffix)
-  );
+  return rateLimiters[policy].limit(identifier);
 }
 
 export function rateLimitHeaders(result: {

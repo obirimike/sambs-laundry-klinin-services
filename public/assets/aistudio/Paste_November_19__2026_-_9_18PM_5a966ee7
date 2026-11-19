@@ -1,0 +1,1047 @@
+MASTER IMPLEMENTATION PROMPT: SAMB ADMIN DASHBOARD REDESIGN & STAFF-SUPERVISOR-ADMIN WORKFLOW
+
+Act as a senior full-stack software architect and experienced Next.js engineer. You are working on my existing SAMB Laundry & Klinin Services platform.
+
+Your task is to professionally redesign the administration workspace and implement a complete multi-level staff assignment, supervision, review and approval workflow.
+
+This is an enhancement of an existing application. You must understand and preserve its current architecture and working features.
+
+Do not build a separate application or unnecessarily rewrite existing functionality.
+
+---
+
+# PART 1 — PROJECT CONTEXT
+
+## Existing technology
+
+- Next.js App Router
+- React
+- TypeScript
+- Tailwind CSS
+- PostgreSQL hosted on Supabase
+- Prisma
+- Auth.js
+- Vercel deployment
+
+## Existing application functionality
+
+The platform already has:
+
+- Customer registration and authentication.
+- Customer profiles and account management.
+- Service listings and service management.
+- Booking submissions and booking history.
+- Admin booking management.
+- Booking calendar.
+- Staff management.
+- Staff assignments.
+- Booking status management.
+- Quotes and pricing.
+- Customer quote responses.
+- Reviews and moderation.
+- Notifications.
+- Contact messages.
+- Administrative audit logs.
+- Staff recruitment and applications.
+- CV/document uploads.
+
+Many of these features are already operational in production.
+
+Preserve existing functionality and data.
+
+## Important Prisma architecture
+
+The project currently has a separate Prisma 8 schema/contract workflow and a Prisma 7 database client/migration workflow.
+
+The following files are particularly important:
+
+- `prisma/schema.prisma`
+- `prisma/schema.prisma7`
+- `prisma.config.ts`
+- `prisma7.config.ts`
+- `lib/db.ts`
+- `lib/db-v8.ts`
+
+Recruitment functionality uses a separate Prisma 8 implementation.
+
+Do not accidentally modify or break the recruitment implementation when working on the existing booking and assignment infrastructure.
+
+Do not introduce unnecessary dependencies or replace the current database architecture.
+
+---
+
+# PART 2 — MAIN OBJECTIVES
+
+Implement two connected improvements.
+
+## Objective A: Professional Admin Dashboard Redesign
+
+Redesign the existing administrator workspace to provide:
+
+1. A professional, clean and modern dashboard.
+2. A permanently expanded sidebar by default.
+3. Grouped, collapsible navigation sections.
+4. A clear operational overview.
+5. Important business statistics.
+6. Pending administrative actions.
+7. Staff and supervisor workflow visibility.
+8. Recent operational activity.
+9. Responsive desktop, tablet and mobile layouts.
+
+The administrator should not feel overwhelmed by too many links, cards or unnecessary information.
+
+The main dashboard should function as a business control centre.
+
+## Objective B: Multi-Level Staff Assignment and Supervision Workflow
+
+Implement a proper operational workflow:
+
+ADMIN → STAFF → SUPERVISOR → ADMIN → CUSTOMER
+
+The process must work as follows:
+
+1. Administrator assigns a job to one or more staff members.
+2. Administrator designates a supervisor responsible for overseeing the job.
+3. Staff members perform their assigned work.
+4. Each staff member independently updates their progress.
+5. Staff members submit completed work for supervisor review.
+6. Supervisor reviews the work and either approves it or requests corrections.
+7. Once the supervisor approves the work, it appears in the admin's final approval queue.
+8. Administrator reviews the supervisor's report.
+9. Administrator gives the final approval and marks the booking completed.
+10. Customer receives the completion notification from the administrator's final approval action.
+
+The administrator retains final authority over customer-facing booking completion.
+
+---
+
+# PART 3 — ADMIN SIDEBAR REDESIGN
+
+The current sidebar contains these routes:
+
+- Overview: `/admin`
+- Recruitment: `/admin/recruitment`
+- Bookings: `/admin/bookings`
+- Assignments: `/admin/assignments`
+- Staff: `/admin/staff`
+- Booking calendar: `/admin/calendar`
+- Customers: `/admin/customers`
+- Services: `/admin/services`
+- Quotes & pricing: `/admin/quotes`
+- Reviews: `/admin/reviews`
+- Messages: `/admin/messages`
+- Audit log: `/admin/audit-logs`
+- Profile settings: `/account/profile`
+
+All existing pages and routes must remain accessible.
+
+Do not delete or rename existing routes.
+
+## Proposed navigation structure
+
+### 1. Overview
+
+Direct link:
+- Overview → `/admin`
+
+This must always be visible.
+
+### 2. Operations
+
+Collapsible group:
+
+- Bookings → `/admin/bookings`
+- Assignments → `/admin/assignments`
+- Booking calendar → `/admin/calendar`
+
+### 3. People
+
+Collapsible group:
+
+- Staff → `/admin/staff`
+- Customers → `/admin/customers`
+- Recruitment → `/admin/recruitment`
+
+### 4. Business Management
+
+Collapsible group:
+
+- Services → `/admin/services`
+- Quotes & pricing → `/admin/quotes`
+- Reviews → `/admin/reviews`
+
+### 5. Communications
+
+Collapsible group:
+
+- Messages → `/admin/messages`
+
+### 6. System
+
+Direct link:
+
+- Audit log → `/admin/audit-logs`
+
+### 7. Account
+
+Direct link:
+
+- Profile settings → `/account/profile`
+- Sign out
+
+## Sidebar design requirements
+
+The sidebar must:
+
+- Be expanded by default.
+- Remain visible on desktop.
+- Have a clear brand/logo area.
+- Use appropriate Lucide icons.
+- Group related links under small section labels.
+- Support expanding and collapsing groups.
+- Highlight the active route.
+- Keep the active group expanded when navigating to one of its child pages.
+- Show small notification badges where relevant.
+- Support keyboard navigation and accessible controls.
+- Have a mobile slide-out drawer.
+- Include an optional collapse control for users who prefer more workspace.
+
+Do not make the sidebar icon-only by default.
+
+Do not use excessive colors, oversized navigation items or unnecessary animations.
+
+Preserve existing navigation permissions. Administrators must not gain access to restricted functionality simply because a link is visible.
+
+---
+
+# PART 4 — ADMIN DASHBOARD OVERVIEW REDESIGN
+
+Redesign `/admin` as a professional business operations dashboard.
+
+The dashboard should prioritize important information and administrative actions.
+
+Avoid displaying every available database count or creating large shortcut cards for every application section.
+
+## A. Dashboard header
+
+Create a clean header containing:
+
+- A contextual greeting.
+- Administrator's name where available.
+- A short business overview description.
+- Current date where appropriate.
+- Relevant notification access.
+
+Use a consistent heading hierarchy and professional spacing.
+
+## B. Operational statistics
+
+Display four to six important statistics.
+
+Recommended metrics:
+
+1. Total bookings.
+2. Active jobs.
+3. Awaiting supervisor review.
+4. Awaiting final admin approval.
+5. Completed bookings.
+6. Total customers.
+
+Each statistic should:
+
+- Be calculated from real database records.
+- Have a clear label.
+- Use a restrained visual design.
+- Support navigation to its corresponding filtered page where practical.
+
+Avoid hardcoded values.
+
+Ensure statistics use consistent definitions and do not double-count jobs.
+
+## C. Requires Your Attention
+
+This should be one of the most important sections.
+
+Display actionable items that require administrative attention.
+
+Examples:
+
+- Bookings awaiting final approval.
+- Supervisor-approved work awaiting an administrator's decision.
+- Bookings requiring reassignment.
+- Important customer enquiries awaiting a response.
+- Other genuinely pending administrative actions.
+
+Each item should display:
+
+- Booking reference or relevant record identifier.
+- Service or subject.
+- Current status.
+- Relevant staff/supervisor information.
+- Date.
+- A clear action link.
+
+Prioritize urgent and overdue items where the necessary data exists.
+
+Do not display completed or irrelevant records in this queue.
+
+## D. Work Pipeline
+
+Create an operational summary showing:
+
+- Jobs assigned to staff.
+- Jobs in progress.
+- Jobs awaiting supervisor review.
+- Jobs returned for corrections.
+- Jobs awaiting admin approval.
+- Jobs finally completed.
+
+Use meaningful status indicators.
+
+The administrator should quickly understand where work is accumulating.
+
+## E. Today's Schedule
+
+Show relevant operational information:
+
+- Today's scheduled bookings.
+- Upcoming jobs.
+- Ongoing jobs.
+- Assigned staff and supervisor where available.
+
+Provide a link to the existing booking calendar.
+
+## F. Recent Activity
+
+Show a concise timeline of important events:
+
+- New booking received.
+- Staff assignment created or changed.
+- Staff member started work.
+- Staff submitted work for review.
+- Supervisor approved work.
+- Supervisor requested corrections.
+- Administrator approved completion.
+- Customer notification sent.
+
+Use existing audit/event data where suitable.
+
+Do not create a second unrelated audit system.
+
+## G. Quick actions
+
+Only include genuinely useful administrative actions.
+
+Examples:
+
+- View bookings.
+- Create or manage assignments.
+- Manage staff.
+- Review pending approvals.
+
+Avoid reproducing the entire sidebar as dashboard cards.
+
+---
+
+# PART 5 — STAFF ASSIGNMENT SYSTEM
+
+Enhance the existing assignment infrastructure.
+
+One booking must support multiple assigned staff members.
+
+An administrator must be able to:
+
+- Select multiple staff members for one booking.
+- Add staff members to an existing assignment.
+- Remove or unassign staff members.
+- Replace assigned staff.
+- Assign or change the responsible supervisor.
+- View assignment history.
+- View each staff member's individual progress.
+
+Preserve existing assignment functionality.
+
+## Individual assignment progress
+
+Each staff member must have an independent assignment status.
+
+Recommended statuses:
+
+- PENDING
+- IN_PROGRESS
+- SUBMITTED_FOR_REVIEW
+- CHANGES_REQUESTED
+
+A staff member must not be able to update another person's assignment.
+
+When a staff member finishes their work, they must submit it for supervisor review.
+
+Do not allow a staff member's submission to mark the overall booking completed.
+
+## Staff completion submission
+
+When submitting work for review, allow the staff member to provide:
+
+- Completion notes.
+- Description of the work performed.
+- Optional supporting photos, if the existing storage architecture can safely support them.
+- Any outstanding issues or concerns.
+
+Validate all submitted information on the server.
+
+Preserve the existing storage architecture and security rules.
+
+---
+
+# PART 6 — OTHER ASSIGNED WORKERS INDICATOR
+
+This feature is mandatory.
+
+On each staff member's assigned-work card or job detail interface, add a small indicator in the top-right corner.
+
+Example:
+
+"2 other workers"
+
+The indicator must:
+
+- Count other active assigned staff members on the same booking.
+- Exclude the currently logged-in staff member.
+- Be hidden when there are no other assigned workers.
+- Be visually clear but unobtrusive.
+- Be clickable.
+- Open a popover or modal showing other assigned workers.
+
+The expanded view should show:
+
+- Staff member's name.
+- Profile image or initials, where available.
+- Staff role.
+- Individual assignment status.
+
+The indicator must work on desktop and mobile.
+
+Only expose information that the authenticated staff member is authorized to see.
+
+It must reflect active assignments and update when the administrator changes the assigned team.
+
+Prevent duplicate active assignments for the same staff member and booking.
+
+---
+
+# PART 7 — SUPERVISOR ROLE AND DASHBOARD
+
+Supervisors must have a dedicated dashboard and their own authorization rules.
+
+Do not simply expose the administrator dashboard to supervisors.
+
+First inspect the existing role definitions and staff-management architecture.
+
+If the current role model has an appropriate STAFF role, determine the safest way to introduce supervisor capabilities.
+
+Possible implementation:
+
+- Add a SUPERVISOR role if the existing authorization architecture supports it.
+- Alternatively, use a separate supervisor capability/permission if that is more compatible.
+
+Do not grant supervisor privileges to ordinary staff members.
+
+The administrator must be able to:
+
+- Designate a supervisor for a booking.
+- Change the assigned supervisor.
+- View supervisor workload.
+- Manage supervisor access.
+
+Use one designated lead supervisor per booking by default. Keep the architecture extensible for future multi-supervisor support.
+
+## Supervisor dashboard
+
+Create a dedicated supervisor workspace.
+
+Suggested navigation:
+
+- Overview
+- Supervised Jobs
+- In Progress
+- Awaiting Review
+- Changes Requested
+- Approved Jobs
+- Profile
+
+Only show navigation items the supervisor is authorized to access.
+
+## Supervisor dashboard overview
+
+Display:
+
+- Total supervised jobs.
+- Jobs currently in progress.
+- Jobs awaiting review.
+- Jobs returned for corrections.
+- Jobs approved.
+- Recent supervision activity.
+
+## Supervised job details
+
+For each assigned job, supervisors must see:
+
+- Booking reference.
+- Service details.
+- Customer/service location information permitted for their role.
+- Scheduled date and time.
+- Assigned staff members.
+- Each worker's individual progress.
+- Staff completion submissions.
+- Completion notes.
+- Relevant supporting evidence.
+
+Supervisors must only access jobs assigned to them for supervision.
+
+## Supervisor review process
+
+When staff members submit their work, the supervisor should be able to:
+
+1. Open the job.
+2. Inspect staff completion reports.
+3. Review individual staff contributions.
+4. Add review notes.
+5. Approve the work.
+6. Request corrections when necessary.
+
+A supervisor must not approve work that has not been submitted.
+
+If corrections are requested:
+
+- The affected staff member must be notified.
+- Their assignment becomes CHANGES_REQUESTED.
+- They can update their work and submit it again.
+- The supervisor can review the new submission.
+- Previous review history must remain available.
+
+When the required work has been approved, the supervisor can mark the job as SUPERVISOR_APPROVED.
+
+This must create an item in the administrator's final approval queue.
+
+A supervisor must never be able to perform the administrator's final customer-facing booking completion action.
+
+---
+
+# PART 8 — ADMIN FINAL APPROVAL
+
+Create a dedicated section in the administrator workspace:
+
+**Awaiting Final Approval**
+
+This section should contain jobs that have received supervisor approval.
+
+The administrator must be able to inspect:
+
+- Booking details.
+- Customer information.
+- Assigned staff.
+- Assigned supervisor.
+- Individual staff completion reports.
+- Supervisor review notes.
+- Supervisor approval date.
+- Supporting completion evidence, if available.
+- Previous corrections and review history.
+
+The administrator can then:
+
+### Option A: Approve completion
+
+- Record final administrative notes.
+- Mark the booking COMPLETED.
+- Record the administrator responsible.
+- Record the final approval timestamp.
+- Trigger the customer completion notification.
+
+### Option B: Return for further action
+
+- Add an explanation.
+- Return the job to the supervisor.
+- Notify the supervisor.
+- Preserve the existing review history.
+
+The admin's final decision must be authoritative.
+
+Only final administrative approval should trigger the booking's transition to COMPLETED and the customer-facing completion notification.
+
+Do not send a completion notification when:
+
+- A staff member submits work.
+- A supervisor approves work.
+- An administrator merely opens or reviews a job.
+
+---
+
+# PART 9 — STATUS AND WORKFLOW ARCHITECTURE
+
+Keep individual assignment progress separate from the overall booking status.
+
+Recommended workflow:
+
+STAFF ASSIGNMENT:
+
+PENDING
+→ IN_PROGRESS
+→ SUBMITTED_FOR_REVIEW
+→ APPROVED or CHANGES_REQUESTED
+→ SUBMITTED_FOR_REVIEW again when corrected
+
+SUPERVISION:
+
+AWAITING_STAFF
+→ AWAITING_REVIEW
+→ SUPERVISOR_APPROVED
+
+Or:
+
+AWAITING_REVIEW
+→ CHANGES_REQUESTED
+→ AWAITING_REVIEW
+
+ADMINISTRATIVE APPROVAL:
+
+AWAITING_FINAL_APPROVAL
+→ COMPLETED
+
+Or:
+
+AWAITING_FINAL_APPROVAL
+→ RETURNED_FOR_ACTION
+→ RESUBMITTED_FOR_REVIEW
+
+Keep the existing booking statuses where possible:
+
+- PENDING
+- CONFIRMED
+- IN_PROGRESS
+- COMPLETED
+- CANCELLED
+
+Do not overload the booking status field with individual staff or supervisor states.
+
+Use appropriate dedicated fields, related records or existing assignment properties.
+
+The exact database design must be determined after inspecting the existing schema.
+
+---
+
+# PART 10 — DATA MODEL AND MIGRATIONS
+
+Before modifying the database:
+
+Inspect:
+
+- `Booking`
+- `BookingAssignment`
+- `User`
+- Existing role definitions.
+- Existing audit models.
+- Existing notification models.
+- Existing booking status enums.
+- Existing assignment APIs.
+- Existing staff and admin queries.
+
+Determine whether the existing BookingAssignment model already supports the required individual progress functionality.
+
+Prefer extending existing models where safe.
+
+If additional models or fields are necessary, design additive, backward-compatible changes.
+
+Possible concepts include:
+
+- Individual staff assignment progress.
+- Assigned supervisor relationship.
+- Staff work completion submissions.
+- Supervisor review records.
+- Administrative final approval records.
+
+Do not create redundant models if existing structures can safely support the requirements.
+
+Preserve historical booking and assignment records.
+
+Do not make destructive schema changes.
+
+Respect the existing Prisma 7 migration workflow.
+
+Do not run production migrations automatically.
+
+Do not modify the recruitment database architecture unless an unavoidable shared dependency requires it.
+
+Before any migration, explain:
+
+- Which models change.
+- Which fields are added.
+- Which existing data is affected.
+- How backward compatibility is maintained.
+- How the migration will be applied safely.
+
+---
+
+# PART 11 — SECURITY AND AUTHORIZATION
+
+Security is mandatory.
+
+Implement server-side authorization for every sensitive operation.
+
+### Staff
+
+Staff members can:
+
+- View their own active assignments.
+- View other assigned team members' permitted information.
+- Update their own assignment progress.
+- Submit their own work.
+- Respond to corrections.
+
+Staff members cannot:
+
+- Update another staff member's assignment.
+- Approve their own submitted work as a supervisor.
+- Access unrelated staff assignments.
+- Perform administrative completion actions.
+
+### Supervisors
+
+Supervisors can:
+
+- View jobs assigned to them for supervision.
+- Review authorized staff submissions.
+- Request corrections.
+- Approve work for administrative review.
+
+Supervisors cannot:
+
+- Approve jobs assigned to another supervisor unless explicitly authorized.
+- Change staff roles.
+- Perform final administrative completion.
+- Access unrelated administrative functions.
+
+### Administrators
+
+Administrators retain authority to:
+
+- Manage staff and supervisors.
+- Manage all booking assignments.
+- Change supervisors.
+- Review supervisor-approved jobs.
+- Return work for additional action.
+- Approve final completion.
+- Notify customers.
+
+Never rely solely on hidden UI buttons for authorization.
+
+Validate all ownership and permissions on the server.
+
+Prevent IDOR vulnerabilities by checking the authenticated user's relationship with each booking and assignment.
+
+Use transactions for operations that must succeed or fail together.
+
+Preserve existing authentication, suspended-account handling and rate limiting.
+
+---
+
+# PART 12 — NOTIFICATIONS AND AUDIT TRAIL
+
+Integrate with the existing notification and audit infrastructure.
+
+Important events should include:
+
+- New staff assignment.
+- Staff member added or removed.
+- Supervisor assigned or changed.
+- Staff member starts work.
+- Staff submits work for review.
+- Supervisor requests corrections.
+- Staff resubmits work.
+- Supervisor approves work.
+- Supervisor returns work to the administrator.
+- Administrator returns work for further action.
+- Administrator approves completion.
+- Customer completion notification sent.
+
+Notifications must be delivered to the appropriate recipients.
+
+Do not duplicate notifications.
+
+Customer completion notifications must be triggered only by successful final administrative approval.
+
+Maintain an audit trail containing:
+
+- Actor.
+- Action.
+- Related booking.
+- Related assignment or review.
+- Timestamp.
+- Relevant metadata.
+
+Reuse the existing audit helper and event infrastructure wherever possible.
+
+---
+
+# PART 13 — USER INTERFACE AND DESIGN SYSTEM
+
+The application must have a consistent professional appearance.
+
+## Design direction
+
+Use:
+
+- Clean, modern SaaS dashboard styling.
+- White and light neutral backgrounds.
+- Dark navy typography.
+- Restrained blue accent colors.
+- Subtle borders and shadows.
+- Consistent spacing.
+- Lucide icons.
+- Clear typography hierarchy.
+- Consistent status badges.
+
+Avoid:
+
+- Excessive colored cards.
+- Oversized headings.
+- Excessive navigation links.
+- Unnecessary decorative elements.
+- Overcrowded tables.
+- Unnecessary animations.
+
+## Responsive design
+
+Ensure:
+
+- Desktop sidebar is permanently expanded by default.
+- Navigation groups collapse and expand.
+- Optional sidebar collapse control is available.
+- Mobile sidebar becomes a slide-out drawer.
+- Dashboard cards adapt to screen width.
+- Tables remain usable on smaller screens.
+- Staff and supervisor dashboards work on mobile devices.
+- Popovers and modals remain usable on touch devices.
+
+## Reusable components
+
+Where appropriate, create reusable components for:
+
+- Dashboard page headers.
+- Statistics cards.
+- Status badges.
+- Navigation groups.
+- Attention queues.
+- Activity timelines.
+- Assignment cards.
+- Staff progress indicators.
+- Team member popovers.
+- Completion submission forms.
+- Supervisor review panels.
+- Admin approval panels.
+- Confirmation dialogs.
+
+Follow existing component conventions and avoid unnecessary duplication.
+
+---
+
+# PART 14 — IMPLEMENTATION PROCESS
+
+Work incrementally and safely.
+
+## Phase 1: Full audit
+
+Inspect the existing:
+
+- Admin layout.
+- Sidebar/navigation components.
+- Admin dashboard page.
+- Staff dashboard.
+- Existing assignment management pages.
+- Booking detail pages.
+- Assignment forms.
+- BookingAssignment model.
+- User roles.
+- Staff APIs.
+- Assignment APIs.
+- Audit and notification infrastructure.
+- Existing responsive design.
+
+Produce a concise report identifying:
+
+1. Existing architecture.
+2. Relevant files.
+3. Existing reusable components.
+4. Required changes.
+5. Potential conflicts.
+6. Database changes.
+7. Security implications.
+
+Do not edit files during the initial audit.
+
+## Phase 2: Technical design
+
+Prepare a proposed implementation design covering:
+
+- Sidebar structure.
+- Admin dashboard layout.
+- Supervisor dashboard layout.
+- Staff dashboard changes.
+- Assignment lifecycle.
+- Individual progress states.
+- Supervisor review lifecycle.
+- Final admin approval.
+- Database changes.
+- API endpoints.
+- Notification events.
+- Role and permission checks.
+
+Identify any unresolved decisions before implementing them.
+
+Do not silently change existing architectural decisions.
+
+## Phase 3: Admin dashboard redesign
+
+Implement:
+
+1. Sidebar redesign.
+2. Grouped navigation.
+3. Collapsible sections.
+4. Responsive navigation.
+5. Dashboard header.
+6. Operational statistics.
+7. Requires your attention section.
+8. Work pipeline.
+9. Today's schedule.
+10. Recent activity.
+
+Preserve all existing routes and functionality.
+
+## Phase 4: Assignment and supervision workflow
+
+Implement:
+
+1. Multiple staff assignment.
+2. Individual staff progress.
+3. Staff completion submissions.
+4. Other assigned workers indicator.
+5. Supervisor assignment.
+6. Dedicated supervisor dashboard.
+7. Supervisor review and corrections.
+8. Supervisor approval.
+9. Admin final approval.
+10. Customer notification.
+
+Ensure each feature is properly integrated with existing booking records.
+
+## Phase 5: Dashboard integration
+
+Connect actual database data to:
+
+- Admin operational statistics.
+- Supervisor review queues.
+- Final administrative approval queues.
+- Work pipeline.
+- Recent activity.
+- Staff assignment indicators.
+
+Do not use hardcoded sample data in production.
+
+## Phase 6: Testing and verification
+
+Run:
+
+- `npx tsc --noEmit`
+- Relevant existing unit tests.
+- Relevant integration tests.
+- Existing Playwright end-to-end tests.
+- `npm run build`
+
+Add tests for:
+
+- Multiple staff on one booking.
+- Staff updating only their own assignments.
+- Staff submission for review.
+- Supervisor authorization.
+- Supervisor approval.
+- Supervisor correction requests.
+- Staff resubmission.
+- Admin final approval.
+- Customer notification triggering.
+- Prevention of duplicate assignments.
+- Prevention of unauthorized access.
+- Existing booking compatibility.
+- Navigation and responsive layouts.
+
+Test older bookings without the new workflow data.
+
+Do not introduce regressions in existing booking, quote, calendar, recruitment or customer features.
+
+## Phase 7: Final report
+
+Provide:
+
+- Summary of implemented features.
+- Files created.
+- Files modified.
+- Database schema changes.
+- Migration files created.
+- New routes and APIs.
+- Role and permission changes.
+- Tests performed and results.
+- Manual testing instructions.
+- Any remaining limitations.
+
+Clearly distinguish completed work from proposed or unverified functionality.
+
+---
+
+# PART 15 — STRICT DEVELOPMENT RULES
+
+These rules must be followed throughout the task.
+
+1. Inspect before editing.
+2. Preserve existing working functionality.
+3. Do not rewrite the entire application.
+4. Do not remove existing pages or routes.
+5. Do not change the current database architecture unnecessarily.
+6. Do not modify recruitment functionality unnecessarily.
+7. Do not expose secrets or request environment credentials.
+8. Do not make destructive database changes.
+9. Do not run production migrations.
+10. Do not use hardcoded dashboard statistics.
+11. Do not trust client-side authorization.
+12. Do not allow staff to approve their own work.
+13. Do not allow supervisors to perform final admin approval.
+14. Do not notify customers before final admin approval.
+15. Maintain backward compatibility with existing bookings.
+16. Preserve existing audit and notification functionality.
+17. Do not discard, reset or overwrite unrelated uncommitted Git changes.
+18. Do not broadly stage or commit unrelated files.
+19. Use the existing UI components and coding conventions wherever possible.
+20. Explain significant architectural decisions before implementing them.
+
+If a requested feature conflicts with existing functionality, explain the conflict and propose the safest solution rather than silently breaking the existing system.
+
+If an important design decision remains unresolved, ask only the necessary question.
+
+Do not claim an operation succeeded unless it has actually been verified.
+
+---
+
+# FINAL INSTRUCTION
+
+Treat this as a coordinated professional upgrade of an existing production-oriented business platform.
+
+The end result should make SAMB easier to operate as a growing laundry and cleaning business.
+
+The administrator should have a clear operational control centre.
+
+Staff should know exactly what work they are responsible for.
+
+Supervisors should have clear responsibility for inspecting and approving staff work.
+
+Administrators should retain final authority over completed bookings and customer notifications.
+
+The interface should be professional, intuitive, responsive and maintainable.
+
+**Begin with Phase 1: inspect the existing codebase and present the audit findings. Do not modify code during the initial audit. Then proceed through the implementation phases safely, preserving existing work and reporting any decisions that require my approval.**

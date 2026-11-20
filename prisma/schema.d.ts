@@ -23,9 +23,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'3346c47c312f0825e43f08162ae792a00c0b5dab4fe55ab22e63292f299257cf'>;
+  StorageHashBase<'2ac012ba75bde89c149523a0e4f4df0afeff40621a3c59669a661bf693b7ec8b'>;
 export type ExecutionHash =
-  ExecutionHashBase<'c4684e6596a615a8e0fd91c80f7ff9bd8d5b87576246aa6b0fa51e730dd4315d'>;
+  ExecutionHashBase<'65d4074bd5789046f43b2cd7d1fa52743c5d47bf831caea7304a30ce26e4cd95'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -573,6 +573,17 @@ export namespace Models {
     actor: public_User;
     readonly [RelationKeys]?: 'actor';
   };
+  export type public_AuditRetentionPolicy = {
+    enabled: FieldOutputTypes['public']['AuditRetentionPolicy']['enabled'];
+    id: FieldOutputTypes['public']['AuditRetentionPolicy']['id'];
+    lastRunAt: FieldOutputTypes['public']['AuditRetentionPolicy']['lastRunAt'];
+    lastRunCount: FieldOutputTypes['public']['AuditRetentionPolicy']['lastRunCount'];
+    retentionDays: FieldOutputTypes['public']['AuditRetentionPolicy']['retentionDays'];
+    updatedAt: FieldOutputTypes['public']['AuditRetentionPolicy']['updatedAt'];
+    updatedById: FieldOutputTypes['public']['AuditRetentionPolicy']['updatedById'];
+    updatedBy: public_User | null;
+    readonly [RelationKeys]?: 'updatedBy';
+  };
   export type public_Booking = {
     address: FieldOutputTypes['public']['Booking']['address'];
     adminNotes: FieldOutputTypes['public']['Booking']['adminNotes'];
@@ -747,6 +758,7 @@ export namespace Models {
     notifications: public_Notification[];
     passwordResetTokens: public_PasswordResetToken[];
     quotesCreated: public_Quote[];
+    retentionPolicyUpdates: public_AuditRetentionPolicy[];
     reviews: public_Review[];
     reviewsModerated: public_Review[];
     vacanciesCreated: public_Vacancy[];
@@ -760,6 +772,7 @@ export namespace Models {
       | 'notifications'
       | 'passwordResetTokens'
       | 'quotesCreated'
+      | 'retentionPolicyUpdates'
       | 'reviews'
       | 'reviewsModerated'
       | 'vacanciesCreated';
@@ -794,6 +807,7 @@ export declare const models: {
   public: {
     ApplicationStatusHistory: Models.public_ApplicationStatusHistory;
     AuditLog: Models.public_AuditLog;
+    AuditRetentionPolicy: Models.public_AuditRetentionPolicy;
     Booking: Models.public_Booking;
     BookingAssignment: Models.public_BookingAssignment;
     ContactMessage: Models.public_ContactMessage;
@@ -1015,6 +1029,96 @@ type ContractBase = Omit<
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'AuditLog';
                     readonly columns: readonly ['actorId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly AuditRetentionPolicy: {
+              columns: {
+                readonly enabled: {
+                  readonly dataType: 'pg/bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'default'>;
+                  };
+                  readonly many: false;
+                };
+                readonly lastRunAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly precision: 3 };
+                  readonly many: false;
+                };
+                readonly lastRunCount: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly retentionDays: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/int4@1', 90>;
+                  };
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly precision: 3 };
+                  readonly many: false;
+                };
+                readonly updatedById: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'AuditRetentionPolicy_updatedAt_idx_8c508b31';
+                  readonly prefix: 'AuditRetentionPolicy_updatedAt_idx';
+                  readonly columns: readonly ['updatedAt'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'AuditRetentionPolicy_updatedById_idx_d0517c24';
+                  readonly prefix: 'AuditRetentionPolicy_updatedById_idx';
+                  readonly columns: readonly ['updatedById'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'AuditRetentionPolicy';
+                    readonly columns: readonly ['updatedById'];
                   };
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
@@ -2593,6 +2697,10 @@ type ContractBase = Omit<
       readonly model: 'ApplicationStatusHistory';
     };
     readonly AuditLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
+    readonly AuditRetentionPolicy: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'AuditRetentionPolicy';
+    };
     readonly Booking: { readonly namespace: 'public' & NamespaceId; readonly model: 'Booking' };
     readonly BookingAssignment: {
       readonly namespace: 'public' & NamespaceId;
@@ -2758,6 +2866,70 @@ type ContractBase = Omit<
                 readonly entityType: { readonly column: 'entityType' };
                 readonly id: { readonly column: 'id' };
                 readonly reason: { readonly column: 'reason' };
+              };
+            };
+          };
+          readonly AuditRetentionPolicy: {
+            readonly fields: {
+              readonly enabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lastRunAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly typeParams: { readonly precision: 3 };
+                };
+              };
+              readonly lastRunCount: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly retentionDays: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly typeParams: { readonly precision: 3 };
+                };
+              };
+              readonly updatedById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly updatedBy: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['updatedById'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'AuditRetentionPolicy';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly enabled: { readonly column: 'enabled' };
+                readonly id: { readonly column: 'id' };
+                readonly lastRunAt: { readonly column: 'lastRunAt' };
+                readonly lastRunCount: { readonly column: 'lastRunCount' };
+                readonly retentionDays: { readonly column: 'retentionDays' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly updatedById: { readonly column: 'updatedById' };
               };
             };
           };
@@ -3890,6 +4062,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['createdById'];
                 };
               };
+              readonly retentionPolicyUpdates: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'AuditRetentionPolicy';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['updatedById'];
+                };
+              };
               readonly reviews: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -4324,6 +4507,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'AuditLog';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: {
+            readonly id: 'timestampNow';
+            readonly kind: 'generator';
+            readonly params: { readonly precision: 3 };
+          };
+          readonly onUpdate: {
+            readonly id: 'timestampNow';
+            readonly kind: 'generator';
+            readonly params: { readonly precision: 3 };
+          };
+          readonly ref: {
+            readonly entry: 'AuditRetentionPolicy';
+            readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
         },

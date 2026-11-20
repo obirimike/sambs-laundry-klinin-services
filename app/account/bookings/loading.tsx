@@ -3,11 +3,13 @@ import Skeleton from "@/components/ui/Skeleton";
 export default function AccountBookingsLoading() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6">
+      {/* Page header */}
       <div>
         <Skeleton className="h-8 w-44 rounded-lg" />
         <Skeleton className="mt-2 h-4 w-64 rounded" />
       </div>
 
+      {/* Booking cards */}
       <div className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div

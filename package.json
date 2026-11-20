@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3000 -H 0.0.0.0",
+    "start": "next start",
     "lint": "eslint",
     "db:generate": "prisma7 generate --config ./prisma7.config.ts && prisma contract emit",
-    "db:migrate": "prisma migrate deploy",
+    "db:migrate": "prisma7 migrate deploy --config ./prisma7.config.ts",
     "db:seed": "prisma db seed",
     "test:e2e": "playwright test",
     "postinstall": "prisma7 generate --config ./prisma7.config.ts && prisma contract emit"
@@ -51,7 +51,7 @@
     "unrs-resolver@1.12.2": true,
     "esbuild@0.28.2": true,
     "workerd@1.20260901.1": true,
-    "@prisma/engines@7.10.0": true,
-    "prisma@7.10.0": true
+    "@prisma/engines@7.10.1": true,
+    "prisma@7.10.1": true
   }
 }

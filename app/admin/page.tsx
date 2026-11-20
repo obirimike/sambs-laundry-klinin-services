@@ -472,10 +472,10 @@ export default async function AdminDashboardPage() {
           {attentionItems.length === 0 ? (
             <div className="p-8 text-center">
               <ShieldCheck size={28} className="mx-auto text-emerald-600" />
-              <p className="mt-2 text-sm font-semibold text-slate-900">
+              <p className="mt-2 text-base font-semibold text-slate-900">
                 All queues are up to date
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-sm text-slate-500">
                 No pending requests, unassigned confirmed jobs, or final
                 approvals waiting right now.
               </p>
@@ -485,30 +485,30 @@ export default async function AdminDashboardPage() {
               {attentionItems.slice(0, 8).map((item) => (
                 <div
                   key={item.id}
-                  className="flex flex-col gap-3 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       <span
-                        className={`rounded-md border px-2 py-0.5 font-semibold ${item.accent}`}
+                        className={`rounded-md border px-2.5 py-0.5 text-xs font-bold ${item.accent}`}
                       >
                         {item.category}
                       </span>
-                      <span className="font-semibold text-slate-900">
+                      <span className="text-sm sm:text-base font-bold text-slate-900">
                         {item.title}
                       </span>
                     </div>
-                    <p className="mt-1 truncate text-xs text-slate-600">
+                    <p className="mt-1.5 truncate text-sm text-slate-600">
                       {item.detail}
                     </p>
                   </div>
 
                   <Link
                     href={item.href}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 transition hover:bg-slate-50 whitespace-nowrap"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-800 transition hover:bg-slate-50 whitespace-nowrap shadow-2xs"
                   >
                     <span>{item.actionLabel}</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight size={14} />
                   </Link>
                 </div>
               ))}
@@ -573,22 +573,22 @@ export default async function AdminDashboardPage() {
                   <Link
                     key={booking.id}
                     href={`/admin/bookings/${booking.id}`}
-                    className="block px-5 py-3.5 transition hover:bg-slate-50"
+                    className="block px-5 py-4 transition hover:bg-slate-50"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs font-semibold text-slate-900 tabular-nums">
+                      <span className="font-mono text-sm font-bold text-slate-900 tabular-nums">
                         {booking.preferredTime} · {booking.bookingNumber}
                       </span>
-                      <span className="text-xs font-medium text-slate-600">
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700">
                         {bStatus.label}
                       </span>
                     </div>
-                    <p className="mt-1 text-sm font-semibold text-slate-900">
+                    <p className="mt-1.5 text-base font-bold text-slate-950">
                       {booking.service.name}
                     </p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
-                      <span>{booking.customer.name}</span>
-                      <span aria-hidden="true">·</span>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm text-slate-600">
+                      <span className="font-medium text-slate-800">{booking.customer.name}</span>
+                      <span aria-hidden="true" className="text-slate-300">·</span>
                       <span>
                         {booking.assignments.length} staff
                         {booking.supervisor
@@ -597,8 +597,8 @@ export default async function AdminDashboardPage() {
                       </span>
                       {booking.supervisionStatus !== "NOT_REQUIRED" && (
                         <>
-                          <span aria-hidden="true">·</span>
-                          <span className="font-medium text-slate-700">
+                          <span aria-hidden="true" className="text-slate-300">·</span>
+                          <span className="font-semibold text-blue-900">
                             {sStatus.label}
                           </span>
                         </>
@@ -653,18 +653,18 @@ export default async function AdminDashboardPage() {
               ).map((log) => (
                 <div
                   key={log.id}
-                  className="flex flex-col gap-1 px-5 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-1.5 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="text-sm sm:text-base font-bold text-slate-900">
                       {humanizeAction(log.action)}
                     </p>
-                    <p className="truncate text-xs text-slate-500">
-                      {log.actor?.name || "System"} · {log.entityType}
+                    <p className="mt-0.5 truncate text-sm text-slate-600">
+                      <span className="font-semibold text-slate-700">{log.actor?.name || "System"}</span> · {log.entityType}
                       {log.reason ? ` · ${log.reason}` : ""}
                     </p>
                   </div>
-                  <span className="shrink-0 font-mono text-xs text-slate-400 tabular-nums">
+                  <span className="shrink-0 font-mono text-xs sm:text-sm font-medium text-slate-500 tabular-nums">
                     {formatDateTime(log.createdAt)}
                   </span>
                 </div>

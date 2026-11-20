@@ -4,6 +4,7 @@ import { ArrowLeft, History } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import AuditLogViewer from "@/components/admin/AuditLogViewer";
+import AuditRetentionPanel from "@/components/admin/AuditRetentionPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -13,15 +14,26 @@ export default async function AdminAuditLogsPage() {
   if (!session?.user) redirect("/login?callbackUrl=%2Fadmin%2Faudit-logs");
   if (session.user.role !== "ADMIN") redirect("/account");
 
-  const logs = await db.auditLog.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      actor: {
-        select: { id: true, name: true, email: true },
+  // Load logs and retention policy in parallel
+  const [logs, rawPolicy] = await Promise.all([
+    db.auditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        actor: {
+          select: { id: true, name: true, email: true },
+        },
       },
-    },
-    take: 250,
-  });
+      take: 250,
+    }),
+    db.auditRetentionPolicy.upsert({
+      where: { id: "default" },
+      create: { id: "default", retentionDays: 90, enabled: true },
+      update: {},
+      include: {
+        updatedBy: { select: { id: true, name: true, email: true } },
+      },
+    }),
+  ]);
 
   const actorsMap = new Map<string, string>();
   const actionsSet = new Set<string>();
@@ -55,8 +67,19 @@ export default async function AdminAuditLogsPage() {
   const actionTypes = Array.from(actionsSet).sort();
   const entityTypes = Array.from(entitiesSet).sort();
 
+  // Serialize policy (Dates → ISO strings for the client component)
+  const policy = {
+    id: rawPolicy.id,
+    retentionDays: rawPolicy.retentionDays,
+    enabled: rawPolicy.enabled,
+    updatedAt: rawPolicy.updatedAt.toISOString(),
+    lastRunAt: rawPolicy.lastRunAt ? rawPolicy.lastRunAt.toISOString() : null,
+    lastRunCount: rawPolicy.lastRunCount,
+    updatedBy: rawPolicy.updatedBy,
+  };
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
       <Link
         href="/admin"
         className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-700"
@@ -64,7 +87,8 @@ export default async function AdminAuditLogsPage() {
         <ArrowLeft size={17} /> Dashboard
       </Link>
 
-      <div className="mt-6 flex items-center gap-4">
+      {/* Page heading */}
+      <div className="flex items-center gap-4">
         <div className="rounded-xl bg-blue-50 p-3 text-blue-700">
           <History size={26} />
         </div>
@@ -78,20 +102,22 @@ export default async function AdminAuditLogsPage() {
         </div>
       </div>
 
-      <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+      <p className="max-w-3xl text-sm leading-6 text-slate-600">
         A comprehensive, tamper-evident audit record of operational decisions,
         staff completions, supervisor reviews, status changes, and record
         deletions across the SAMB&apos;s operations platform.
       </p>
 
-      <div className="mt-7">
-        <AuditLogViewer
-          initialLogs={serializedLogs}
-          actors={actors}
-          actionTypes={actionTypes}
-          entityTypes={entityTypes}
-        />
-      </div>
+      {/* Retention policy panel — sits above the log viewer */}
+      <AuditRetentionPanel initialPolicy={policy} />
+
+      {/* Log viewer */}
+      <AuditLogViewer
+        initialLogs={serializedLogs}
+        actors={actors}
+        actionTypes={actionTypes}
+        entityTypes={entityTypes}
+      />
     </main>
   );
 }

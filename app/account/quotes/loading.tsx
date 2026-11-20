@@ -3,8 +3,8 @@ import Skeleton from "@/components/ui/Skeleton";
 export default function CustomerQuotesLoading() {
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:px-8 space-y-7">
-      {/* Account Quotes Header Skeleton */}
-      <header className="rounded-2xl bg-gradient-to-r from-blue-800 to-indigo-700 p-6 text-white sm:p-8 space-y-3">
+      {/* Account Quotes header — matches the real page's gradient banner */}
+      <header className="rounded-2xl bg-[#031c43] p-6 text-white sm:p-8 space-y-3">
         <Skeleton className="h-4 w-28 rounded" variant="glass" />
         <Skeleton className="h-8 w-60 rounded-xl" variant="glass" />
         <Skeleton className="h-4 w-full max-w-lg rounded" variant="glass" />
@@ -13,14 +13,15 @@ export default function CustomerQuotesLoading() {
         </div>
       </header>
 
-      {/* Quote Cards Skeleton */}
+      {/* Quote cards */}
       <div className="space-y-5">
         {[0, 1].map((i) => (
           <article
             key={i}
             className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
           >
-            <div className="flex flex-col gap-4 border-b border-slate-200 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
+            {/* Card header row */}
+            <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6">
               <div className="space-y-2">
                 <Skeleton className="h-3.5 w-32 rounded" />
                 <Skeleton className="h-6 w-56 rounded-md" />
@@ -33,16 +34,19 @@ export default function CustomerQuotesLoading() {
               </div>
             </div>
 
+            {/* Card body */}
             <div className="space-y-5 p-5 sm:p-6">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <Skeleton className="h-16 rounded-xl" />
                 <Skeleton className="h-16 rounded-xl" />
               </div>
 
-              {/* Table skeleton */}
-              <div className="overflow-hidden rounded-xl border border-slate-200 p-4 space-y-3">
-                <Skeleton className="h-5 w-36 rounded" />
-                <div className="space-y-2">
+              {/* Line items table */}
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-100">
+                  <Skeleton className="h-4 w-36 rounded" />
+                </div>
+                <div className="divide-y divide-slate-100 p-4 space-y-2">
                   <Skeleton className="h-8 w-full rounded" />
                   <Skeleton className="h-8 w-full rounded" />
                 </div>
@@ -51,7 +55,7 @@ export default function CustomerQuotesLoading() {
               {/* Action buttons */}
               <div className="flex justify-end gap-3 pt-2">
                 <Skeleton className="h-10 w-28 rounded-xl" />
-                <Skeleton className="h-10 w-36 rounded-xl bg-blue-900/30" />
+                <Skeleton className="h-10 w-36 rounded-xl" />
               </div>
             </div>
           </article>

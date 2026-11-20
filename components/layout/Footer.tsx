@@ -20,7 +20,7 @@ export default function Footer() {
                 className="object-cover"
               />
             </span>
-            <span className="font-bold tracking-tight">SAMB&apos;S LAUNDRY & KLININ SERVICES</span>
+            <span className="font-bold tracking-tight">SAMB&apos;s Laundry &amp; Klinin Services</span>
           </Link>
           <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">
             Professional cleaning solutions with expanding laundry services.

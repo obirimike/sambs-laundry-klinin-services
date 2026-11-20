@@ -4,9 +4,9 @@ import CareersApplicationForm from "@/components/careers/CareersApplicationForm"
 import { ArrowLeft, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "General Job Application | SAMB Careers",
+  title: "General Job Application | SAMB's Careers",
   description:
-    "Submit your resume to the SAMB Laundry & Klinin Services recruitment portal. We review general applications for emerging operations, customer service, and field positions.",
+    "Submit your resume to the SAMB's Laundry & Klinin Services recruitment portal. We review general applications for emerging operations, customer service, and field positions.",
 };
 
 export default function GeneralApplicationPage() {

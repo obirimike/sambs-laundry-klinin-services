@@ -1,6 +1,6 @@
-MASTER IMPLEMENTATION PROMPT: SAMB ADMIN DASHBOARD REDESIGN & STAFF-SUPERVISOR-ADMIN WORKFLOW
+MASTER IMPLEMENTATION PROMPT: SAMB's ADMIN DASHBOARD REDESIGN & STAFF-SUPERVISOR-ADMIN WORKFLOW
 
-Act as a senior full-stack software architect and experienced Next.js engineer. You are working on my existing SAMB Laundry & Klinin Services platform.
+Act as a senior full-stack software architect and experienced Next.js engineer. You are working on my existing SAMB's Laundry & Klinin Services platform.
 
 Your task is to professionally redesign the administration workspace and implement a complete multi-level staff assignment, supervision, review and approval workflow.
 
@@ -1032,7 +1032,7 @@ Do not claim an operation succeeded unless it has actually been verified.
 
 Treat this as a coordinated professional upgrade of an existing production-oriented business platform.
 
-The end result should make SAMB easier to operate as a growing laundry and cleaning business.
+The end result should make SAMB's easier to operate as a growing laundry and cleaning business.
 
 The administrator should have a clear operational control centre.
 

@@ -95,7 +95,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const { status, adminNotes, historyNote } = parsed.data;
     const statusChanged = status && status !== existing.status;
 
-    const updated = await db.$transaction(async (tx: any ) => {
+    const updated = await db.$transaction(async (tx ) => {
       if (statusChanged) {
         await tx.applicationStatusHistory.create({
           data: {

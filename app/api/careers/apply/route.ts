@@ -121,7 +121,7 @@ export async function POST(request: Request) {
     // Generate reference and persist application with status history
     const reference = generateApplicationReference();
 
-    const application = await db.$transaction(async (tx: any ) => {
+    const application = await db.$transaction(async (tx ) => {
       const created = await tx.jobApplication.create({
         data: {
           applicationReference: reference,

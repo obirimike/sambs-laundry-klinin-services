@@ -388,7 +388,7 @@ export default function AdminNavigation({
             />
           </span>
           <span className="truncate text-sm font-bold tracking-tight">
-            SAMB Admin
+            SAMB&apos;s Admin
           </span>
         </Link>
 
@@ -433,7 +433,7 @@ export default function AdminNavigation({
             <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4">
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-slate-900">
-                  SAMB&apos;S Admin
+                  SAMB&apos;s Admin
                 </p>
                 <p className="truncate text-xs text-slate-500">{adminName}</p>
               </div>
@@ -488,7 +488,7 @@ export default function AdminNavigation({
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold tracking-tight text-slate-900">
-                  SAMB&apos;S
+                  SAMB&apos;s
                 </span>
                 <span className="block truncate text-xs text-slate-500">
                   Operations Console

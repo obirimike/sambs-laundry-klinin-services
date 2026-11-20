@@ -31,7 +31,7 @@ export default async function ServicesPage() {
   ]);
 
   const statsByServiceId = new Map(
-    reviewStats.map((item: any) => [
+    reviewStats.map((item) => [
       item.serviceId,
       {
         averageRating: item._avg.rating,
@@ -40,13 +40,14 @@ export default async function ServicesPage() {
     ])
   );
 
-  const servicesWithRatings = services.map((service: any) => {
+  const servicesWithRatings = services.map((service) => {
     const stats = statsByServiceId.get(service.id);
 
     return {
       ...service,
-      averageRating: (stats as any)?.averageRating ?? null,
-      reviewCount: (stats as any)?.reviewCount ?? 0,
+     averageRating: (stats as { averageRating?: number | null })?.averageRating ?? null,
+     reviewCount: (stats as { reviewCount?: number | null })?.reviewCount ?? 0,
+
     };
   });
 

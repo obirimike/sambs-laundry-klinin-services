@@ -12,7 +12,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/samb_laundry_platform
       AUTH_SECRET: ci-only-secret-not-for-production
       NEXT_PUBLIC_APP_URL: http://localhost:3000
-      EMAIL_FROM: SAMB <onboarding@resend.dev>
+      EMAIL_FROM: SAMB's<onboarding@resend.dev>
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

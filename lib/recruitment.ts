@@ -117,7 +117,7 @@ export function formatApplicationStatus(status: string): {
         label: "Offer / Approved",
         badgeStyle: "bg-emerald-100 text-emerald-800 border-emerald-200",
         applicantExplanation:
-          "Your application has been successful! We are excited to welcome you to the SAMB team.",
+          "Your application has been successful! We are excited to welcome you to the SAMB's team.",
       };
     case "REJECTED":
       return {

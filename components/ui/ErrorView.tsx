@@ -84,7 +84,7 @@ export default function ErrorView({
           </span>
           <div className="text-left">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-900">
-              SAMB&apos;S
+              SAMB&apos;s
             </p>
             <p className="text-[10px] font-medium text-slate-500">
               Laundry &amp; Cleaning Services

@@ -55,22 +55,22 @@ A full-stack service-management platform built for **SAMB's Laundry and Klinin S
 
 ## Tech Stack
 
-| Layer | Technology |
-| --- | --- |
-| Framework | [Next.js 16](https://nextjs.org/) (App Router, React 19) |
-| Language | TypeScript 5 |
-| Styling | Tailwind CSS 4 (with Turbopack) |
-| Database | PostgreSQL 16 |
-| ORM | Prisma 7 (`@prisma/adapter-pg` driver adapter) |
-| Authentication | NextAuth v5 (Credentials provider, JWT sessions) |
-| Email | [Resend](https://resend.com/) (transactional email) |
-| Rate Limiting | [Upstash Redis](https://upstash.com/) (`@upstash/ratelimit`) |
-| Validation | Zod 4 |
-| Icons | Lucide React |
-| Error Tracking | Sentry |
-| E2E Testing | Playwright |
-| CI/CD | GitHub Actions |
-| Containerisation | Docker Compose (PostgreSQL) |
+| Layer            | Technology                                                   |
+| ---------------- | ------------------------------------------------------------ |
+| Framework        | [Next.js 16](https://nextjs.org/) (App Router, React 19)     |
+| Language         | TypeScript 5                                                 |
+| Styling          | Tailwind CSS 4 (with Turbopack)                              |
+| Database         | PostgreSQL 16                                                |
+| ORM              | Prisma 7 (`@prisma/adapter-pg` driver adapter)               |
+| Authentication   | NextAuth v5 (Credentials provider, JWT sessions)             |
+| Email            | [Resend](https://resend.com/) (transactional email)          |
+| Rate Limiting    | [Upstash Redis](https://upstash.com/) (`@upstash/ratelimit`) |
+| Validation       | Zod 4                                                        |
+| Icons            | Lucide React                                                 |
+| Error Tracking   | Sentry                                                       |
+| E2E Testing      | Playwright                                                   |
+| CI/CD            | GitHub Actions                                               |
+| Containerisation | Docker Compose (PostgreSQL)                                  |
 
 ## Project Structure
 
@@ -117,8 +117,8 @@ samb-laundry-platform/
 
 - **Node.js** ≥ 22 and **npm**
 - **PostgreSQL 16** — run locally or use the included Docker Compose file
-- *(Optional)* [Resend](https://resend.com/) account for email delivery
-- *(Optional)* [Upstash Redis](https://upstash.com/) for rate limiting
+- _(Optional)_ [Resend](https://resend.com/) account for email delivery
+- _(Optional)_ [Upstash Redis](https://upstash.com/) for rate limiting
 
 ### 1. Clone & install
 
@@ -166,28 +166,28 @@ The application is served at **http://localhost:3000**.
 
 Copy `.env.example` and set each value. **Never commit `.env` or production secrets.**
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string (e.g. `postgresql://user:pass@localhost:5432/samb`) |
-| `AUTH_SECRET` | Yes | Secret for NextAuth JWT signing — generate a strong unique value per environment |
-| `NEXT_PUBLIC_APP_URL` | Production | Public base URL (e.g. `https://samb.example.com`) — used in email links; defaults to `http://localhost:3000` in development |
-| `RESEND_API_KEY` | For email | Resend API key — without it, the app functions but emails are not delivered |
-| `EMAIL_FROM` | Recommended | Verified sender identity for Resend (e.g. `SAMB <noreply@samb.example.com>`) |
-| `UPSTASH_REDIS_REST_URL` | For rate limiting | Upstash Redis REST endpoint � required in production; skipped in dev if unset |
-| `UPSTASH_REDIS_REST_TOKEN` | For rate limiting | Upstash Redis REST token |
+| Variable                   | Required          | Description                                                                                                                 |
+| -------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`             | Yes               | PostgreSQL connection string (e.g. `postgresql://user:pass@localhost:5432/samb`)                                            |
+| `AUTH_SECRET`              | Yes               | Secret for NextAuth JWT signing — generate a strong unique value per environment                                            |
+| `NEXT_PUBLIC_APP_URL`      | Production        | Public base URL (e.g. `https://samb.example.com`) — used in email links; defaults to `http://localhost:3000` in development |
+| `RESEND_API_KEY`           | For email         | Resend API key — without it, the app functions but emails are not delivered                                                 |
+| `EMAIL_FROM`               | Recommended       | Verified sender identity for Resend (e.g. `SAMB's<noreply@samb.example.com>`)                                               |
+| `UPSTASH_REDIS_REST_URL`   | For rate limiting | Upstash Redis REST endpoint � required in production; skipped in dev if unset                                               |
+| `UPSTASH_REDIS_REST_TOKEN` | For rate limiting | Upstash Redis REST token                                                                                                    |
 
 ## Available Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start Next.js development server with Turbopack |
-| `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run db:generate` | Generate Prisma Client |
-| `npm run db:migrate` | Apply database migrations (`prisma migrate deploy`) |
-| `npm run db:seed` | Seed the database with services |
-| `npm run test:e2e` | Run Playwright end-to-end tests |
+| Command               | Description                                         |
+| --------------------- | --------------------------------------------------- |
+| `npm run dev`         | Start Next.js development server with Turbopack     |
+| `npm run build`       | Production build                                    |
+| `npm run start`       | Start production server                             |
+| `npm run lint`        | Run ESLint                                          |
+| `npm run db:generate` | Generate Prisma Client                              |
+| `npm run db:migrate`  | Apply database migrations (`prisma migrate deploy`) |
+| `npm run db:seed`     | Seed the database with services                     |
+| `npm run test:e2e`    | Run Playwright end-to-end tests                     |
 
 ## Database
 
@@ -219,23 +219,23 @@ Authentication uses **NextAuth v5** (beta) with a **Credentials provider** (emai
 
 ### Default roles
 
-| Role | Access |
-| --- | --- |
+| Role       | Access                                                         |
+| ---------- | -------------------------------------------------------------- |
 | `CUSTOMER` | Public pages, `/account/*`, booking/review/quote response APIs |
-| `ADMIN` | Everything above + `/admin/*` and all admin API routes |
-| `STAFF` | `/staff/*` and assigned work |
+| `ADMIN`    | Everything above + `/admin/*` and all admin API routes         |
+| `STAFF`    | `/staff/*` and assigned work                                   |
 
 ## Documentation
 
 Detailed documentation is maintained in the `docs/` directory:
 
-| Document | Description |
-| --- | --- |
-| [Requirements & Product](docs/requirements-product.md) | Feature specifications, functional requirements, user workflows, API contracts, and acceptance criteria |
-| [Architecture & Design](docs/architecture-design.md) | System architecture, request flows, data model design, persistence strategy, and integration boundaries |
-| [Development & Code](docs/development-code.md) | Technology stack, local setup, code map, implementation conventions, and change checklists |
-| [Testing & Quality](docs/testing-quality.md) | Automated checks, E2E test coverage, manual verification checklists, and quality guidelines |
-| [Operations & Deployment](docs/operations-deployment-user-guides.md) | Environment configuration, deployment procedure, admin/customer user guides, and troubleshooting |
+| Document                                                             | Description                                                                                             |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Requirements & Product](docs/requirements-product.md)               | Feature specifications, functional requirements, user workflows, API contracts, and acceptance criteria |
+| [Architecture & Design](docs/architecture-design.md)                 | System architecture, request flows, data model design, persistence strategy, and integration boundaries |
+| [Development & Code](docs/development-code.md)                       | Technology stack, local setup, code map, implementation conventions, and change checklists              |
+| [Testing & Quality](docs/testing-quality.md)                         | Automated checks, E2E test coverage, manual verification checklists, and quality guidelines             |
+| [Operations & Deployment](docs/operations-deployment-user-guides.md) | Environment configuration, deployment procedure, admin/customer user guides, and troubleshooting        |
 
 ## Quality Checks
 

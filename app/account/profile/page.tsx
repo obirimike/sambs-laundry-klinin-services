@@ -57,7 +57,7 @@ export default async function ProfilePage() {
             Profile settings
           </h1>
           <p className="mt-2 text-slate-600">
-            Manage the personal information associated with your SAMB account.
+            Manage the personal information associated with your SAMB&apos;s account.
           </p>
         </div>
 

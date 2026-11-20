@@ -146,7 +146,7 @@ export async function POST(request: Request, context: RouteContext) {
 
     const { id } = await context.params;
 
-    const result = await db.$transaction(async (tx: any ) => {
+    const result = await db.$transaction(async (tx) => {
       const source = await tx.quote.findUnique({
         where: { id },
         include: {
@@ -236,7 +236,7 @@ export async function POST(request: Request, context: RouteContext) {
           data: {
             userId: source.booking.customerId,
             title: "Quote updated",
-            message: `Quote ${source.quoteNumber} has been withdrawn while SAMB prepares a revised quotation.`,
+            message: `Quote ${source.quoteNumber} has been withdrawn while SAMB's prepares a revised quotation.`,
             type: "QUOTE_REVISED",
           },
         });

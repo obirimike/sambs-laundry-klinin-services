@@ -19,6 +19,7 @@ import {
   Calendar,
   PhoneCall,
   MessageSquare,
+  Users,
   WashingMachine,
   Home,
   Bug,
@@ -66,6 +67,23 @@ export default async function AccountPage() {
           select: {
             name: true,
             category: true,
+          },
+        },
+        supervisor: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignments: {
+          where: { isActive: true },
+          include: {
+            staff: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
           },
         },
       },
@@ -544,6 +562,23 @@ export default async function AccountPage() {
                             {booking.address}
                           </span>
                         </div>
+
+                        {((booking.supervisor || (booking.assignments && booking.assignments.length > 0)) && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {booking.supervisor && (
+                              <span className="inline-flex items-center gap-1 rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                                <ShieldCheck size={11} />
+                                Lead: {booking.supervisor.name}
+                              </span>
+                            )}
+                            {booking.assignments?.length > 0 && (
+                              <span className="inline-flex items-center gap-1 rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                                <Users size={11} />
+                                {booking.assignments.length} staff
+                              </span>
+                            )}
+                          </div>
+                        ))}
                       </div>
                     </div>
 

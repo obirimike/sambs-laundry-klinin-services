@@ -354,7 +354,7 @@ export default function StaffWorkspaceClient({
             </span>
             <div className="min-w-0">
               <p className="truncate text-sm font-bold text-slate-900">
-                SAMB&apos;S Field Staff
+                SAMB&apos;s Field Staff
               </p>
               <p className="truncate text-xs text-slate-500">{staffName}</p>
             </div>

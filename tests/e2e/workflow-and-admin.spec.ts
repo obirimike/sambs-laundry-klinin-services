@@ -43,7 +43,7 @@ async function dismissFeedbackModalIfOpen(page: Page) {
   }
 }
 
-test.describe.serial("SAMB Admin Redesign & Multi-Level Staff-Supervisor-Admin Workflow", () => {
+test.describe.serial("SAMB's Admin Redesign & Multi-Level Staff-Supervisor-Admin Workflow", () => {
   test.setTimeout(60_000);
   let uploadedEvidenceHref = "";
 

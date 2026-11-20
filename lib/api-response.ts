@@ -86,7 +86,7 @@ export const HttpErrors = {
   ) => apiError(500, "INTERNAL_SERVER_ERROR", message, extra),
 
   serviceUnavailable: (
-    message = "SAMB is temporarily unable to process your request. Please try again shortly.",
+    message = "SAMB's is temporarily unable to process your request. Please try again shortly.",
     extra?: Record<string, unknown>
   ) => apiError(503, "SERVICE_UNAVAILABLE", message, extra),
 };

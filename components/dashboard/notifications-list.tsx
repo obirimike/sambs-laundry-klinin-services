@@ -9,7 +9,6 @@ import {
   Calendar,
   AlertCircle,
   FileText,
-  Sparkles,
   Inbox,
   Clock,
   ArrowRight,

@@ -143,7 +143,7 @@ export function buildBookingWhatsAppMessage({
     "Please contact us if you have any questions.",
     "",
     "Thank you,",
-    "SAMB Laundry & Cleaning SERVICES.",
+    "SAMB's Laundry & Cleaning SERVICES.",
   ].join("\n");
 }
 
@@ -221,7 +221,7 @@ export function buildQuoteWhatsAppMessage({
         "",
         "This is SAMB's LAUNDRY & KLININ SERVICES.",
         "",
-        `Your service quotation ${quoteNumber}${bookingRef} has expired. If you would like an updated quote, please log in to your SAMB account or contact us:`,
+        `Your service quotation ${quoteNumber}${bookingRef} has expired. If you would like an updated quote, please log in to your SAMB's account or contact us:`,
         quotePageUrl,
         "",
         "Thank you,",
@@ -249,7 +249,7 @@ export function buildQuoteWhatsAppMessage({
         "",
         `We have an update regarding your service quotation ${quoteNumber}${bookingRef}.`,
         "",
-        "Please log in to your SAMB account to review the quotation and respond:",
+        "Please log in to your SAMB's account to review the quotation and respond:",
         quotePageUrl,
         "",
         "Thank you,",

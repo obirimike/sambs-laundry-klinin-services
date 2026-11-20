@@ -45,7 +45,7 @@ export default async function AdminReviewsPage() {
     },
   });
 
-  const initialReviews = reviews.map((review: any) => ({
+  const initialReviews = reviews.map((review) => ({
     id: review.id,
     rating: review.rating,
     comment: review.comment,

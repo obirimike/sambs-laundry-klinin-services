@@ -12,10 +12,7 @@ import {
   LoaderCircle,
   Lock,
   PhoneCall,
-  Calendar,
-  Clock,
   X,
-  CheckCircle2,
 } from "lucide-react";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import FeedbackModal, { FeedbackVariant } from "@/components/ui/FeedbackModal";

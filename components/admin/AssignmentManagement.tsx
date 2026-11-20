@@ -491,7 +491,7 @@ export default function AssignmentManagement({
 
                 <div className="grid grid-cols-1 gap-6 p-5 lg:grid-cols-12">
                   {/* Left: Customer + Supervisor Assignment */}
-                  <div className="space-y-5 lg:col-span-5">
+                  <div className="min-w-0 space-y-5 lg:col-span-5">
                     <div className="space-y-1.5">
                       <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
                         Customer &amp; Site
@@ -530,7 +530,7 @@ export default function AssignmentManagement({
                         sign-off.
                       </p>
 
-                      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <div className="mt-3 space-y-2">
                         <select
                           value={currentSupervisorValue}
                           onChange={(e) =>
@@ -541,7 +541,7 @@ export default function AssignmentManagement({
                           }
                           disabled={busyKey !== null}
                           aria-label={`Lead supervisor for ${booking.bookingNumber}`}
-                          className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                          className="w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                         >
                           <option value="">Unassigned (no supervisor)</option>
                           {supervisors.map((sup) => (
@@ -555,7 +555,7 @@ export default function AssignmentManagement({
                           type="button"
                           disabled={busyKey !== null || !supervisorChanged}
                           onClick={() => updateSupervisor(booking)}
-                          className="rounded-lg bg-indigo-700 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap"
+                          className="w-full rounded-lg bg-indigo-700 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-indigo-800 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {busyKey === `sup-${booking.id}`
                             ? "Saving..."
@@ -568,7 +568,7 @@ export default function AssignmentManagement({
                   </div>
 
                   {/* Right: Multi-staff Assignment Form */}
-                  <div className="lg:col-span-7">
+                  <div className="min-w-0 lg:col-span-7">
                     <div className="flex items-center justify-between">
                       <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
                         <Users size={16} className="text-blue-700" />

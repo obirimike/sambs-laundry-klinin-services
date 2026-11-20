@@ -96,7 +96,7 @@ export default function ResetPasswordForm({
         </h1>
 
         <p className="mt-2 text-sm text-gray-600">
-          Choose a new password for your SAMB account.
+          Choose a new password for your SAMB&apos;s account.
         </p>
       </div>
 

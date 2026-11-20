@@ -2,17 +2,17 @@
 
 ## Scope
 
-This document describes the functional requirements, user workflows, and API contracts for the SAMB platform. It covers all major features: service catalogue, booking management, quoting, staff assignments, customer reviews, notifications, and contact messaging.
+This document describes the functional requirements, user workflows, and API contracts for the SAMB's platform. It covers all major features: service catalogue, booking management, quoting, staff assignments, customer reviews, notifications, and contact messaging.
 
 ---
 
 ## Users and Roles
 
-| Role | Description |
-| --- | --- |
-| **Customer** | Browses services, submits booking requests, receives and responds to quotes, writes reviews for completed bookings, manages their account profile and notifications. |
+| Role              | Description                                                                                                                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Customer**      | Browses services, submits booking requests, receives and responds to quotes, writes reviews for completed bookings, manages their account profile and notifications.                                 |
 | **Administrator** | Manages all bookings, creates and sends itemised quotes with revision history, assigns staff to bookings, moderates customer reviews, manages services and staff accounts, handles contact messages. |
-| **Staff** | Views assigned bookings and work schedule. |
+| **Staff**         | Views assigned bookings and work schedule.                                                                                                                                                           |
 
 ---
 
@@ -136,14 +136,14 @@ Requires authenticated administrator session. No request body.
 
 **Error responses:**
 
-| HTTP Status | Condition |
-| --- | --- |
-| `401` | No authenticated session |
-| `403` | User is not an administrator |
-| `404` | Quote not found |
-| `409` | Quote status is not `DRAFT` or `SENT`, or concurrent update conflict |
-| `400` | Quote has expired (marked `EXPIRED`) |
-| `500` | Unexpected server error |
+| HTTP Status | Condition                                                            |
+| ----------- | -------------------------------------------------------------------- |
+| `401`       | No authenticated session                                             |
+| `403`       | User is not an administrator                                         |
+| `404`       | Quote not found                                                      |
+| `409`       | Quote status is not `DRAFT` or `SENT`, or concurrent update conflict |
+| `400`       | Quote has expired (marked `EXPIRED`)                                 |
+| `500`       | Unexpected server error                                              |
 
 > **Note:** Email provider failure is not an HTTP error — the endpoint returns `200` with `emailSent: false`.
 
@@ -155,11 +155,11 @@ POST /api/admin/quotes/{id}/revise
 
 Requires authenticated administrator and a JSON body with 1–50 itemised lines, optional terms, and optional expiry. Returns `201` with the new linked draft revision.
 
-| HTTP Status | Condition |
-| --- | --- |
-| `400` | Invalid input |
-| `404` | Source quote not found |
-| `409` | Unsupported source state, cancelled booking, duplicate revision, or concurrent change |
+| HTTP Status | Condition                                                                             |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `400`       | Invalid input                                                                         |
+| `404`       | Source quote not found                                                                |
+| `409`       | Unsupported source state, cancelled booking, duplicate revision, or concurrent change |
 
 ### Quote Response (Customer)
 

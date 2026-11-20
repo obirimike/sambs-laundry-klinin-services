@@ -113,7 +113,7 @@ export default function RegisterPage() {
             </span>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">
-                SAMB&apos;S
+                SAMB&apos;s
               </p>
               <p className="text-xs font-medium text-blue-200">
                 Laundry &amp; Klinin Services

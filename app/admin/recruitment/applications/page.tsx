@@ -47,7 +47,7 @@ export default async function AdminApplicationsPage() {
     }),
   ]);
 
-  const serializedApps = applications.map((app: any) => ({
+  const serializedApps = applications.map((app) => ({
     ...app,
     createdAt: app.createdAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),

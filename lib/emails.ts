@@ -469,7 +469,7 @@ export async function sendQuoteResponseEmail({
     const { data, error } = await emailConfig.resend.emails.send({
       from: emailConfig.fromAddress,
       to: [to],
-      subject: "Reset your SAMB account password",
+      subject: "Reset your SAMB's account password",
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#172033;line-height:1.6">
           <div style="background:#123b73;padding:24px;border-radius:12px 12px 0 0">
@@ -485,7 +485,7 @@ export async function sendQuoteResponseEmail({
 
             <p>
               We received a request to reset the password associated with
-              your SAMB account.
+              your SAMB's account.
             </p>
 
             <p>
@@ -519,7 +519,7 @@ export async function sendQuoteResponseEmail({
       text: [
         `Hello ${customerName || "Customer"},`,
         "",
-        "We received a request to reset your SAMB account password.",
+        "We received a request to reset your SAMB's account password.",
         "",
         "Use this link to choose a new password:",
         resetUrl,
@@ -528,7 +528,7 @@ export async function sendQuoteResponseEmail({
         "",
         "If you did not request this, you can ignore this email.",
         "",
-        "SAMB's Laundry and Klinin Services",
+        "SAMB's dry and Klinin Services",
       ].join("\n"),
     });
 
@@ -594,7 +594,7 @@ export async function sendApplicationConfirmationEmail({
             <p>Our recruitment team is reviewing your application. You can track your application status at any time using your reference code and email address on our Careers portal.</p>
             <p style="font-size:13px;color:#64748b;margin-top:30px">
               Best regards,<br />
-              <strong>SAMB Recruitment Team</strong>
+              <strong>SAMB's Recruitment Team</strong>
             </p>
           </div>
         </div>
@@ -610,7 +610,7 @@ export async function sendApplicationConfirmationEmail({
         "",
         "You can track your application status on our website with your reference number.",
         "",
-        "SAMB Recruitment Team",
+        "SAMB's Recruitment Team",
       ].join("\n"),
     });
 

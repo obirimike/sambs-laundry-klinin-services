@@ -58,7 +58,7 @@ async function updateStatus(
   const message =
     role === "CUSTOMER"
       ? status === "SUSPENDED"
-        ? "This customer's access to SAMB has been suspended."
+        ? "This customer's access to SAMB's has been suspended."
         : "This customer can sign in and book again."
       : status === "SUSPENDED"
         ? "This team account has been suspended."

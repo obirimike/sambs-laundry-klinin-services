@@ -128,7 +128,7 @@ export default async function AdminCustomersPage({
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {customers.map((customer: any) => (
+            {customers.map((customer) => (
               <Link
                 key={customer.id}
                 href={`/admin/customers/${customer.id}`}

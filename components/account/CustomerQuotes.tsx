@@ -231,7 +231,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
         variant: "success",
         title: isAccepted ? "Quote Accepted" : "Quote Declined",
         message: isAccepted
-          ? "Your quote response has been recorded successfully. SAMB will follow up regarding your booking confirmation."
+          ? "Your quote response has been recorded successfully. SAMB's will follow up regarding your booking confirmation."
           : "Your decision has been recorded. Our team will review your response.",
         referenceNumber: quote.quoteNumber,
       });
@@ -344,7 +344,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
             No quotations yet
           </h2>
           <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-            When SAMB sends a quotation for one of your bookings, it will appear here.
+            When SAMB&apos;s sends a quotation for one of your bookings, it will appear here.
           </p>
         </div>
       ) : (
@@ -503,7 +503,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                             htmlFor={`note-${quote.id}`}
                             className="mb-2 block text-sm font-semibold text-slate-700"
                           >
-                            Message to SAMB{" "}
+                            Message to SAMB&apos;s{" "}
                             <span className="font-normal text-slate-400">
                               (optional)
                             </span>
@@ -571,7 +571,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                   {status === "EXPIRED" && (
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-amber-50 p-4">
                       <p className="text-sm text-amber-800">
-                        This quote has expired. Please contact SAMB if you need a revised quotation.
+                        This quote has expired. Please contact SAMB&apos;s if you need a revised quotation.
                       </p>
                       <button
                         type="button"
@@ -587,7 +587,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
                   {status === "ACCEPTED" && (
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl bg-emerald-50 p-4">
                       <p className="text-sm text-emerald-800">
-                        You accepted this quote on {dateLabel(quote.respondedAt)}. SAMB will follow up regarding booking confirmation.
+                        You accepted this quote on {dateLabel(quote.respondedAt)}. SAMB&apos;s will follow up regarding booking confirmation.
                       </p>
                       <button
                         type="button"
@@ -652,7 +652,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
           description={
             confirmTarget.decision === "ACCEPT"
               ? `You are accepting quotation ${confirmTarget.quote.quoteNumber} for booking ${confirmTarget.quote.booking.bookingNumber} (${money(confirmTarget.quote.amount, confirmTarget.quote.currency)}).`
-              : `You are declining quotation ${confirmTarget.quote.quoteNumber}. You can include feedback for the SAMB team in the message field.`
+              : `You are declining quotation ${confirmTarget.quote.quoteNumber}. You can include feedback for the SAMB's team in the message field.`
           }
           recordName={confirmTarget.quote.quoteNumber}
           confirmText={
@@ -672,7 +672,7 @@ export default function CustomerQuotes({ initialQuotes }: Props) {
           title="Remove this quotation?"
           description={`Are you sure you want to remove quote ${deleteTarget.quoteNumber} (${money(deleteTarget.amount, deleteTarget.currency)}) for booking ${deleteTarget.booking.bookingNumber}? This quotation will be cleared from your account.`}
           recordName={deleteTarget.quoteNumber}
-          consequences="This action will delete the quotation from your account. If you need a new estimate later, you can contact SAMB support or request a new booking."
+          consequences="This action will delete the quotation from your account. If you need a new estimate later, you can contact SAMB's support or request a new booking."
           confirmText="Yes, Remove Quote"
           cancelText="Keep Quote"
           isDestructive={true}

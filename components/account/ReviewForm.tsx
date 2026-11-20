@@ -112,7 +112,7 @@ export default function ReviewForm({
           maxLength={2000}
           value={comment}
           onChange={(event) => setComment(event.target.value)}
-          placeholder="Tell us about your experience with SAMB..."
+          placeholder="Tell us about your experience with SAMB's..."
           className="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm text-slate-600 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
         />
 

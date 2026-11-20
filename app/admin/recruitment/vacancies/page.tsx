@@ -20,7 +20,7 @@ export default async function AdminVacanciesPage() {
     },
   });
 
-  const serialized = vacancies.map((v: any) => ({
+  const serialized = vacancies.map((v) => ({
     ...v,
     deadline: v.deadline ? v.deadline.toISOString() : null,
     createdAt: v.createdAt.toISOString(),

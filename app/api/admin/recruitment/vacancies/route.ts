@@ -113,7 +113,7 @@ export async function POST(request: Request) {
 
     const publishedAt = data.status === "PUBLISHED" ? new Date() : null;
 
-    const vacancy = await db.$transaction(async (tx: any ) => {
+    const vacancy = await db.$transaction(async (tx ) => {
       const created = await tx.vacancy.create({
         data: {
           title: data.title,

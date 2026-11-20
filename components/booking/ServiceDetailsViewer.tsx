@@ -6,7 +6,7 @@ import {
   DomesticSupportDetails,
   PestControlDetails,
 } from "@/lib/booking-types";
-import { WashingMachine, Sparkles, Home, Bug, Layers } from "lucide-react";
+import { WashingMachine, Sparkles, Home, Bug } from "lucide-react";
 
 interface ServiceDetailsViewerProps {
   category: ServiceCategory;

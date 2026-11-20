@@ -124,7 +124,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       const now = new Date();
       const reason = parsed.data.reason?.trim();
 
-      const updated = await db.$transaction(async (tx: any) => {
+      const updated = await db.$transaction(async (tx) => {
         const b = await tx.booking.update({
           where: { id },
           data: {
@@ -237,7 +237,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
       const trimmedReason = reason?.trim();
 
-      const updated = await db.$transaction(async (tx: any) => {
+      const updated = await db.$transaction(async (tx) => {
         const b = await tx.booking.update({
           where: { id },
           data: {
@@ -378,7 +378,7 @@ export async function DELETE(request: Request, context: RouteContext) {
     // 1. Before work starts: PENDING, CONFIRMED
     // 2. When completed: COMPLETED
     // 3. When already cancelled: CANCELLED
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx) => {
       await writeAudit(tx, {
         actorId: session.user.id,
         action: "CUSTOMER_DELETED_BOOKING",

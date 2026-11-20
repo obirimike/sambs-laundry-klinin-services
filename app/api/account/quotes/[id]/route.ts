@@ -65,7 +65,7 @@ export async function DELETE(
       );
     }
 
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx) => {
       await writeAudit(tx, {
         actorId: session.user.id,
         action: "CUSTOMER_CLEARED_QUOTE",

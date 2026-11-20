@@ -35,13 +35,13 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
 
   if (!vacancy) {
     return {
-      title: "Position Not Found | SAMB Careers",
+      title: "Position Not Found | SAMB's Careers",
     };
   }
 
   return {
-    title: `${vacancy.title} (${vacancy.department}) | SAMB Careers`,
-    description: `${vacancy.title} in ${vacancy.location} at SAMB Laundry & Klinin Services. ${vacancy.description.slice(0, 150)}...`,
+    title: `${vacancy.title} (${vacancy.department}) | SAMB's Careers`,
+    description: `${vacancy.title} in ${vacancy.location} at SAMB's Laundry & Klinin Services. ${vacancy.description.slice(0, 150)}...`,
   };
 }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   BadgeDollarSign,
@@ -285,7 +286,7 @@ export default function AdminNavigation({
                 aria-expanded={isOpen}
                 aria-controls={`admin-nav-group-${group.id}`}
                 onClick={() => toggleGroup(group.id)}
-                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-[11px] font-semibold tracking-wide text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-blue-600"
+                className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-blue-600"
               >
                 <span className="truncate">{group.label}</span>
                 {isOpen ? (
@@ -312,7 +313,7 @@ export default function AdminNavigation({
                         title={collapsedMode ? item.label : undefined}
                         aria-label={collapsedMode ? item.label : undefined}
                         aria-current={active ? "page" : undefined}
-                        className={`group relative flex items-center rounded-lg px-2.5 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
+                        className={`group relative flex items-center rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-blue-600 ${
                           collapsedMode
                             ? "justify-center"
                             : "justify-between gap-2.5"
@@ -377,8 +378,14 @@ export default function AdminNavigation({
           href="/admin"
           className="flex min-w-0 items-center gap-2.5 text-slate-900"
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#031c43] text-xs font-bold text-white">
-            S
+          <span className="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-slate-200/80 bg-white shadow-2xs">
+            <Image
+              src="/images/logo/samb-logo.jpeg"
+              alt="SAMB's Logo"
+              fill
+              sizes="32px"
+              className="object-cover"
+            />
           </span>
           <span className="truncate text-sm font-bold tracking-tight">
             SAMB Admin
@@ -461,14 +468,23 @@ export default function AdminNavigation({
         }`}
       >
         <div
-          className={`flex h-16 shrink-0 items-center border-b border-slate-200 ${
-            isCollapsed ? "justify-center px-2" : "justify-between px-4"
+          className={`flex shrink-0 items-center border-b border-slate-200 ${
+            isCollapsed
+              ? "h-auto flex-col justify-center gap-3 px-2 py-3"
+              : "h-16 justify-between px-4"
           }`}
         >
-          {!isCollapsed && (
+          {!isCollapsed ? (
             <Link href="/admin" className="flex min-w-0 items-center gap-2.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#031c43] text-sm font-bold text-white">
-                S
+              <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs">
+                <Image
+                  src="/images/logo/samb-logo.jpeg"
+                  alt="SAMB's Logo"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                  priority
+                />
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold tracking-tight text-slate-900">
@@ -477,6 +493,24 @@ export default function AdminNavigation({
                 <span className="block truncate text-xs text-slate-500">
                   Operations Console
                 </span>
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/admin"
+              className="flex items-center justify-center"
+              title="SAMB's Operations Console"
+              aria-label="SAMB's Operations Console"
+            >
+              <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs">
+                <Image
+                  src="/images/logo/samb-logo.jpeg"
+                  alt="SAMB's Logo"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                  priority
+                />
               </span>
             </Link>
           )}

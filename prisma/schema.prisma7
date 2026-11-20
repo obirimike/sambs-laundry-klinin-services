@@ -147,6 +147,7 @@ model User {
   auditLogs                AuditLog[]
   vacanciesCreated         Vacancy[]                  @relation("VacanciesCreated")
   applicationStatusChanges ApplicationStatusHistory[] @relation("AdminStatusChanges")
+  retentionPolicyUpdates   AuditRetentionPolicy[]     @relation("RetentionPolicyUpdates")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -429,6 +430,20 @@ model AuditLog {
   @@index([entityType, entityId])
   @@index([action, createdAt])
   @@index([createdAt])
+}
+
+/// Singleton row (id = "default") that holds the active retention policy.
+model AuditRetentionPolicy {
+  id              String    @id @default("default")
+  retentionDays   Int       @default(90)   // logs older than this are removed
+  enabled         Boolean   @default(true)
+  updatedById     String?
+  updatedBy       User?     @relation("RetentionPolicyUpdates", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedAt       DateTime  @updatedAt
+  lastRunAt       DateTime?
+  lastRunCount    Int?      // how many rows were purged on the last run
+
+  @@index([updatedAt])
 }
 
 model Vacancy {

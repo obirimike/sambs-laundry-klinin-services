@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
@@ -224,8 +225,14 @@ export default function SupervisorNavigation({
           href="/supervisor"
           className="flex min-w-0 items-center gap-2.5 text-slate-900"
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#031c43] text-xs font-bold text-white">
-            S
+          <span className="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-slate-200/80 bg-white shadow-2xs">
+            <Image
+              src="/images/logo/samb-logo.jpeg"
+              alt="SAMB's Logo"
+              fill
+              sizes="32px"
+              className="object-cover"
+            />
           </span>
           <span className="truncate text-sm font-bold tracking-tight">
             SAMB Supervisor
@@ -317,17 +324,26 @@ export default function SupervisorNavigation({
         }`}
       >
         <div
-          className={`flex h-16 shrink-0 items-center border-b border-slate-200 ${
-            isCollapsed ? "justify-center px-2" : "justify-between px-4"
+          className={`flex shrink-0 items-center border-b border-slate-200 ${
+            isCollapsed
+              ? "h-auto flex-col justify-center gap-3 px-2 py-3"
+              : "h-16 justify-between px-4"
           }`}
         >
-          {!isCollapsed && (
+          {!isCollapsed ? (
             <Link
               href="/supervisor"
               className="flex min-w-0 items-center gap-2.5"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#031c43] text-sm font-bold text-white">
-                S
+              <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs">
+                <Image
+                  src="/images/logo/samb-logo.jpeg"
+                  alt="SAMB's Logo"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                  priority
+                />
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold tracking-tight text-slate-900">
@@ -336,6 +352,24 @@ export default function SupervisorNavigation({
                 <span className="block truncate text-xs text-slate-500">
                   Supervisor Portal
                 </span>
+              </span>
+            </Link>
+          ) : (
+            <Link
+              href="/supervisor"
+              className="flex items-center justify-center"
+              title="SAMB's Supervisor Portal"
+              aria-label="SAMB's Supervisor Portal"
+            >
+              <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs">
+                <Image
+                  src="/images/logo/samb-logo.jpeg"
+                  alt="SAMB's Logo"
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                  priority
+                />
               </span>
             </Link>
           )}

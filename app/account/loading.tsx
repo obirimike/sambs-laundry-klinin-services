@@ -3,7 +3,7 @@ import Skeleton from "@/components/ui/Skeleton";
 export default function AccountLoading() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-8">
-      {/* Header skeleton */}
+      {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <Skeleton className="h-8 w-48 rounded-lg" />
@@ -12,12 +12,12 @@ export default function AccountLoading() {
         <Skeleton className="h-10 w-36 rounded-xl" />
       </div>
 
-      {/* Stats cards skeleton */}
+      {/* Stats cards */}
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-2xl border border-slate-200 bg-gray-500 p-5 shadow-sm"
+            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
           >
             <div className="flex items-center justify-between">
               <Skeleton className="h-4 w-24 rounded" />
@@ -28,8 +28,8 @@ export default function AccountLoading() {
         ))}
       </div>
 
-      {/* Recent bookings card skeleton */}
-      <div className="rounded-3xl border border-slate-200 bg-gray-500 p-6 shadow-sm sm:p-8">
+      {/* Recent bookings card */}
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="flex items-center justify-between border-b border-slate-100 pb-5">
           <Skeleton className="h-6 w-44 rounded-md" />
           <Skeleton className="h-4 w-20 rounded" />
@@ -38,7 +38,7 @@ export default function AccountLoading() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="flex items-center justify-between rounded-2xl border border-slate-100 p-4"
+              className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/60 p-4"
             >
               <div className="space-y-2">
                 <Skeleton className="h-5 w-40 rounded" />

@@ -43,7 +43,7 @@ export default function ServiceCardSkeleton() {
         {/* Action Buttons matching Details + Book dual buttons */}
         <div className="mt-6 flex items-center gap-2 pt-2">
           <Skeleton className="h-9 flex-1 rounded-xl" />
-          <Skeleton className="h-9 flex-1 rounded-xl bg-slate-300" />
+          <Skeleton className="h-9 flex-1 rounded-xl" />
         </div>
       </div>
     </div>

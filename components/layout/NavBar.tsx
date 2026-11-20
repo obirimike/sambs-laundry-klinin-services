@@ -43,7 +43,7 @@ export default async function NavBar() {
         <Link
           href="/"
           className="flex min-w-0 items-center gap-3"
-          aria-label="SAMB&apos;s Laundry and Klinin Services homepage"
+          aria-label="SAMB's Laundry and Klinin Services homepage"
         >
           <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-full border border-blue-200 bg-blue-900 shadow-sm">
             <Image
@@ -58,7 +58,7 @@ export default async function NavBar() {
 
           <span className="min-w-0">
             <span className="block text-base font-extrabold tracking-tight text-slate-900">
-              SAMB&apos;S
+              SAMB&apos;s
             </span>
             <span className="block text-[11px] font-medium text-slate-500 sm:text-xs">
               Laundry &amp; Klinin Services

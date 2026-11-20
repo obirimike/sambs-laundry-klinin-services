@@ -1,4 +1,4 @@
-import { unknown, z } from "zod";
+import { z } from "zod";
 import { assertAdmin } from "@/lib/admin-guard";
 import { apiError, apiSuccess } from "@/lib/api-response";
 import { writeAudit } from "@/lib/audit";
@@ -66,7 +66,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       return apiError(404, "CUSTOMER_NOT_FOUND", "Customer not found.");
     }
 
-    const customer = await db.$transaction(async (tx: any) => {
+    const customer = await db.$transaction(async (tx) => {
       const updated = await tx.user.update({
         where: { id },
         data: {
@@ -146,7 +146,7 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "CUSTOMER_DELETED",

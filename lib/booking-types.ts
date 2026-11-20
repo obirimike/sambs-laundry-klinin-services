@@ -1,4 +1,4 @@
-import { ServiceCategory } from "@/types/service";
+
 
 export type LaundryDetails = {
   laundryServiceType?: "wash_and_fold" | "wash_and_iron" | "ironing_only" | "dry_cleaning" | "other";

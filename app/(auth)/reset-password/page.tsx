@@ -3,7 +3,7 @@ import ResetPasswordForm from "@/components/auth/ResetPasswordForm";
 
 export const metadata = {
   title: "Reset Password | SAMB's Laundry & Klining Services",
-  description: "Securely reset your SAMB account password.",
+  description: "Securely reset your SAMB's account password.",
 };
 
 type ResetPasswordPageProps = {
@@ -25,7 +25,7 @@ export default async function ResetPasswordPage({
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-sm sm:p-8">
         <div className="mb-8 text-center">
           <p className="text-xl font-bold tracking-wide text-gray-900">
-            SAMB&apos;S
+            SAMB&apos;s
           </p>
 
           <p className="mt-1 text-xs text-gray-500">

@@ -2,7 +2,7 @@
 
 ## System Overview
 
-SAMB is a monolithic Next.js 16 application using the App Router pattern. It serves server-rendered pages, client-interactive components, and REST API endpoints from a single deployment. All data is persisted in PostgreSQL via Prisma ORM, authentication is handled by NextAuth v5, and transactional email is delivered through Resend.
+SAMB&apos;s is a monolithic Next.js 16 application using the App Router pattern. It serves server-rendered pages, client-interactive components, and REST API endpoints from a single deployment. All data is persisted in PostgreSQL via Prisma ORM, authentication is handled by NextAuth v5, and transactional email is delivered through Resend.
 
 ```text
 ┌─────────────────────────────────────────────────────┐
@@ -35,13 +35,13 @@ SAMB is a monolithic Next.js 16 application using the App Router pattern. It ser
 
 The application uses Next.js route groups for layout segmentation:
 
-| Group | Path Prefix | Layout | Purpose |
-| --- | --- | --- | --- |
-| `(auth)` | `/login`, `/register` | Minimal | Authentication pages |
-| `(public)` | `/services`, `/book`, `/contact`, `/about`, `/how-it-works` | NavBar + Footer | Public-facing pages |
-| `account` | `/account/*` | Customer layout | Authenticated customer area |
-| `admin` | `/admin/*` | AdminNavigation sidebar | Admin dashboard |
-| `staff` | `/staff/*` | Staff layout | Staff portal |
+| Group      | Path Prefix                                                 | Layout                  | Purpose                     |
+| ---------- | ----------------------------------------------------------- | ----------------------- | --------------------------- |
+| `(auth)`   | `/login`, `/register`                                       | Minimal                 | Authentication pages        |
+| `(public)` | `/services`, `/book`, `/contact`, `/about`, `/how-it-works` | NavBar + Footer         | Public-facing pages         |
+| `account`  | `/account/*`                                                | Customer layout         | Authenticated customer area |
+| `admin`    | `/admin/*`                                                  | AdminNavigation sidebar | Admin dashboard             |
+| `staff`    | `/staff/*`                                                  | Staff layout            | Staff portal                |
 
 ### API Layer (21 Endpoints)
 
@@ -112,12 +112,12 @@ User (CUSTOMER/ADMIN/STAFF)
 - **Customer routes** validate the session and check resource ownership (e.g. a customer can only view their own bookings).
 - **Rate limiting** is enforced via Upstash Redis with four policies:
 
-| Policy | Limit | Window | Applied To |
-| --- | --- | --- | --- |
-| `auth` | 10 requests | 10 min | Login endpoint |
-| `registration` | 5 requests | 10 min | Registration endpoint |
-| `contact` | 3 requests | 10 min | Contact form |
-| `booking` | 10 requests | 10 min | Booking creation |
+| Policy         | Limit       | Window | Applied To            |
+| -------------- | ----------- | ------ | --------------------- |
+| `auth`         | 10 requests | 10 min | Login endpoint        |
+| `registration` | 5 requests  | 10 min | Registration endpoint |
+| `contact`      | 3 requests  | 10 min | Contact form          |
+| `booking`      | 10 requests | 10 min | Booking creation      |
 
 In development, rate limiting is skipped if Upstash Redis variables are unset. In production (NODE_ENV === "production"), missing Redis variables throw an explicit configuration error to prevent rate limiting from silently failing open.
 
@@ -144,12 +144,12 @@ Email delivery (via Resend) occurs **after** database transactions commit. This 
 
 ## External Service Integration
 
-| Service | Purpose | Configuration | Failure Mode |
-| --- | --- | --- | --- |
-| **PostgreSQL** | Primary data store | `DATABASE_URL` | Application cannot start |
-| **Resend** | Transactional email | `RESEND_API_KEY`, `EMAIL_FROM` | `emailSent: false` — app continues without email |
-| **Upstash Redis** | Rate limiting | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Rate limiting disabled — app continues unthrottled |
-| **Unsplash** | Service card images | `next.config.ts` remote patterns | Fallback to local SVG placeholders |
+| Service           | Purpose             | Configuration                                        | Failure Mode                                       |
+| ----------------- | ------------------- | ---------------------------------------------------- | -------------------------------------------------- |
+| **PostgreSQL**    | Primary data store  | `DATABASE_URL`                                       | Application cannot start                           |
+| **Resend**        | Transactional email | `RESEND_API_KEY`, `EMAIL_FROM`                       | `emailSent: false` — app continues without email   |
+| **Upstash Redis** | Rate limiting       | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Rate limiting disabled — app continues unthrottled |
+| **Unsplash**      | Service card images | `next.config.ts` remote patterns                     | Fallback to local SVG placeholders                 |
 
 ## Design Decisions & Caveats
 

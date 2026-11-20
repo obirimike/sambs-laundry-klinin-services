@@ -66,7 +66,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const { reason, imageUrl, ...fields } = parsed.data;
 
-    const service = await db.$transaction(async (tx: any ) => {
+    const service = await db.$transaction(async (tx ) => {
       const updated = await tx.service.update({
         where: { id },
         data: {
@@ -175,7 +175,7 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    await db.$transaction(async (tx: any ) => {
+    await db.$transaction(async (tx ) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "SERVICE_DELETED",

@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { suspendedAccountResponse } from "@/lib/account-access";
 import { limitRequest, rateLimitHeaders } from "@/lib/rate-limit";
+import { Prisma } from "@prisma/client";
 
 const bookingSchema = z
   .object({
@@ -165,7 +166,7 @@ export async function POST(request: Request) {
         numberOfRooms: input.numberOfRooms ?? null,
         estimatedSize: input.estimatedSize || null,
         specialInstructions: input.specialInstructions || null,
-        serviceDetails: (input.serviceDetails as any) ?? undefined,
+        serviceDetails: (input.serviceDetails as Prisma.JsonObject) ?? undefined,
         status: "PENDING",
       },
       select: {

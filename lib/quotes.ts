@@ -37,7 +37,7 @@ export async function expireSentQuotes(): Promise<number> {
     let expiredInBatch = 0;
 
     for (const quote of candidates) {
-      const changed = await db.$transaction(async (tx: any ) => {
+      const changed = await db.$transaction(async (tx ) => {
         // Conditional update prevents duplicate expiry notifications
         // if two requests try to expire the same quote concurrently.
         const result = await tx.quote.updateMany({
@@ -61,7 +61,7 @@ export async function expireSentQuotes(): Promise<number> {
           {
             userId: quote.booking.customerId,
             title: "Quote expired",
-            message: `Quote ${quote.quoteNumber} for booking ${quote.booking.bookingNumber} has expired. Contact SAMB if you need an updated quote.`,
+            message: `Quote ${quote.quoteNumber} for booking ${quote.booking.bookingNumber} has expired. Contact SAMB's if you need an updated quote.`,
             type: "QUOTE_EXPIRED",
           },
           {

@@ -101,7 +101,7 @@ export async function PATCH(request: Request, context: RouteContext) {
       closedAt = new Date();
     }
 
-    const updated = await db.$transaction(async (tx: any ) => {
+    const updated = await db.$transaction(async (tx ) => {
       const v = await tx.vacancy.update({
         where: { id },
         data: {
@@ -196,7 +196,7 @@ export async function DELETE(request: Request, context: RouteContext) {
       );
     }
 
-    await db.$transaction(async (tx: any ) => {
+    await db.$transaction(async (tx ) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "VACANCY_DELETED",

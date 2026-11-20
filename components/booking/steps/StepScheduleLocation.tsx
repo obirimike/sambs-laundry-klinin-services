@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Calendar, Clock, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
+import { Calendar, MapPin, ArrowLeft, ArrowRight } from "lucide-react";
 
 interface StepScheduleLocationProps {
   preferredDate: string;

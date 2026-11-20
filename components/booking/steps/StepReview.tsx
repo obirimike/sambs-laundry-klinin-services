@@ -8,7 +8,7 @@ import {
   DomesticSupportDetails,
   PestControlDetails,
 } from "@/lib/booking-types";
-import { Calendar, Clock, MapPin, LoaderCircle, Send, CheckCircle2, ArrowLeft } from "lucide-react";
+import { Calendar, MapPin, LoaderCircle, Send, ArrowLeft } from "lucide-react";
 
 interface StepReviewProps {
   selectedService: ServiceOption;

@@ -9,6 +9,20 @@ interface DomesticSupportQuestionsProps {
   onChange: (updates: Partial<DomesticSupportDetails>) => void;
 }
 
+const FREQUENCIES = [
+  { id: "one_off", label: "One-Off Assistance", desc: "Single day or event helper" },
+  { id: "daily", label: "Daily (Mon – Fri)", desc: "Consistent weekday domestic support" },
+  { id: "weekly_recurring", label: "Part-Time (2–3 days/wk)", desc: "Selected days each week" },
+  { id: "live_in", label: "Live-In Housekeeper", desc: "Permanent residing assistant" },
+] as const;
+
+const SCHEDULES = [
+  { id: "morning", label: "Morning Shift (8:00 AM – 12:00 PM)" },
+  { id: "afternoon", label: "Afternoon Shift (12:00 PM – 4:00 PM)" },
+  { id: "full_day", label: "Full Day Shift (8:00 AM – 5:00 PM)" },
+  { id: "flexible", label: "Flexible / Custom Hours" },
+] as const;
+
 export default function DomesticSupportQuestions({
   serviceName,
   data,
@@ -20,29 +34,11 @@ export default function DomesticSupportQuestions({
       const lower = serviceName.toLowerCase();
       if (lower.includes("cook") || lower.includes("meal")) {
         onChange({ supportType: "meal_prep_cooking" });
-      } else if (lower.includes("laundry") || lower.includes("clothing")) {
-        onChange({ supportType: "general_housekeeping" });
-      } else if (lower.includes("helper") || lower.includes("housekeeping")) {
-        onChange({ supportType: "general_housekeeping" });
       } else {
         onChange({ supportType: "general_housekeeping" });
       }
     }
   }, [serviceName, data.supportType, onChange]);
-
-  const frequencies = [
-    { id: "one_off", label: "One-Off Assistance", desc: "Single day or event helper" },
-    { id: "daily", label: "Daily (Mon – Fri)", desc: "Consistent weekday domestic support" },
-    { id: "weekly_recurring", label: "Part-Time (2–3 days/wk)", desc: "Selected days each week" },
-    { id: "live_in", label: "Live-In Housekeeper", desc: "Permanent residing assistant" },
-  ];
-
-  const schedules = [
-    { id: "morning", label: "Morning Shift (8:00 AM – 12:00 PM)" },
-    { id: "afternoon", label: "Afternoon Shift (12:00 PM – 4:00 PM)" },
-    { id: "full_day", label: "Full Day Shift (8:00 AM – 5:00 PM)" },
-    { id: "flexible", label: "Flexible / Custom Hours" },
-  ];
 
   return (
     <div className="space-y-6">
@@ -54,11 +50,16 @@ export default function DomesticSupportQuestions({
           </label>
           <select
             value={data.frequency || ""}
-            onChange={(e) => onChange({ frequency: e.target.value as any })}
+            onChange={(e) =>
+              onChange({
+                frequency: (e.target.value ||
+                  undefined) as DomesticSupportDetails["frequency"],
+              })
+            }
             className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
           >
             <option value="">Select frequency</option>
-            {frequencies.map((f) => (
+            {FREQUENCIES.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.label} — {f.desc}
               </option>
@@ -72,11 +73,16 @@ export default function DomesticSupportQuestions({
           </label>
           <select
             value={data.schedulePreference || ""}
-            onChange={(e) => onChange({ schedulePreference: e.target.value as any })}
+            onChange={(e) =>
+              onChange({
+                schedulePreference: (e.target.value ||
+                  undefined) as DomesticSupportDetails["schedulePreference"],
+              })
+            }
             className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
           >
             <option value="">Select shift schedule</option>
-            {schedules.map((s) => (
+            {SCHEDULES.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
               </option>
@@ -88,7 +94,8 @@ export default function DomesticSupportQuestions({
       {/* 2. Estimated hours needed */}
       <div>
         <label className="block text-xs font-black uppercase tracking-wider text-slate-800">
-          Estimated Hours per Visit / Session <span className="text-xs font-normal text-slate-500">(Optional)</span>
+          Estimated Hours per Visit / Session{" "}
+          <span className="text-xs font-normal text-slate-500">(Optional)</span>
         </label>
         <input
           type="number"
@@ -108,10 +115,12 @@ export default function DomesticSupportQuestions({
       {/* 3. Specific household requirements */}
       <div>
         <label className="block text-xs font-black uppercase tracking-wider text-slate-800">
-          Specific Household Requirements &amp; Routines <span className="text-xs font-normal text-slate-500">(Optional)</span>
+          Specific Household Requirements &amp; Routines{" "}
+          <span className="text-xs font-normal text-slate-500">(Optional)</span>
         </label>
         <p className="mt-0.5 text-xs text-slate-500">
-          Note any dietary preferences, children or pets in the home, special laundry care, or compound duties.
+          Note any dietary preferences, children or pets in the home, special
+          laundry care, or compound duties.
         </p>
         <textarea
           rows={4}

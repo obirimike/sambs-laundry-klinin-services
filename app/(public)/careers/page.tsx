@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Careers & Opportunities | SAMB Laundry & Klinin Services",
+  title: "Careers & Opportunities | SAMB's Laundry & Klinin Services",
   description:
     "Join our dedicated team at SAMB's Laundry & Klinin Services. Discover open vacancies and career pathways across cleaning operations, logistics, and management.",
 };

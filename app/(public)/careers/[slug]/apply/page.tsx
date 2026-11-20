@@ -20,13 +20,13 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
 
   if (!vacancy) {
     return {
-      title: "Apply | SAMB Careers",
+      title: "Apply | SAMB's Careers",
     };
   }
 
   return {
-    title: `Apply: ${vacancy.title} | SAMB Careers`,
-    description: `Submit your job application for ${vacancy.title} at SAMB Laundry & Klinin Services.`,
+    title: `Apply: ${vacancy.title} | SAMB's Careers`,
+    description: `Submit your job application for ${vacancy.title} at SAMB's Laundry & Klinin Services.`,
   };
 }
 

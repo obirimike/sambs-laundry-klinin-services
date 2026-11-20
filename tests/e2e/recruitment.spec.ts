@@ -18,7 +18,7 @@ test.describe("Recruitment & Careers Portal", () => {
   test("general application page displays form controls and validation", async ({ page }) => {
     await page.goto("/careers/apply");
     await expect(
-      page.getByRole("heading", { name: "Join the SAMB&apos;s Team" })
+      page.getByRole("heading", { name: "Join the SAMB's Team" })
     ).toBeVisible();
 
     // Check key form elements

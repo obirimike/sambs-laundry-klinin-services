@@ -208,7 +208,7 @@ async function main() {
     });
   }
 
-  console.log(`Successfully seeded ${services.length} SAMB services.`);
+  console.log(`Successfully seeded ${services.length} SAMB's services.`);
 }
 
 main()

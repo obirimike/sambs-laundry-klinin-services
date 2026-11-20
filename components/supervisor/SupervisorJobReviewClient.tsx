@@ -496,7 +496,7 @@ export default function SupervisorJobReviewClient({
           onClose={() => setShowApproveModal(false)}
           onConfirm={() => submitDecision("APPROVE")}
           title="Approve work for Administrator Final Sign-Off?"
-          description={`Confirm that all work for ${booking.bookingNumber} meets SAMB quality standards. Administrators will be notified to issue final approval and notify the customer.`}
+          description={`Confirm that all work for ${booking.bookingNumber} meets SAMB's quality standards. Administrators will be notified to issue final approval and notify the customer.`}
           recordName={booking.bookingNumber}
           confirmText="Approve & Escalate"
           isLoading={busy}

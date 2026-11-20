@@ -9,7 +9,7 @@ export default function ForbiddenPage() {
       <ErrorView
         statusCode="403"
         title="Access Denied"
-        message="You don't have permission to access this page or perform this action. If you believe this is an error, please contact SAMB administration."
+        message="You don't have permission to access this page or perform this action. If you believe this is an error, please contact SAMB's administration."
         primaryAction={{
           label: "Return to dashboard",
           href: "/account",

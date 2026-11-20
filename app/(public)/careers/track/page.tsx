@@ -5,7 +5,7 @@ import ApplicationTracker from "@/components/careers/ApplicationTracker";
 import { ArrowLeft, Search } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Track Application Status | SAMB Careers",
+  title: "Track Application Status | SAMB's Careers",
   description:
     "Check the status of your submitted job application with SAMB's Laundry & Klinin Services using your reference number and email.",
 };

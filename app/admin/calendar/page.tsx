@@ -42,7 +42,7 @@ export default async function AdminCalendarPage() {
     orderBy: [{ preferredDate: "asc" }, { preferredTime: "asc" }],
   });
 
-  const bookings = records.map((booking: any) => ({
+  const bookings = records.map((booking) => ({
     ...booking,
     preferredDate: booking.preferredDate.toISOString(),
   }));

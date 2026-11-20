@@ -135,7 +135,7 @@ export default function CustomerManager({
         title: "Customer Account Suspended",
         message:
           data.message ||
-          "This customer's access to SAMB has been suspended. They will no longer be able to log in or submit bookings.",
+          "This customer's access to SAMB's has been suspended. They will no longer be able to log in or submit bookings.",
       });
 
       router.refresh();

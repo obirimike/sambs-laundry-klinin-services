@@ -39,7 +39,7 @@ export default async function AdminAuditLogsPage() {
   const actionsSet = new Set<string>();
   const entitiesSet = new Set<string>();
 
-  const serializedLogs = logs.map((log: any) => {
+  const serializedLogs = logs.map((log) => {
     actorsMap.set(log.actor.id, log.actor.name);
     actionsSet.add(log.action);
     entitiesSet.add(log.entityType);

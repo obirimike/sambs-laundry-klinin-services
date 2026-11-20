@@ -235,7 +235,7 @@ export default function SupervisorNavigation({
             />
           </span>
           <span className="truncate text-sm font-bold tracking-tight">
-            SAMB Supervisor
+            SAMB&apos;s Supervisor
           </span>
         </Link>
 
@@ -276,7 +276,7 @@ export default function SupervisorNavigation({
             <div className="flex h-14 items-center justify-between border-b border-slate-200 px-4">
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-slate-900">
-                  SAMB&apos;S Supervisor
+                  SAMB&apos;s Supervisor
                 </p>
                 <p className="truncate text-xs text-slate-500">
                   {supervisorName}
@@ -347,7 +347,7 @@ export default function SupervisorNavigation({
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold tracking-tight text-slate-900">
-                  SAMB&apos;S
+                  SAMB&apos;s
                 </span>
                 <span className="block truncate text-xs text-slate-500">
                   Supervisor Portal

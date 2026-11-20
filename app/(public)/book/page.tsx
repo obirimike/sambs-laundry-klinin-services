@@ -81,7 +81,7 @@ export default async function BookingPage({
   ]);
 
   const selectedService = query.service
-    ? services.find((service: any) => service.slug === query.service || service.id === query.service)
+    ? services.find((service) => service.slug === query.service || service.id === query.service)
     : undefined;
 
   const repeatData: RepeatBookingData | undefined = repeatBooking

@@ -167,7 +167,7 @@ export default function StepServiceSelect({
       <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs font-medium text-slate-600">
         <ShieldCheck size={20} className="shrink-0 text-emerald-700" />
         <span>
-          All SAMB services are covered by our customer satisfaction guarantee, verified staff, and transparent upfront pricing.
+          All SAMB&apos;s services are covered by our customer satisfaction guarantee, verified staff, and transparent upfront pricing.
         </span>
       </div>
 

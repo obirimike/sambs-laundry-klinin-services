@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const input = parsed.data;
     const status = input.status ?? "ACTIVE";
 
-    const service = await db.$transaction(async (tx: any ) => {
+    const service = await db.$transaction(async (tx ) => {
       const created = await tx.service.create({
         data: {
           name: input.name,

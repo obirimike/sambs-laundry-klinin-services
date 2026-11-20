@@ -78,7 +78,7 @@ function LoginFormContent() {
               <Image src="/images/logo/samb-logo.jpeg" alt="SAMB's Logo" fill sizes="48px" className="object-cover" />
             </span>
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">SAMB&apos;S</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-blue-100">SAMB&apos;s</p>
               <p className="text-xs font-medium text-blue-200">Laundry &amp; Klinin Services</p>
             </div>
           </div>

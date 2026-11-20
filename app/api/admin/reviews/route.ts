@@ -45,7 +45,7 @@ export async function PATCH(request: Request) {
       return apiError(404, "REVIEW_NOT_FOUND", "Review not found.");
     }
 
-    const review = await db.$transaction(async (tx: any ) => {
+    const review = await db.$transaction(async (tx ) => {
       const updated = await tx.review.update({
         where: { id: reviewId },
         data: {
@@ -113,7 +113,7 @@ export async function DELETE(request: Request) {
       return apiError(404, "REVIEW_NOT_FOUND", "Review not found.");
     }
 
-    await db.$transaction(async (tx: any ) => {
+    await db.$transaction(async (tx ) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "REVIEW_DELETED",

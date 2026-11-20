@@ -727,7 +727,7 @@ The message of `RUNTIME.PREPARE_BIND_ON_ADHOC` changed; its code did not. Code t
 
 ### `transaction-query-members`
 
-Inside `db.transaction(async (tx: any ) => …)`, `tx` now has the client's query members with the same types: `sql`, `orm` (with the client's custom collection classes), `raw`, `prepare`, `query`, `execute` and `toSql`. This holds for `postgres()`, every serverless connection, `sqlite()` and every Supabase role-bound client. A Supabase role-bound client gains `prepare`, and SQLite's `db.orm` gains `fragment`. A prepared statement runs on whatever it is given, so `ps.query(tx, params)` runs inside the transaction; `tx.prepare` lets code inside a transaction prepare without the outer client.
+Inside `db.transaction(async (tx ) => …)`, `tx` now has the client's query members with the same types: `sql`, `orm` (with the client's custom collection classes), `raw`, `prepare`, `query`, `execute` and `toSql`. This holds for `postgres()`, every serverless connection, `sqlite()` and every Supabase role-bound client. A Supabase role-bound client gains `prepare`, and SQLite's `db.orm` gains `fragment`. A prepared statement runs on whatever it is given, so `ps.query(tx, params)` runs inside the transaction; `tx.prepare` lets code inside a transaction prepare without the outer client.
 
 ### Test doubles of client types
 

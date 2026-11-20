@@ -6,7 +6,7 @@
 
 # Test info
 
-- Name: workflow-and-admin.spec.ts >> SAMB Admin Redesign & Multi-Level Staff-Supervisor-Admin Workflow >> 4 & 5. Admin assigns 1 worker first (badge hidden), then adds multiple workers + supervisor & blocks duplicates
+- Name: workflow-and-admin.spec.ts >> SAMB's Admin Redesign & Multi-Level Staff-Supervisor-Admin Workflow >> 4 & 5. Admin assigns 1 worker first (badge hidden), then adds multiple workers + supervisor & blocks duplicates
 - Location: tests/e2e/workflow-and-admin.spec.ts:150:3
 
 # Error details
@@ -19,380 +19,380 @@ Test timeout of 30000ms exceeded.
 
 ```yaml
 - generic [active] [ref=f5e1]:
-  - generic [ref=f5e2]:
-    - complementary [ref=f5e3]:
-      - generic [ref=f5e4]:
-        - link "S SAMB'S Operations Console" [ref=f5e5] [cursor=pointer]:
-          - /url: /admin
-          - generic [ref=f5e6]: S
-          - generic [ref=f5e7]:
-            - generic [ref=f5e8]: SAMB'S
-            - generic [ref=f5e9]: Operations Console
-        - button "Collapse sidebar" [ref=f5e10]
-      - navigation "Admin navigation" [ref=f5e14]:
-        - generic [ref=f5e15]:
-          - generic [ref=f5e16]:
-            - button "Overview" [expanded] [ref=f5e17]
-            - list [ref=f5e21]:
-              - listitem [ref=f5e22]:
-                - link "Dashboard" [ref=f5e23] [cursor=pointer]:
-                  - /url: /admin
-          - generic [ref=f5e31]:
-            - button "Operations" [expanded] [ref=f5e32]
-            - list [ref=f5e36]:
-              - listitem [ref=f5e37]:
-                - link "Bookings 1" [ref=f5e38] [cursor=pointer]:
-                  - /url: /admin/bookings
-                  - generic [ref=f5e39]: Bookings
-                  - generic [ref=f5e44]: "1"
-              - listitem [ref=f5e45]:
-                - link "Final Approvals 1" [ref=f5e46] [cursor=pointer]:
-                  - /url: /admin/approvals
-                  - generic [ref=f5e47]: Final Approvals
-                  - generic [ref=f5e52]: "1"
-              - listitem [ref=f5e53]:
-                - link "Assignments" [ref=f5e54] [cursor=pointer]:
-                  - /url: /admin/assignments
-              - listitem [ref=f5e60]:
-                - link "Booking Calendar" [ref=f5e61] [cursor=pointer]:
-                  - /url: /admin/calendar
-              - listitem [ref=f5e66]:
-                - link "Quotes & Pricing" [ref=f5e67] [cursor=pointer]:
-                  - /url: /admin/quotes
-          - generic [ref=f5e73]:
-            - button "People" [expanded] [ref=f5e74]
-            - list [ref=f5e78]:
-              - listitem [ref=f5e79]:
-                - link "Staff & Supervisors" [ref=f5e80] [cursor=pointer]:
-                  - /url: /admin/staff
-              - listitem [ref=f5e87]:
-                - link "Customers" [ref=f5e88] [cursor=pointer]:
-                  - /url: /admin/customers
-              - listitem [ref=f5e96]:
-                - link "Recruitment" [ref=f5e97] [cursor=pointer]:
-                  - /url: /admin/recruitment
-          - button "Business Management" [ref=f5e104]
-          - button "Communications" [ref=f5e109]
-          - button "System" [ref=f5e114]
-          - button "Account" [ref=f5e119]
-      - generic [ref=f5e123]:
-        - generic [ref=f5e124]:
-          - paragraph [ref=f5e125]: Samuel Mensah
-          - paragraph [ref=f5e126]: Administrator
-        - button "Sign out" [ref=f5e127]
-    - main [ref=f5e129]:
-      - generic [ref=f5e130]:
-        - generic [ref=f5e131]:
-          - generic [ref=f5e132]:
-            - paragraph [ref=f5e133]: Team Dispatch & Supervision
-            - heading "Staff & Supervisor Assignments" [level=1] [ref=f5e134]
-            - paragraph [ref=f5e135]: Assign one or multiple field staff members and a lead supervisor to confirmed work, track individual progress, and swap workers as needed.
-          - link "Manage Staff & Supervisors" [ref=f5e136] [cursor=pointer]:
-            - /url: /admin/staff
-        - generic [ref=f5e137]:
-          - generic [ref=f5e138]:
-            - generic [ref=f5e139]:
-              - generic [ref=f5e140]:
-                - generic [ref=f5e141]:
-                  - heading "SAMB-2026-1005" [level=2] [ref=f5e142]
-                  - generic [ref=f5e143]: In Progress
-                  - generic [ref=f5e144]: Awaiting Admin Final Approval
-                - paragraph [ref=f5e145]: Residential and Office Pest Control · PEST CONTROL
-                - paragraph [ref=f5e146]: 18 Nov 2026 at 10:00 AM
-              - link "Open booking detail" [ref=f5e147] [cursor=pointer]:
-                - /url: /admin/bookings/30000000-0000-4000-8000-000000000005
-            - generic [ref=f5e148]:
-              - generic [ref=f5e149]:
-                - generic [ref=f5e150]:
-                  - heading "Customer & Site" [level=3] [ref=f5e151]
-                  - paragraph [ref=f5e152]: Abena Darko
-                  - paragraph [ref=f5e153]: customer@sambservices.com · +233244555666
-                  - paragraph [ref=f5e154]: "Address: 19 Osu Oxford Street, Accra"
-                  - paragraph [ref=f5e155]: "Instructions: Eco-safe treatment around pantry."
-                - generic [ref=f5e156]:
-                  - heading "Lead Supervisor" [level=3] [ref=f5e162]
-                  - paragraph [ref=f5e163]: Inspects staff completion reports before admin final sign-off.
-                  - generic [ref=f5e164]:
-                    - combobox "Lead supervisor for SAMB-2026-1005" [ref=f5e165]:
-                      - option "Unassigned (no supervisor)"
-                      - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
-                      - option "Nana Addo (supervisor2@sambservices.com)"
-                    - button "Update Supervisor" [disabled] [ref=f5e166]
-              - generic [ref=f5e167]:
-                - generic [ref=f5e168]:
-                  - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e169]
-                  - generic [ref=f5e175]: 0 selected
-                - generic [ref=f5e176]:
-                  - generic [ref=f5e177]:
-                    - generic [ref=f5e178]:
-                      - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e179]
-                      - generic [ref=f5e180]:
-                        - generic [ref=f5e181]: Ama Mensah
-                        - generic [ref=f5e182]: Already assigned
-                    - generic [ref=f5e183] [cursor=pointer]:
-                      - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e184]
-                      - generic [ref=f5e185]:
-                        - generic [ref=f5e186]: Esi Appiah
-                        - generic [ref=f5e187]: staff3@sambservices.com
-                    - generic [ref=f5e188] [cursor=pointer]:
-                      - checkbox "Kojo Owusu staff2@sambservices.com" [ref=f5e189]
-                      - generic [ref=f5e190]:
-                        - generic [ref=f5e191]: Kojo Owusu
-                        - generic [ref=f5e192]: staff2@sambservices.com
-                  - textbox "Team instructions / assignment notes (optional)" [ref=f5e193]
-                  - button "Assign Selected Staff (0)" [disabled] [ref=f5e194]
-            - generic [ref=f5e195]:
-              - generic [ref=f5e196]:
-                - heading "Active assigned staff" [level=3] [ref=f5e197]
-                - generic [ref=f5e198]: 1 active
-              - generic [ref=f5e200]:
-                - generic [ref=f5e201]:
-                  - generic [ref=f5e202]:
-                    - paragraph [ref=f5e203]: Ama Mensah
-                    - generic [ref=f5e204]: Supervisor Approved
-                  - paragraph [ref=f5e205]: staff1@sambservices.com
-                  - paragraph [ref=f5e206]: Full commercial perimeter pest treatment.
-                  - paragraph [ref=f5e207]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
-                - generic [ref=f5e208]:
-                  - button "Replace" [ref=f5e209]
-                  - button "Unassign" [ref=f5e215]
-          - generic [ref=f5e216]:
-            - generic [ref=f5e217]:
-              - generic [ref=f5e218]:
-                - generic [ref=f5e219]:
-                  - heading "SAMB-2026-1004" [level=2] [ref=f5e220]
-                  - generic [ref=f5e221]: In Progress
-                  - generic [ref=f5e222]: Awaiting Supervisor Review
-                - paragraph [ref=f5e223]: Post-Construction Cleaning · CLEANING
-                - paragraph [ref=f5e224]: 19 Nov 2026 at 02:00 PM
-              - link "Open booking detail" [ref=f5e225] [cursor=pointer]:
-                - /url: /admin/bookings/30000000-0000-4000-8000-000000000004
-            - generic [ref=f5e226]:
-              - generic [ref=f5e227]:
-                - generic [ref=f5e228]:
-                  - heading "Customer & Site" [level=3] [ref=f5e229]
-                  - paragraph [ref=f5e230]: Abena Darko
-                  - paragraph [ref=f5e231]: customer@sambservices.com · +233244555666
-                  - paragraph [ref=f5e232]: "Address: 42 East Legon Boundary Rd, Accra"
-                  - paragraph [ref=f5e233]: "Instructions: Post-renovation dust removal on glass."
-                - generic [ref=f5e234]:
-                  - heading "Lead Supervisor" [level=3] [ref=f5e240]
-                  - paragraph [ref=f5e241]: Inspects staff completion reports before admin final sign-off.
-                  - generic [ref=f5e242]:
-                    - combobox "Lead supervisor for SAMB-2026-1004" [ref=f5e243]:
-                      - option "Unassigned (no supervisor)"
-                      - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
-                      - option "Nana Addo (supervisor2@sambservices.com)"
-                    - button "Update Supervisor" [disabled] [ref=f5e244]
-              - generic [ref=f5e245]:
-                - generic [ref=f5e246]:
-                  - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e247]
-                  - generic [ref=f5e253]: 0 selected
-                - generic [ref=f5e254]:
-                  - generic [ref=f5e255]:
-                    - generic [ref=f5e256]:
-                      - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e257]
-                      - generic [ref=f5e258]:
-                        - generic [ref=f5e259]: Ama Mensah
-                        - generic [ref=f5e260]: Already assigned
-                    - generic [ref=f5e261] [cursor=pointer]:
-                      - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e262]
-                      - generic [ref=f5e263]:
-                        - generic [ref=f5e264]: Esi Appiah
-                        - generic [ref=f5e265]: staff3@sambservices.com
-                    - generic [ref=f5e266]:
-                      - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e267]
-                      - generic [ref=f5e268]:
-                        - generic [ref=f5e269]: Kojo Owusu
-                        - generic [ref=f5e270]: Already assigned
-                  - textbox "Team instructions / assignment notes (optional)" [ref=f5e271]
-                  - button "Assign Selected Staff (0)" [disabled] [ref=f5e272]
-            - generic [ref=f5e273]:
-              - generic [ref=f5e274]:
-                - heading "Active assigned staff" [level=3] [ref=f5e275]
-                - generic [ref=f5e276]: 2 active
-              - generic [ref=f5e277]:
-                - generic [ref=f5e278]:
-                  - generic [ref=f5e279]:
-                    - generic [ref=f5e280]:
-                      - paragraph [ref=f5e281]: Ama Mensah
-                      - generic [ref=f5e282]: Submitted for Review
-                    - paragraph [ref=f5e283]: staff1@sambservices.com
-                    - paragraph [ref=f5e284]: Upper floor windows and bedrooms.
-                    - paragraph [ref=f5e285]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
-                  - generic [ref=f5e286]:
-                    - button "Replace" [ref=f5e287]
-                    - button "Unassign" [ref=f5e293]
-                - generic [ref=f5e294]:
-                  - generic [ref=f5e295]:
-                    - generic [ref=f5e296]:
-                      - paragraph [ref=f5e297]: Kojo Owusu
-                      - generic [ref=f5e298]: Submitted for Review
-                    - paragraph [ref=f5e299]: staff2@sambservices.com
-                    - paragraph [ref=f5e300]: Ground floor tiles and exterior veranda.
-                    - paragraph [ref=f5e301]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
-                  - generic [ref=f5e302]:
-                    - button "Replace" [ref=f5e303]
-                    - button "Unassign" [ref=f5e309]
-          - generic [ref=f5e310]:
-            - generic [ref=f5e311]:
-              - generic [ref=f5e312]:
-                - generic [ref=f5e313]:
-                  - heading "SAMB-2026-1003" [level=2] [ref=f5e314]
-                  - generic [ref=f5e315]: In Progress
-                  - generic [ref=f5e316]: Work in Progress
-                - paragraph [ref=f5e317]: Deep Cleaning · CLEANING
-                - paragraph [ref=f5e318]: 19 Nov 2026 at 08:30 AM
-              - link "Open booking detail" [ref=f5e319] [cursor=pointer]:
-                - /url: /admin/bookings/30000000-0000-4000-8000-000000000003
-            - generic [ref=f5e320]:
-              - generic [ref=f5e321]:
-                - generic [ref=f5e322]:
-                  - heading "Customer & Site" [level=3] [ref=f5e323]
-                  - paragraph [ref=f5e324]: Abena Darko
-                  - paragraph [ref=f5e325]: customer@sambservices.com · +233244555666
-                  - paragraph [ref=f5e326]: "Address: 7 Airport Residential Link, Accra"
-                  - paragraph [ref=f5e327]: "Instructions: Focus on conference rooms and kitchen."
-                - generic [ref=f5e328]:
-                  - heading "Lead Supervisor" [level=3] [ref=f5e334]
-                  - paragraph [ref=f5e335]: Inspects staff completion reports before admin final sign-off.
-                  - generic [ref=f5e336]:
-                    - combobox "Lead supervisor for SAMB-2026-1003" [ref=f5e337]:
-                      - option "Unassigned (no supervisor)"
-                      - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
-                      - option "Nana Addo (supervisor2@sambservices.com)"
-                    - button "Update Supervisor" [disabled] [ref=f5e338]
-              - generic [ref=f5e339]:
-                - generic [ref=f5e340]:
-                  - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e341]
-                  - generic [ref=f5e347]: 0 selected
-                - generic [ref=f5e348]:
-                  - generic [ref=f5e349]:
-                    - generic [ref=f5e350]:
-                      - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e351]
-                      - generic [ref=f5e352]:
-                        - generic [ref=f5e353]: Ama Mensah
-                        - generic [ref=f5e354]: Already assigned
-                    - generic [ref=f5e355] [cursor=pointer]:
-                      - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e356]
-                      - generic [ref=f5e357]:
-                        - generic [ref=f5e358]: Esi Appiah
-                        - generic [ref=f5e359]: staff3@sambservices.com
-                    - generic [ref=f5e360]:
-                      - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e361]
-                      - generic [ref=f5e362]:
-                        - generic [ref=f5e363]: Kojo Owusu
-                        - generic [ref=f5e364]: Already assigned
-                  - textbox "Team instructions / assignment notes (optional)" [ref=f5e365]
-                  - button "Assign Selected Staff (0)" [disabled] [ref=f5e366]
-            - generic [ref=f5e367]:
-              - generic [ref=f5e368]:
-                - heading "Active assigned staff" [level=3] [ref=f5e369]
-                - generic [ref=f5e370]: 2 active
-              - generic [ref=f5e371]:
-                - generic [ref=f5e372]:
-                  - generic [ref=f5e373]:
-                    - generic [ref=f5e374]:
-                      - paragraph [ref=f5e375]: Ama Mensah
-                      - generic [ref=f5e376]: In Progress
-                    - paragraph [ref=f5e377]: staff1@sambservices.com
-                    - paragraph [ref=f5e378]: Handle executive suite & glass partitions.
-                    - paragraph [ref=f5e379]: Assigned 18 Nov 2026, 9:00 am · By Samuel Mensah
-                  - generic [ref=f5e380]:
-                    - button "Replace" [ref=f5e381]
-                    - button "Unassign" [ref=f5e387]
-                - generic [ref=f5e388]:
-                  - generic [ref=f5e389]:
-                    - generic [ref=f5e390]:
-                      - paragraph [ref=f5e391]: Kojo Owusu
-                      - generic [ref=f5e392]: Pending Start
-                    - paragraph [ref=f5e393]: staff2@sambservices.com
-                    - paragraph [ref=f5e394]: Handle reception & pantry sanitization.
-                    - paragraph [ref=f5e395]: Assigned 18 Nov 2026, 9:00 am · By Samuel Mensah
-                  - generic [ref=f5e396]:
-                    - button "Replace" [ref=f5e397]
-                    - button "Unassign" [ref=f5e403]
-          - generic [ref=f5e404]:
-            - generic [ref=f5e405]:
-              - generic [ref=f5e406]:
-                - generic [ref=f5e407]:
-                  - heading "SAMB-2026-1002" [level=2] [ref=f5e408]
-                  - generic [ref=f5e409]: Confirmed
-                  - generic [ref=f5e410]: Supervisor Assigned
-                - paragraph [ref=f5e411]: Laundry Services · LAUNDRY
-                - paragraph [ref=f5e412]: 19 Nov 2026 at 11:00 AM
-              - link "Open booking detail" [ref=f5e413] [cursor=pointer]:
-                - /url: /admin/bookings/30000000-0000-4000-8000-000000000002
-            - generic [ref=f5e414]:
-              - generic [ref=f5e415]:
-                - generic [ref=f5e416]:
-                  - heading "Customer & Site" [level=3] [ref=f5e417]
-                  - paragraph [ref=f5e418]: Abena Darko
-                  - paragraph [ref=f5e419]: customer@sambservices.com · +233244555666
-                  - paragraph [ref=f5e420]: "Address: 28 Cantonments Crescent, Accra"
-                  - paragraph [ref=f5e421]: "Instructions: Separate delicate linen items."
-                - generic [ref=f5e422]:
-                  - heading "Lead Supervisor" [level=3] [ref=f5e428]
-                  - paragraph [ref=f5e429]: Inspects staff completion reports before admin final sign-off.
-                  - generic [ref=f5e430]:
-                    - combobox "Lead supervisor for SAMB-2026-1002" [ref=f5e431]:
-                      - option "Unassigned (no supervisor)"
-                      - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
-                      - option "Nana Addo (supervisor2@sambservices.com)"
-                    - button "Update Supervisor" [disabled] [ref=f5e432]
-              - generic [ref=f5e433]:
-                - generic [ref=f5e434]:
-                  - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e435]
-                  - generic [ref=f5e441]: 0 selected
-                - generic [ref=f5e442]:
-                  - generic [ref=f5e443]:
-                    - generic [ref=f5e444]:
-                      - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e445]
-                      - generic [ref=f5e446]:
-                        - generic [ref=f5e447]: Ama Mensah
-                        - generic [ref=f5e448]: Already assigned
-                    - generic [ref=f5e449]:
-                      - checkbox "Esi Appiah Already assigned" [checked] [disabled] [ref=f5e450]
-                      - generic [ref=f5e451]:
-                        - generic [ref=f5e452]: Esi Appiah
-                        - generic [ref=f5e453]: Already assigned
-                    - generic [ref=f5e454]:
-                      - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e455]
-                      - generic [ref=f5e456]:
-                        - generic [ref=f5e457]: Kojo Owusu
-                        - generic [ref=f5e458]: Already assigned
-                  - textbox "Team instructions / assignment notes (optional)" [ref=f5e459]
-                  - button "Assign Selected Staff (0)" [disabled] [ref=f5e460]
-            - generic [ref=f5e461]:
-              - generic [ref=f5e462]:
-                - heading "Active assigned staff" [level=3] [ref=f5e463]
-                - generic [ref=f5e464]: 3 active
-              - generic [ref=f5e465]:
-                - generic [ref=f5e466]:
-                  - generic [ref=f5e467]:
-                    - generic [ref=f5e468]:
-                      - paragraph [ref=f5e469]: Esi Appiah
-                      - generic [ref=f5e470]: Pending Start
-                    - paragraph [ref=f5e471]: staff3@sambservices.com
-                    - paragraph [ref=f5e472]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
-                  - button "Unassign" [ref=f5e474]
-                - generic [ref=f5e475]:
-                  - generic [ref=f5e476]:
-                    - generic [ref=f5e477]:
-                      - paragraph [ref=f5e478]: Kojo Owusu
-                      - generic [ref=f5e479]: Pending Start
-                    - paragraph [ref=f5e480]: staff2@sambservices.com
-                    - paragraph [ref=f5e481]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
-                  - button "Unassign" [ref=f5e483]
-                - generic [ref=f5e484]:
-                  - generic [ref=f5e485]:
-                    - generic [ref=f5e486]:
-                      - paragraph [ref=f5e487]: Ama Mensah
-                      - generic [ref=f5e488]: Pending Start
-                    - paragraph [ref=f5e489]: staff1@sambservices.com
-                    - paragraph [ref=f5e490]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
-                  - button "Unassign" [ref=f5e492]
-  - button "Back to top"
-  - button "Open Next.js Dev Tools" [ref=f5e498] [cursor=pointer]
-  - alert [ref=f5e502]
+    - generic [ref=f5e2]:
+        - complementary [ref=f5e3]:
+            - generic [ref=f5e4]:
+                - link "S SAMB's Operations Console" [ref=f5e5] [cursor=pointer]:
+                    - /url: /admin
+                    - generic [ref=f5e6]: S
+                    - generic [ref=f5e7]:
+                        - generic [ref=f5e8]: SAMB's
+                        - generic [ref=f5e9]: Operations Console
+                - button "Collapse sidebar" [ref=f5e10]
+            - navigation "Admin navigation" [ref=f5e14]:
+                - generic [ref=f5e15]:
+                    - generic [ref=f5e16]:
+                        - button "Overview" [expanded] [ref=f5e17]
+                        - list [ref=f5e21]:
+                            - listitem [ref=f5e22]:
+                                - link "Dashboard" [ref=f5e23] [cursor=pointer]:
+                                    - /url: /admin
+                    - generic [ref=f5e31]:
+                        - button "Operations" [expanded] [ref=f5e32]
+                        - list [ref=f5e36]:
+                            - listitem [ref=f5e37]:
+                                - link "Bookings 1" [ref=f5e38] [cursor=pointer]:
+                                    - /url: /admin/bookings
+                                    - generic [ref=f5e39]: Bookings
+                                    - generic [ref=f5e44]: "1"
+                            - listitem [ref=f5e45]:
+                                - link "Final Approvals 1" [ref=f5e46] [cursor=pointer]:
+                                    - /url: /admin/approvals
+                                    - generic [ref=f5e47]: Final Approvals
+                                    - generic [ref=f5e52]: "1"
+                            - listitem [ref=f5e53]:
+                                - link "Assignments" [ref=f5e54] [cursor=pointer]:
+                                    - /url: /admin/assignments
+                            - listitem [ref=f5e60]:
+                                - link "Booking Calendar" [ref=f5e61] [cursor=pointer]:
+                                    - /url: /admin/calendar
+                            - listitem [ref=f5e66]:
+                                - link "Quotes & Pricing" [ref=f5e67] [cursor=pointer]:
+                                    - /url: /admin/quotes
+                    - generic [ref=f5e73]:
+                        - button "People" [expanded] [ref=f5e74]
+                        - list [ref=f5e78]:
+                            - listitem [ref=f5e79]:
+                                - link "Staff & Supervisors" [ref=f5e80] [cursor=pointer]:
+                                    - /url: /admin/staff
+                            - listitem [ref=f5e87]:
+                                - link "Customers" [ref=f5e88] [cursor=pointer]:
+                                    - /url: /admin/customers
+                            - listitem [ref=f5e96]:
+                                - link "Recruitment" [ref=f5e97] [cursor=pointer]:
+                                    - /url: /admin/recruitment
+                    - button "Business Management" [ref=f5e104]
+                    - button "Communications" [ref=f5e109]
+                    - button "System" [ref=f5e114]
+                    - button "Account" [ref=f5e119]
+            - generic [ref=f5e123]:
+                - generic [ref=f5e124]:
+                    - paragraph [ref=f5e125]: Samuel Mensah
+                    - paragraph [ref=f5e126]: Administrator
+                - button "Sign out" [ref=f5e127]
+        - main [ref=f5e129]:
+            - generic [ref=f5e130]:
+                - generic [ref=f5e131]:
+                    - generic [ref=f5e132]:
+                        - paragraph [ref=f5e133]: Team Dispatch & Supervision
+                        - heading "Staff & Supervisor Assignments" [level=1] [ref=f5e134]
+                        - paragraph [ref=f5e135]: Assign one or multiple field staff members and a lead supervisor to confirmed work, track individual progress, and swap workers as needed.
+                    - link "Manage Staff & Supervisors" [ref=f5e136] [cursor=pointer]:
+                        - /url: /admin/staff
+                - generic [ref=f5e137]:
+                    - generic [ref=f5e138]:
+                        - generic [ref=f5e139]:
+                            - generic [ref=f5e140]:
+                                - generic [ref=f5e141]:
+                                    - heading "SAMB-2026-1005" [level=2] [ref=f5e142]
+                                    - generic [ref=f5e143]: In Progress
+                                    - generic [ref=f5e144]: Awaiting Admin Final Approval
+                                - paragraph [ref=f5e145]: Residential and Office Pest Control · PEST CONTROL
+                                - paragraph [ref=f5e146]: 18 Nov 2026 at 10:00 AM
+                            - link "Open booking detail" [ref=f5e147] [cursor=pointer]:
+                                - /url: /admin/bookings/30000000-0000-4000-8000-000000000005
+                        - generic [ref=f5e148]:
+                            - generic [ref=f5e149]:
+                                - generic [ref=f5e150]:
+                                    - heading "Customer & Site" [level=3] [ref=f5e151]
+                                    - paragraph [ref=f5e152]: Abena Darko
+                                    - paragraph [ref=f5e153]: customer@sambservices.com · +233244555666
+                                    - paragraph [ref=f5e154]: "Address: 19 Osu Oxford Street, Accra"
+                                    - paragraph [ref=f5e155]: "Instructions: Eco-safe treatment around pantry."
+                                - generic [ref=f5e156]:
+                                    - heading "Lead Supervisor" [level=3] [ref=f5e162]
+                                    - paragraph [ref=f5e163]: Inspects staff completion reports before admin final sign-off.
+                                    - generic [ref=f5e164]:
+                                        - combobox "Lead supervisor for SAMB-2026-1005" [ref=f5e165]:
+                                            - option "Unassigned (no supervisor)"
+                                            - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
+                                            - option "Nana Addo (supervisor2@sambservices.com)"
+                                        - button "Update Supervisor" [disabled] [ref=f5e166]
+                            - generic [ref=f5e167]:
+                                - generic [ref=f5e168]:
+                                    - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e169]
+                                    - generic [ref=f5e175]: 0 selected
+                                - generic [ref=f5e176]:
+                                    - generic [ref=f5e177]:
+                                        - generic [ref=f5e178]:
+                                            - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e179]
+                                            - generic [ref=f5e180]:
+                                                - generic [ref=f5e181]: Ama Mensah
+                                                - generic [ref=f5e182]: Already assigned
+                                        - generic [ref=f5e183] [cursor=pointer]:
+                                            - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e184]
+                                            - generic [ref=f5e185]:
+                                                - generic [ref=f5e186]: Esi Appiah
+                                                - generic [ref=f5e187]: staff3@sambservices.com
+                                        - generic [ref=f5e188] [cursor=pointer]:
+                                            - checkbox "Kojo Owusu staff2@sambservices.com" [ref=f5e189]
+                                            - generic [ref=f5e190]:
+                                                - generic [ref=f5e191]: Kojo Owusu
+                                                - generic [ref=f5e192]: staff2@sambservices.com
+                                    - textbox "Team instructions / assignment notes (optional)" [ref=f5e193]
+                                    - button "Assign Selected Staff (0)" [disabled] [ref=f5e194]
+                        - generic [ref=f5e195]:
+                            - generic [ref=f5e196]:
+                                - heading "Active assigned staff" [level=3] [ref=f5e197]
+                                - generic [ref=f5e198]: 1 active
+                            - generic [ref=f5e200]:
+                                - generic [ref=f5e201]:
+                                    - generic [ref=f5e202]:
+                                        - paragraph [ref=f5e203]: Ama Mensah
+                                        - generic [ref=f5e204]: Supervisor Approved
+                                    - paragraph [ref=f5e205]: staff1@sambservices.com
+                                    - paragraph [ref=f5e206]: Full commercial perimeter pest treatment.
+                                    - paragraph [ref=f5e207]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
+                                - generic [ref=f5e208]:
+                                    - button "Replace" [ref=f5e209]
+                                    - button "Unassign" [ref=f5e215]
+                    - generic [ref=f5e216]:
+                        - generic [ref=f5e217]:
+                            - generic [ref=f5e218]:
+                                - generic [ref=f5e219]:
+                                    - heading "SAMB-2026-1004" [level=2] [ref=f5e220]
+                                    - generic [ref=f5e221]: In Progress
+                                    - generic [ref=f5e222]: Awaiting Supervisor Review
+                                - paragraph [ref=f5e223]: Post-Construction Cleaning · CLEANING
+                                - paragraph [ref=f5e224]: 19 Nov 2026 at 02:00 PM
+                            - link "Open booking detail" [ref=f5e225] [cursor=pointer]:
+                                - /url: /admin/bookings/30000000-0000-4000-8000-000000000004
+                        - generic [ref=f5e226]:
+                            - generic [ref=f5e227]:
+                                - generic [ref=f5e228]:
+                                    - heading "Customer & Site" [level=3] [ref=f5e229]
+                                    - paragraph [ref=f5e230]: Abena Darko
+                                    - paragraph [ref=f5e231]: customer@sambservices.com · +233244555666
+                                    - paragraph [ref=f5e232]: "Address: 42 East Legon Boundary Rd, Accra"
+                                    - paragraph [ref=f5e233]: "Instructions: Post-renovation dust removal on glass."
+                                - generic [ref=f5e234]:
+                                    - heading "Lead Supervisor" [level=3] [ref=f5e240]
+                                    - paragraph [ref=f5e241]: Inspects staff completion reports before admin final sign-off.
+                                    - generic [ref=f5e242]:
+                                        - combobox "Lead supervisor for SAMB-2026-1004" [ref=f5e243]:
+                                            - option "Unassigned (no supervisor)"
+                                            - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
+                                            - option "Nana Addo (supervisor2@sambservices.com)"
+                                        - button "Update Supervisor" [disabled] [ref=f5e244]
+                            - generic [ref=f5e245]:
+                                - generic [ref=f5e246]:
+                                    - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e247]
+                                    - generic [ref=f5e253]: 0 selected
+                                - generic [ref=f5e254]:
+                                    - generic [ref=f5e255]:
+                                        - generic [ref=f5e256]:
+                                            - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e257]
+                                            - generic [ref=f5e258]:
+                                                - generic [ref=f5e259]: Ama Mensah
+                                                - generic [ref=f5e260]: Already assigned
+                                        - generic [ref=f5e261] [cursor=pointer]:
+                                            - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e262]
+                                            - generic [ref=f5e263]:
+                                                - generic [ref=f5e264]: Esi Appiah
+                                                - generic [ref=f5e265]: staff3@sambservices.com
+                                        - generic [ref=f5e266]:
+                                            - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e267]
+                                            - generic [ref=f5e268]:
+                                                - generic [ref=f5e269]: Kojo Owusu
+                                                - generic [ref=f5e270]: Already assigned
+                                    - textbox "Team instructions / assignment notes (optional)" [ref=f5e271]
+                                    - button "Assign Selected Staff (0)" [disabled] [ref=f5e272]
+                        - generic [ref=f5e273]:
+                            - generic [ref=f5e274]:
+                                - heading "Active assigned staff" [level=3] [ref=f5e275]
+                                - generic [ref=f5e276]: 2 active
+                            - generic [ref=f5e277]:
+                                - generic [ref=f5e278]:
+                                    - generic [ref=f5e279]:
+                                        - generic [ref=f5e280]:
+                                            - paragraph [ref=f5e281]: Ama Mensah
+                                            - generic [ref=f5e282]: Submitted for Review
+                                        - paragraph [ref=f5e283]: staff1@sambservices.com
+                                        - paragraph [ref=f5e284]: Upper floor windows and bedrooms.
+                                        - paragraph [ref=f5e285]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
+                                    - generic [ref=f5e286]:
+                                        - button "Replace" [ref=f5e287]
+                                        - button "Unassign" [ref=f5e293]
+                                - generic [ref=f5e294]:
+                                    - generic [ref=f5e295]:
+                                        - generic [ref=f5e296]:
+                                            - paragraph [ref=f5e297]: Kojo Owusu
+                                            - generic [ref=f5e298]: Submitted for Review
+                                        - paragraph [ref=f5e299]: staff2@sambservices.com
+                                        - paragraph [ref=f5e300]: Ground floor tiles and exterior veranda.
+                                        - paragraph [ref=f5e301]: Assigned 17 Nov 2026, 9:00 am · By Samuel Mensah
+                                    - generic [ref=f5e302]:
+                                        - button "Replace" [ref=f5e303]
+                                        - button "Unassign" [ref=f5e309]
+                    - generic [ref=f5e310]:
+                        - generic [ref=f5e311]:
+                            - generic [ref=f5e312]:
+                                - generic [ref=f5e313]:
+                                    - heading "SAMB-2026-1003" [level=2] [ref=f5e314]
+                                    - generic [ref=f5e315]: In Progress
+                                    - generic [ref=f5e316]: Work in Progress
+                                - paragraph [ref=f5e317]: Deep Cleaning · CLEANING
+                                - paragraph [ref=f5e318]: 19 Nov 2026 at 08:30 AM
+                            - link "Open booking detail" [ref=f5e319] [cursor=pointer]:
+                                - /url: /admin/bookings/30000000-0000-4000-8000-000000000003
+                        - generic [ref=f5e320]:
+                            - generic [ref=f5e321]:
+                                - generic [ref=f5e322]:
+                                    - heading "Customer & Site" [level=3] [ref=f5e323]
+                                    - paragraph [ref=f5e324]: Abena Darko
+                                    - paragraph [ref=f5e325]: customer@sambservices.com · +233244555666
+                                    - paragraph [ref=f5e326]: "Address: 7 Airport Residential Link, Accra"
+                                    - paragraph [ref=f5e327]: "Instructions: Focus on conference rooms and kitchen."
+                                - generic [ref=f5e328]:
+                                    - heading "Lead Supervisor" [level=3] [ref=f5e334]
+                                    - paragraph [ref=f5e335]: Inspects staff completion reports before admin final sign-off.
+                                    - generic [ref=f5e336]:
+                                        - combobox "Lead supervisor for SAMB-2026-1003" [ref=f5e337]:
+                                            - option "Unassigned (no supervisor)"
+                                            - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
+                                            - option "Nana Addo (supervisor2@sambservices.com)"
+                                        - button "Update Supervisor" [disabled] [ref=f5e338]
+                            - generic [ref=f5e339]:
+                                - generic [ref=f5e340]:
+                                    - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e341]
+                                    - generic [ref=f5e347]: 0 selected
+                                - generic [ref=f5e348]:
+                                    - generic [ref=f5e349]:
+                                        - generic [ref=f5e350]:
+                                            - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e351]
+                                            - generic [ref=f5e352]:
+                                                - generic [ref=f5e353]: Ama Mensah
+                                                - generic [ref=f5e354]: Already assigned
+                                        - generic [ref=f5e355] [cursor=pointer]:
+                                            - checkbox "Esi Appiah staff3@sambservices.com" [ref=f5e356]
+                                            - generic [ref=f5e357]:
+                                                - generic [ref=f5e358]: Esi Appiah
+                                                - generic [ref=f5e359]: staff3@sambservices.com
+                                        - generic [ref=f5e360]:
+                                            - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e361]
+                                            - generic [ref=f5e362]:
+                                                - generic [ref=f5e363]: Kojo Owusu
+                                                - generic [ref=f5e364]: Already assigned
+                                    - textbox "Team instructions / assignment notes (optional)" [ref=f5e365]
+                                    - button "Assign Selected Staff (0)" [disabled] [ref=f5e366]
+                        - generic [ref=f5e367]:
+                            - generic [ref=f5e368]:
+                                - heading "Active assigned staff" [level=3] [ref=f5e369]
+                                - generic [ref=f5e370]: 2 active
+                            - generic [ref=f5e371]:
+                                - generic [ref=f5e372]:
+                                    - generic [ref=f5e373]:
+                                        - generic [ref=f5e374]:
+                                            - paragraph [ref=f5e375]: Ama Mensah
+                                            - generic [ref=f5e376]: In Progress
+                                        - paragraph [ref=f5e377]: staff1@sambservices.com
+                                        - paragraph [ref=f5e378]: Handle executive suite & glass partitions.
+                                        - paragraph [ref=f5e379]: Assigned 18 Nov 2026, 9:00 am · By Samuel Mensah
+                                    - generic [ref=f5e380]:
+                                        - button "Replace" [ref=f5e381]
+                                        - button "Unassign" [ref=f5e387]
+                                - generic [ref=f5e388]:
+                                    - generic [ref=f5e389]:
+                                        - generic [ref=f5e390]:
+                                            - paragraph [ref=f5e391]: Kojo Owusu
+                                            - generic [ref=f5e392]: Pending Start
+                                        - paragraph [ref=f5e393]: staff2@sambservices.com
+                                        - paragraph [ref=f5e394]: Handle reception & pantry sanitization.
+                                        - paragraph [ref=f5e395]: Assigned 18 Nov 2026, 9:00 am · By Samuel Mensah
+                                    - generic [ref=f5e396]:
+                                        - button "Replace" [ref=f5e397]
+                                        - button "Unassign" [ref=f5e403]
+                    - generic [ref=f5e404]:
+                        - generic [ref=f5e405]:
+                            - generic [ref=f5e406]:
+                                - generic [ref=f5e407]:
+                                    - heading "SAMB-2026-1002" [level=2] [ref=f5e408]
+                                    - generic [ref=f5e409]: Confirmed
+                                    - generic [ref=f5e410]: Supervisor Assigned
+                                - paragraph [ref=f5e411]: Laundry Services · LAUNDRY
+                                - paragraph [ref=f5e412]: 19 Nov 2026 at 11:00 AM
+                            - link "Open booking detail" [ref=f5e413] [cursor=pointer]:
+                                - /url: /admin/bookings/30000000-0000-4000-8000-000000000002
+                        - generic [ref=f5e414]:
+                            - generic [ref=f5e415]:
+                                - generic [ref=f5e416]:
+                                    - heading "Customer & Site" [level=3] [ref=f5e417]
+                                    - paragraph [ref=f5e418]: Abena Darko
+                                    - paragraph [ref=f5e419]: customer@sambservices.com · +233244555666
+                                    - paragraph [ref=f5e420]: "Address: 28 Cantonments Crescent, Accra"
+                                    - paragraph [ref=f5e421]: "Instructions: Separate delicate linen items."
+                                - generic [ref=f5e422]:
+                                    - heading "Lead Supervisor" [level=3] [ref=f5e428]
+                                    - paragraph [ref=f5e429]: Inspects staff completion reports before admin final sign-off.
+                                    - generic [ref=f5e430]:
+                                        - combobox "Lead supervisor for SAMB-2026-1002" [ref=f5e431]:
+                                            - option "Unassigned (no supervisor)"
+                                            - option "Kwame Boateng (supervisor@sambservices.com)" [selected]
+                                            - option "Nana Addo (supervisor2@sambservices.com)"
+                                        - button "Update Supervisor" [disabled] [ref=f5e432]
+                            - generic [ref=f5e433]:
+                                - generic [ref=f5e434]:
+                                    - heading "Assign Field Staff (Multi-select)" [level=3] [ref=f5e435]
+                                    - generic [ref=f5e441]: 0 selected
+                                - generic [ref=f5e442]:
+                                    - generic [ref=f5e443]:
+                                        - generic [ref=f5e444]:
+                                            - checkbox "Ama Mensah Already assigned" [checked] [disabled] [ref=f5e445]
+                                            - generic [ref=f5e446]:
+                                                - generic [ref=f5e447]: Ama Mensah
+                                                - generic [ref=f5e448]: Already assigned
+                                        - generic [ref=f5e449]:
+                                            - checkbox "Esi Appiah Already assigned" [checked] [disabled] [ref=f5e450]
+                                            - generic [ref=f5e451]:
+                                                - generic [ref=f5e452]: Esi Appiah
+                                                - generic [ref=f5e453]: Already assigned
+                                        - generic [ref=f5e454]:
+                                            - checkbox "Kojo Owusu Already assigned" [checked] [disabled] [ref=f5e455]
+                                            - generic [ref=f5e456]:
+                                                - generic [ref=f5e457]: Kojo Owusu
+                                                - generic [ref=f5e458]: Already assigned
+                                    - textbox "Team instructions / assignment notes (optional)" [ref=f5e459]
+                                    - button "Assign Selected Staff (0)" [disabled] [ref=f5e460]
+                        - generic [ref=f5e461]:
+                            - generic [ref=f5e462]:
+                                - heading "Active assigned staff" [level=3] [ref=f5e463]
+                                - generic [ref=f5e464]: 3 active
+                            - generic [ref=f5e465]:
+                                - generic [ref=f5e466]:
+                                    - generic [ref=f5e467]:
+                                        - generic [ref=f5e468]:
+                                            - paragraph [ref=f5e469]: Esi Appiah
+                                            - generic [ref=f5e470]: Pending Start
+                                        - paragraph [ref=f5e471]: staff3@sambservices.com
+                                        - paragraph [ref=f5e472]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
+                                    - button "Unassign" [ref=f5e474]
+                                - generic [ref=f5e475]:
+                                    - generic [ref=f5e476]:
+                                        - generic [ref=f5e477]:
+                                            - paragraph [ref=f5e478]: Kojo Owusu
+                                            - generic [ref=f5e479]: Pending Start
+                                        - paragraph [ref=f5e480]: staff2@sambservices.com
+                                        - paragraph [ref=f5e481]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
+                                    - button "Unassign" [ref=f5e483]
+                                - generic [ref=f5e484]:
+                                    - generic [ref=f5e485]:
+                                        - generic [ref=f5e486]:
+                                            - paragraph [ref=f5e487]: Ama Mensah
+                                            - generic [ref=f5e488]: Pending Start
+                                        - paragraph [ref=f5e489]: staff1@sambservices.com
+                                        - paragraph [ref=f5e490]: Assigned 19 Nov 2026, 9:47 pm · By Samuel Mensah
+                                    - button "Unassign" [ref=f5e492]
+    - button "Back to top"
+    - button "Open Next.js Dev Tools" [ref=f5e498] [cursor=pointer]
+    - alert [ref=f5e502]
 ```

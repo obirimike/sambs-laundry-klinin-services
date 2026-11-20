@@ -46,7 +46,7 @@ export async function assertAdmin(request: Request) {
       response: apiError(
         503,
         "SERVICE_UNAVAILABLE",
-        "SAMB is temporarily unable to process your request. Please try again shortly."
+        "SAMB's is temporarily unable to process your request. Please try again shortly."
       ),
     };
   }

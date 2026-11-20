@@ -94,7 +94,7 @@ test.describe("WhatsApp and Phone Number Utility", () => {
     expect(bookingMessage).toContain("SAMB-2026-TEST1");
     expect(bookingMessage).toContain("Deep Home Cleaning");
     expect(bookingMessage).toContain("10:00");
-    expect(bookingMessage).toContain("SAMB Laundry & Cleaning Services");
+    expect(bookingMessage).toContain("SAMB's Laundry & Cleaning Services");
 
     // Private operational info must not be included
     expect(bookingMessage).not.toContain("password");

@@ -235,7 +235,7 @@ export default async function AdminRecruitmentOverviewPage() {
           </div>
         ) : (
           <div className="divide-y divide-slate-100">
-            {recentApplications.map((app: any) => {
+            {recentApplications.map((app) => {
               const statusMeta = formatApplicationStatus(app.status);
 
               return (

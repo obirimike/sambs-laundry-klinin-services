@@ -4,15 +4,15 @@
 
 Set these variables in your deployment platform's secret/configuration store. **Never commit values to the repository.**
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `DATABASE_URL` | Yes | PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/samb`) |
-| `AUTH_SECRET` | Yes | Secret for NextAuth JWT signing — generate a strong, unique value per environment |
-| `NEXT_PUBLIC_APP_URL` | Yes (production) | Public HTTPS base URL (e.g. `https://samb.example.com`). Used in email links. Falls back to `http://localhost:3000` in development. |
-| `RESEND_API_KEY` | For email delivery | Resend API key. Without it, the app functions normally but emails are not delivered (`emailSent: false`). |
-| `EMAIL_FROM` | Recommended | Verified sender identity for Resend (e.g. `SAMB <noreply@samb.example.com>`). A development fallback is used if unset. |
-| UPSTASH_REDIS_REST_URL | For rate limiting | Upstash Redis REST endpoint. Required in production; dev falls back to no rate limiting. |
-| `UPSTASH_REDIS_REST_TOKEN` | For rate limiting | Upstash Redis REST token. |
+| Variable                   | Required           | Description                                                                                                                         |
+| -------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`             | Yes                | PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/samb`)                                                         |
+| `AUTH_SECRET`              | Yes                | Secret for NextAuth JWT signing — generate a strong, unique value per environment                                                   |
+| `NEXT_PUBLIC_APP_URL`      | Yes (production)   | Public HTTPS base URL (e.g. `https://samb.example.com`). Used in email links. Falls back to `http://localhost:3000` in development. |
+| `RESEND_API_KEY`           | For email delivery | Resend API key. Without it, the app functions normally but emails are not delivered (`emailSent: false`).                           |
+| `EMAIL_FROM`               | Recommended        | Verified sender identity for Resend (e.g. `SAMB's<noreply@samb.example.com>`). A development fallback is used if unset.             |
+| UPSTASH_REDIS_REST_URL     | For rate limiting  | Upstash Redis REST endpoint. Required in production; dev falls back to no rate limiting.                                            |
+| `UPSTASH_REDIS_REST_TOKEN` | For rate limiting  | Upstash Redis REST token.                                                                                                           |
 
 See `.env.example` for placeholder values. Do not copy placeholder values into production.
 
@@ -24,7 +24,7 @@ See `.env.example` for placeholder values. Do not copy placeholder values into p
 
 1. Provision a PostgreSQL 16 database.
 2. Configure a [Resend](https://resend.com/) account with a valid API key and verified sender domain.
-3. *(Optional)* Configure [Upstash Redis](https://upstash.com/) for rate limiting.
+3. _(Optional)_ Configure [Upstash Redis](https://upstash.com/) for rate limiting.
 4. Set all required environment variables in the deployment platform.
 5. Set `NEXT_PUBLIC_APP_URL` to the public HTTPS origin customers will use.
 6. Ensure a database backup and rollback plan are in place before schema changes.
@@ -175,7 +175,7 @@ npm run start            # Start production server
 5. Check [Resend's dashboard](https://resend.com/) for delivery activity and sending limits.
 6. Retry from `/admin/quotes` after confirming the quote status, since resending dispatches another email.
 
-> **Important:** The endpoint persists the first-send transition and customer notification *before* attempting email delivery. A failed email can coexist with `SENT` status. The `emailSent` field in the API response (not the quote status) is the source of truth for delivery.
+> **Important:** The endpoint persists the first-send transition and customer notification _before_ attempting email delivery. A failed email can coexist with `SENT` status. The `emailSent` field in the API response (not the quote status) is the source of truth for delivery.
 
 ### Booking Status Email Not Delivered
 

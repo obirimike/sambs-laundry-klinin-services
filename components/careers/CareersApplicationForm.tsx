@@ -316,7 +316,7 @@ export default function CareersApplicationForm({
               )}
               {!vacancy && (
                 <p className="text-xs text-slate-600 mt-1">
-                  Submit your resume for consideration as new openings and service expansion roles arise at SAMB.
+                  Submit your resume for consideration as new openings and service expansion roles arise at SAMB&apos;s.
                 </p>
               )}
             </div>
@@ -443,7 +443,7 @@ export default function CareersApplicationForm({
               disabled={isPending}
               value={coverLetter}
               onChange={(e) => setCoverLetter(e.target.value)}
-              placeholder="Introduce yourself, your relevant background in laundry/cleaning services or operations, and what motivates you to join SAMB..."
+              placeholder="Introduce yourself, your relevant background in laundry/cleaning services or operations, and what motivates you to join SAMB's..."
               className={`mt-2 block w-full rounded-xl border px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                 fieldErrors.coverLetter
                   ? "border-rose-300 focus:border-rose-500 focus:ring-rose-200"

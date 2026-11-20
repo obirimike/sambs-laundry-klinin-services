@@ -62,7 +62,7 @@ export async function PATCH(
         );
       }
 
-      await db.$transaction(async (tx: any ) => {
+      await db.$transaction(async (tx ) => {
         await tx.quote.update({
           where: { id },
           data: { status: "WITHDRAWN" },
@@ -85,7 +85,7 @@ export async function PATCH(
             data: {
               userId: existing.booking.customerId,
               title: "Quote withdrawn",
-              message: `Quote ${existing.quoteNumber} for booking ${existing.booking.bookingNumber} has been withdrawn by SAMB administration.`,
+              message: `Quote ${existing.quoteNumber} for booking ${existing.booking.bookingNumber} has been withdrawn by SAMB's administration.`,
               type: "QUOTE_WITHDRAWN",
             },
           });
@@ -136,7 +136,7 @@ export async function DELETE(
       return apiError(404, "QUOTE_NOT_FOUND", "Quote not found.");
     }
 
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx) => {
       await writeAudit(tx, {
         actorId: session.user.id,
         action: "ADMIN_DELETED_QUOTE",

@@ -7,6 +7,8 @@ import {
   ClipboardList,
   Clock3,
   Plus,
+  ShieldCheck,
+  Users,
 } from "lucide-react";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -64,6 +66,23 @@ export default async function BookingHistoryPage() {
         select: {
           name: true,
           category: true,
+        },
+      },
+      supervisor: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      assignments: {
+        where: { isActive: true },
+        include: {
+          staff: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
         },
       },
       review: {
@@ -126,14 +145,14 @@ export default async function BookingHistoryPage() {
             <div className="rounded-2xl border border-slate-200 bg-white p-5">
               <p className="text-sm text-slate-500">Awaiting review</p>
               <p className="mt-2 text-3xl font-extrabold text-amber-600">
-                {bookings.filter((booking: any) => booking.status === "PENDING").length}
+                {bookings.filter((booking) => booking.status === "PENDING").length}
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-5">
               <p className="text-sm text-slate-500">Completed</p>
               <p className="mt-2 text-3xl font-extrabold text-emerald-600">
-                {bookings.filter((booking: any) => booking.status === "COMPLETED").length}
+                {bookings.filter((booking) => booking.status === "COMPLETED").length}
               </p>
             </div>
           </div>
@@ -167,7 +186,7 @@ export default async function BookingHistoryPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {bookings.map((booking: any) => (
+                {bookings.map((booking) => (
                   <article
                     key={booking.id}
                     className="rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-blue-200 hover:shadow-sm sm:p-6"
@@ -192,7 +211,7 @@ export default async function BookingHistoryPage() {
                           </span>
                         </p>
 
-                        <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-600">
+                        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600">
                           <span className="inline-flex items-center gap-2">
                             <CalendarDays size={16} />
                             {formatDate(booking.preferredDate)}
@@ -201,6 +220,18 @@ export default async function BookingHistoryPage() {
                             <Clock3 size={16} />
                             {booking.preferredTime}
                           </span>
+                          {booking.supervisor && (
+                            <span className="inline-flex items-center gap-1.5 rounded-md border border-indigo-100 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700">
+                              <ShieldCheck size={13} />
+                              Lead: {booking.supervisor.name}
+                            </span>
+                          )}
+                          {booking.assignments?.length > 0 && (
+                            <span className="inline-flex items-center gap-1.5 rounded-md border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                              <Users size={13} />
+                              {booking.assignments.length} {booking.assignments.length === 1 ? "staff" : "staff"}
+                            </span>
+                          )}
                         </div>
                       </div>
 

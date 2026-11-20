@@ -33,7 +33,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const { status, reason } = parsed.data;
 
-    const updated = await db.$transaction(async (tx: any) => {
+    const updated = await db.$transaction(async (tx) => {
       const msg = await tx.contactMessage.update({
         where: { id },
         data: { status },
@@ -74,7 +74,7 @@ export async function DELETE(request: Request, context: RouteContext) {
       return apiError(404, "MESSAGE_NOT_FOUND", "Message not found.");
     }
 
-    await db.$transaction(async (tx: any) => {
+    await db.$transaction(async (tx) => {
       await writeAudit(tx, {
         actorId: guard.session.user.id,
         action: "MESSAGE_DELETED",

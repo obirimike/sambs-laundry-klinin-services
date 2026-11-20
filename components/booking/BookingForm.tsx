@@ -65,14 +65,13 @@ export default function BookingForm({
     if (repeatData) return 3;
     return initialService ? 2 : 1;
   });
-
   // Category specific question answers with repeat prefill
   const [laundryData, setLaundryData] = useState<LaundryDetails>(() => ({
     laundryServiceType: "wash_and_fold",
     quantityEstimated: "1_to_2_bags",
     collectionPreference: "pickup_and_delivery",
     ...(repeatData?.category === "LAUNDRY" && repeatData.serviceDetails
-      ? (repeatData.serviceDetails as any)
+      ? (repeatData.serviceDetails as Partial<LaundryDetails>)
       : {}),
   }));
 
@@ -83,7 +82,7 @@ export default function BookingForm({
     numberOfRooms: repeatData?.numberOfRooms ?? 3,
     estimatedSize: repeatData?.estimatedSize,
     ...(repeatData?.category === "CLEANING" && repeatData.serviceDetails
-      ? (repeatData.serviceDetails as any)
+      ? (repeatData.serviceDetails as Partial<CleaningDetails>)
       : {}),
   }));
 
@@ -92,7 +91,7 @@ export default function BookingForm({
     frequency: "one_off",
     schedulePreference: "full_day",
     ...(repeatData?.category === "DOMESTIC_SUPPORT" && repeatData.serviceDetails
-      ? (repeatData.serviceDetails as any)
+      ? (repeatData.serviceDetails as Partial<DomesticSupportDetails>)
       : {}),
   }));
 
@@ -105,7 +104,7 @@ export default function BookingForm({
     propertyType: repeatData?.propertyType,
     estimatedSize: repeatData?.estimatedSize,
     ...(repeatData?.category === "PEST_CONTROL" && repeatData.serviceDetails
-      ? (repeatData.serviceDetails as any)
+      ? (repeatData.serviceDetails as Partial<PestControlDetails>)
       : {}),
   }));
 

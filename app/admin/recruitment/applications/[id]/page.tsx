@@ -50,14 +50,16 @@ export default async function AdminApplicationDetailPage({ params }: RouteProps)
   }
 
   const serializedApp: DetailedApplication = {
-    ...app,
-    createdAt: app.createdAt.toISOString(),
-    updatedAt: app.updatedAt.toISOString(),
-    statusHistory: app.statusHistory.map((h: any) => ({
-      ...h,
-      createdAt: h.createdAt.toISOString(),
-    })),
-  };
+  ...app,
+  createdAt: app.createdAt.toISOString(),
+  updatedAt: app.updatedAt.toISOString(),
+  statusHistory: app.statusHistory.map((h) => ({
+    ...h,
+    previousStatus: h.previousStatus ?? "",
+    createdAt: h.createdAt.toISOString(),
+  })),
+};
+
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">

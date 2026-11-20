@@ -9,6 +9,41 @@ interface CleaningQuestionsProps {
   onChange: (updates: Partial<CleaningDetails>) => void;
 }
 
+const FREQUENCIES = [
+  { id: "one_time", label: "One-Off Service", desc: "Single comprehensive session" },
+  { id: "weekly", label: "Weekly Regular", desc: "Discounted recurring visit" },
+  { id: "bi_weekly", label: "Bi-Weekly", desc: "Every two weeks" },
+  { id: "monthly", label: "Monthly Maintenance", desc: "Once a month deep refresh" },
+] as const;
+
+const PROPERTY_TYPES = [
+  "Residential Apartment / Flat",
+  "Self-contained House / Villa",
+  "Office / Commercial Suite",
+  "Retail Store / Showroom",
+  "Event Venue / Hall",
+  "Warehouse / Compound",
+  "Other",
+] as const;
+
+const SIZE_OPTIONS = [
+  "Compact (Under 70 sqm / 750 sqft)",
+  "Medium (70 – 150 sqm / 750 – 1,600 sqft)",
+  "Large (150 – 300 sqm / 1,600 – 3,200 sqft)",
+  "Extensive / Multi-Floor Estate (300+ sqm / 3,200+ sqft)",
+] as const;
+
+const FOCUS_AREA_OPTIONS = [
+  "Kitchen, grease extraction & oven scrub",
+  "Bathrooms, limescale & tile descaling",
+  "Interior & exterior window glass",
+  "Upholstery, sofas, & mattresses",
+  "Balcony, terrace, & patio pressure wash",
+  "Refrigerator & microwave interior sanitization",
+  "Baseboards, door frames, & light fixtures",
+  "Wardrobes & cupboard interior wiping",
+] as const;
+
 export default function CleaningQuestions({
   serviceName,
   data,
@@ -32,41 +67,6 @@ export default function CleaningQuestions({
     }
   }, [serviceName, data.cleaningType, onChange]);
 
-  const frequencies = [
-    { id: "one_time", label: "One-Off Service", desc: "Single comprehensive session" },
-    { id: "weekly", label: "Weekly Regular", desc: "Discounted recurring visit" },
-    { id: "bi_weekly", label: "Bi-Weekly", desc: "Every two weeks" },
-    { id: "monthly", label: "Monthly Maintenance", desc: "Once a month deep refresh" },
-  ];
-
-  const propertyTypes = [
-    "Residential Apartment / Flat",
-    "Self-contained House / Villa",
-    "Office / Commercial Suite",
-    "Retail Store / Showroom",
-    "Event Venue / Hall",
-    "Warehouse / Compound",
-    "Other",
-  ];
-
-  const sizeOptions = [
-    "Compact (Under 70 sqm / 750 sqft)",
-    "Medium (70 – 150 sqm / 750 – 1,600 sqft)",
-    "Large (150 – 300 sqm / 1,600 – 3,200 sqft)",
-    "Extensive / Multi-Floor Estate (300+ sqm / 3,200+ sqft)",
-  ];
-
-  const focusAreaOptions = [
-    "Kitchen, grease extraction & oven scrub",
-    "Bathrooms, limescale & tile descaling",
-    "Interior & exterior window glass",
-    "Upholstery, sofas, & mattresses",
-    "Balcony, terrace, & patio pressure wash",
-    "Refrigerator & microwave interior sanitization",
-    "Baseboards, door frames, & light fixtures",
-    "Wardrobes & cupboard interior wiping",
-  ];
-
   const toggleFocusArea = (area: string) => {
     const current = data.focusAreas || [];
     if (current.includes(area)) {
@@ -87,13 +87,13 @@ export default function CleaningQuestions({
           How often do you require this cleaning service?
         </p>
         <div className="mt-2.5 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-          {frequencies.map((f) => {
+          {FREQUENCIES.map((f) => {
             const isSelected = data.frequency === f.id;
             return (
               <button
                 key={f.id}
                 type="button"
-                onClick={() => onChange({ frequency: f.id as any })}
+                onClick={() => onChange({ frequency: f.id })}
                 className={`rounded-xl border-2 py-3 px-3 text-left transition-all duration-150 ${
                   isSelected
                     ? "border-blue-900 bg-blue-50/70 shadow-xs ring-2 ring-blue-900/10"
@@ -101,7 +101,9 @@ export default function CleaningQuestions({
                 }`}
               >
                 <p className="text-xs font-black text-slate-900">{f.label}</p>
-                <p className="mt-0.5 text-[11px] text-slate-500 font-medium hidden sm:block">{f.desc}</p>
+                <p className="mt-0.5 text-[11px] text-slate-500 font-medium hidden sm:block">
+                  {f.desc}
+                </p>
               </button>
             );
           })}
@@ -120,7 +122,7 @@ export default function CleaningQuestions({
             className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
           >
             <option value="">Select property type</option>
-            {propertyTypes.map((pt) => (
+            {PROPERTY_TYPES.map((pt) => (
               <option key={pt} value={pt}>
                 {pt}
               </option>
@@ -159,7 +161,7 @@ export default function CleaningQuestions({
           className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
         >
           <option value="">Select approximate floor area</option>
-          {sizeOptions.map((opt) => (
+          {SIZE_OPTIONS.map((opt) => (
             <option key={opt} value={opt}>
               {opt}
             </option>
@@ -173,7 +175,7 @@ export default function CleaningQuestions({
           Priority Focus Areas &amp; Special Attention (Select all that apply)
         </label>
         <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
-          {focusAreaOptions.map((area) => {
+          {FOCUS_AREA_OPTIONS.map((area) => {
             const checked = (data.focusAreas || []).includes(area);
             return (
               <label

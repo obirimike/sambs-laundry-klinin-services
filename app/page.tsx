@@ -43,7 +43,7 @@ export default async function HomePage({
     ]);
 
     const statsByServiceId = new Map(
-        reviewStats.map((item: any) => [
+        reviewStats.map((item) => [
             item.serviceId,
             {
                 averageRating: item._avg.rating,
@@ -52,12 +52,13 @@ export default async function HomePage({
         ])
     );
 
-    const servicesWithRatings = services.map((service: any) => {
+    const servicesWithRatings = services.map((service) => {
         const stats = statsByServiceId.get(service.id);
         return {
             ...service,
-            averageRating: (stats as any)?.averageRating ?? null,
-            reviewCount: (stats as any)?.reviewCount ?? 0,
+           averageRating: (stats as { averageRating?: number | null })?.averageRating ?? null,
+       reviewCount: (stats as { reviewCount?: number | null })?.reviewCount ?? 0,
+
         };
     });
 
@@ -124,7 +125,7 @@ export default async function HomePage({
                                 <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] bg-slate-900 sm:aspect-[16/12] lg:aspect-[4/3]">
                                     <Image
                                         src="/images/hero/samb-hero.jpeg"
-                                        alt="SAMB's Laundry &amp; Klinin Services - Professional office cleaners"
+                                        alt="SAMB's Laundry & Klinin Services - Professional office cleaners"
                                         fill
                                         priority
                                         sizes="(max-width: 1024px) 100vw, 50vw"
@@ -201,7 +202,7 @@ export default async function HomePage({
                         </div>
 
                         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                            {servicesWithRatings.map((service: any) => (
+                            {servicesWithRatings.map((service) => (
                                 <ServiceCard key={service.id} service={service} />
                             ))}
                         </div>

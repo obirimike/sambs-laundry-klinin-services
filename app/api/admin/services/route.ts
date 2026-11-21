@@ -14,7 +14,14 @@ const serviceSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens."),
   description: z.string().trim().min(10).max(2000),
   category: z.enum(["CLEANING", "LAUNDRY", "DOMESTIC_SUPPORT", "PEST_CONTROL"]),
-  imageUrl: z.union([z.string().trim().url(), z.literal("")]).optional(),
+  imageUrl: z
+    .union([
+      z.string().trim().url(),
+      z.string().trim().startsWith("/"),
+      z.literal(""),
+    ])
+    .nullable()
+    .optional(),
   status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]).optional(),
 });
 

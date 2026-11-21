@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   LoaderCircle,
@@ -10,10 +11,15 @@ import {
   Power,
   PauseCircle,
   PlayCircle,
+  Upload,
+  Link as LinkIcon,
+  X,
+  ImageIcon,
 } from "lucide-react";
 import { ServiceCategory } from "@/types/service";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 import FeedbackModal from "@/components/ui/FeedbackModal";
+import { getServiceImageUrl } from "@/lib/services-data";
 
 type ServiceStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
 
@@ -69,21 +75,78 @@ export default function ServiceManager({
     message: "",
   });
 
+  // Image upload & URL state
+  const [imageMode, setImageMode] = useState<"upload" | "url">("upload");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFileSelect(file: File) {
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select a valid image file (JPEG, PNG, or WebP).");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError("Image file size exceeds the 10 MB limit.");
+      return;
+    }
+
+    setUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/services/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setUploadError(data.message || "Failed to upload image.");
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, imageUrl: data.data.url }));
+    } catch {
+      setUploadError("Network error while uploading image. Please try again.");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  }
+
   function startEditing(service: ServiceItem) {
     setEditingId(service.id);
+    const img = service.imageUrl || "";
     setForm({
       name: service.name,
       slug: service.slug,
       description: service.description,
       category: service.category,
-      imageUrl: service.imageUrl || "",
+      imageUrl: img,
     });
+    if (img.startsWith("http://") || img.startsWith("https://")) {
+      setImageMode("url");
+    } else {
+      setImageMode("upload");
+    }
+    setUploadError(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function resetForm() {
     setEditingId(null);
     setForm(emptyForm);
+    setImageMode("upload");
+    setUploadError(null);
   }
 
   function updateField(field: keyof typeof emptyForm, value: string) {
@@ -306,7 +369,7 @@ export default function ServiceManager({
             />
           </label>
 
-          <label className="text-sm font-semibold text-slate-700">
+          <label className="text-sm font-semibold text-slate-700 sm:col-span-2">
             Category
             <select
               value={form.category}
@@ -322,16 +385,164 @@ export default function ServiceManager({
             </select>
           </label>
 
-          <label className="text-sm font-semibold text-slate-700">
-            Image URL (optional)
-            <input
-              type="url"
-              value={form.imageUrl}
-              onChange={(event) => updateField("imageUrl", event.target.value)}
-              className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              placeholder="https://..."
-            />
-          </label>
+          {/* Service Image Section: Upload or URL */}
+          <div className="sm:col-span-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
+              <span className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                <ImageIcon size={18} className="text-blue-600" />
+                Service Image (Optional)
+              </span>
+
+              {/* Mode Toggle Pills */}
+              <div className="inline-flex rounded-lg bg-slate-200/80 p-0.5 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageMode("upload");
+                    setUploadError(null);
+                  }}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
+                    imageMode === "upload"
+                      ? "bg-white text-blue-700 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <Upload size={14} />
+                  Upload Photo
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageMode("url");
+                    setUploadError(null);
+                  }}
+                  className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 transition ${
+                    imageMode === "url"
+                      ? "bg-white text-blue-700 shadow-sm"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  <LinkIcon size={14} />
+                  Image URL
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              {imageMode === "upload" ? (
+                <div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                  />
+
+                  <div
+                    onClick={() => !uploading && fileInputRef.current?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const file = e.dataTransfer.files?.[0];
+                      if (file) handleFileSelect(file);
+                    }}
+                    className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${
+                      uploading
+                        ? "border-blue-400 bg-blue-50/50 cursor-wait"
+                        : "border-slate-300 bg-white hover:border-blue-500 hover:bg-blue-50/20 cursor-pointer"
+                    }`}
+                  >
+                    {uploading ? (
+                      <div className="flex flex-col items-center gap-2">
+                        <LoaderCircle size={28} className="animate-spin text-blue-600" />
+                        <p className="text-sm font-medium text-slate-700">Uploading image...</p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="rounded-full bg-blue-100 p-3 text-blue-700">
+                          <Upload size={22} />
+                        </div>
+                        <p className="text-sm font-semibold text-slate-800">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          PNG, JPG or WebP (max 10 MB)
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="text"
+                    value={form.imageUrl}
+                    onChange={(event) => {
+                      updateField("imageUrl", event.target.value);
+                      setUploadError(null);
+                    }}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                    placeholder="https://... or /images/..."
+                  />
+                  <p className="mt-1.5 text-xs text-slate-500">
+                    Paste an image web URL or a local path.
+                  </p>
+                </div>
+              )}
+
+              {uploadError && (
+                <p className="mt-2 text-xs font-semibold text-red-600">
+                  {uploadError}
+                </p>
+              )}
+
+              {/* Preview Box */}
+              {form.imageUrl.trim() && (
+                <div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
+                      <Image
+                        src={form.imageUrl}
+                        alt="Service preview"
+                        fill
+                        className="object-cover"
+                        unoptimized={form.imageUrl.startsWith("http")}
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-semibold text-slate-800">Selected Image</p>
+                      <p className="truncate text-xs font-mono text-slate-500">
+                        {form.imageUrl}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateField("imageUrl", "");
+                      if (fileInputRef.current) fileInputRef.current.value = "";
+                    }}
+                    className="ml-3 flex items-center gap-1 rounded-lg border border-red-200 px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition"
+                  >
+                    <X size={14} />
+                    Remove
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
 
           <label className="text-sm font-semibold text-slate-700 sm:col-span-2">
             Description
@@ -406,40 +617,51 @@ export default function ServiceManager({
                 className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm"
               >
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <h3 className="text-lg font-bold text-slate-900">
-                        {service.name}
-                      </h3>
-                      <span
-                        className={`rounded-full px-3 py-0.5 text-xs font-bold ${
-                          service.status === "ACTIVE"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : service.status === "SUSPENDED"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {service.status}
-                      </span>
-                      {hasHistory && (
-                        <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-medium text-blue-700">
-                          {service._count?.bookings} booking(s)
-                        </span>
-                      )}
+                  <div className="flex flex-1 items-start gap-4 min-w-0">
+                    <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-slate-100 border border-slate-200">
+                      <Image
+                        src={getServiceImageUrl(service.slug, service.category, service.imageUrl)}
+                        alt={service.name}
+                        fill
+                        className="object-cover"
+                        unoptimized={Boolean(service.imageUrl?.startsWith("http"))}
+                      />
                     </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <h3 className="text-lg font-bold text-slate-900">
+                          {service.name}
+                        </h3>
+                        <span
+                          className={`rounded-full px-3 py-0.5 text-xs font-bold ${
+                            service.status === "ACTIVE"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : service.status === "SUSPENDED"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          {service.status}
+                        </span>
+                        {hasHistory && (
+                          <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-medium text-blue-700">
+                            {service._count?.bookings} booking(s)
+                          </span>
+                        )}
+                      </div>
 
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-blue-700">
-                      {service.category.replaceAll("_", " ")}
-                    </p>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-blue-700">
+                        {service.category.replaceAll("_", " ")}
+                      </p>
 
-                    <p className="mt-2.5 whitespace-pre-wrap text-sm leading-6 text-slate-600">
-                      {service.description}
-                    </p>
+                      <p className="mt-2.5 whitespace-pre-wrap text-sm leading-6 text-slate-600">
+                        {service.description}
+                      </p>
 
-                    <p className="mt-2 break-all text-xs font-mono text-slate-400">
-                      /services/{service.slug}
-                    </p>
+                      <p className="mt-2 break-all text-xs font-mono text-slate-400">
+                        /services/{service.slug}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -18,7 +18,14 @@ const updateSchema = z
     category: z
       .enum(["CLEANING", "LAUNDRY", "DOMESTIC_SUPPORT", "PEST_CONTROL"])
       .optional(),
-    imageUrl: z.union([z.string().trim().url(), z.literal("")]).nullable().optional(),
+    imageUrl: z
+      .union([
+        z.string().trim().url(),
+        z.string().trim().startsWith("/"),
+        z.literal(""),
+      ])
+      .nullable()
+      .optional(),
     status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED"]).optional(),
     reason: z.string().trim().max(500).optional(),
   })

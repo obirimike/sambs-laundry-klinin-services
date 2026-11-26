@@ -247,8 +247,8 @@ export default async function VacancyDetailPage({ params }: RouteProps) {
               <h3 className="font-bold text-slate-900 text-sm">Need Help?</h3>
               <p className="mt-2 text-xs leading-relaxed text-slate-600">
                 Have questions about this role or our recruitment process? Feel free to contact our recruitment team at{" "}
-                <a href="mailto:info@sambsklining.com" className="font-semibold text-blue-700 hover:underline">
-                  info@sambsklining.com
+                <a href="mailto:info@sambsklinin.com" className="font-semibold text-blue-700 hover:underline">
+                  info@sambsklinin.com
                 </a>.
               </p>
             </div>
